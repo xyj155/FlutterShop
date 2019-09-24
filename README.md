@@ -1,16 +1,30 @@
-# sauce_app
+# 大学生社交软件
 
-A new Flutter application.
+采用Flutter开发的一款双端APP 
+### api包
+接口集合
+### common
+公共界面
+### gson
+接口返回实体类
+### login
+登陆模块
+### message
+即时通讯模块
+### post
+发表帖子模块
+### square
+广场模块
+### user
+用户中心模块
+### util
+工具包
+### widget
+组件包
 
-## Getting Started
+## 命名规则
+dart文件命名：模块名称+界面名称
 
-This project is a starting point for a Flutter application.
+图片资源命名：组件名称+组件名称+作用名称
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+函数命名：私有变量  _ 开头    私有函数  _开头
