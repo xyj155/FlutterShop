@@ -11,6 +11,7 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 import 'login/third_social_login.dart';
 import 'login/user_register_information.dart';
 import 'login/user_register_owner_information.dart';
+import 'square/part_time_job_detail_page.dart';
 import 'square/square_little_shop.dart';
 import 'square/square_part_time_job.dart';
 
@@ -56,7 +57,7 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: PartTimeJobPage(), //启动MainPage
+        home: LoginPage(), //启动MainPage
       ),
     );
   }

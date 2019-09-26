@@ -13,7 +13,10 @@
   static final String QUERY_SQUARE_PURSE_KIND = "JustLikeThis/public/index.php/api/mobile/querysquarepursekind";
   static final String QUERY_POST_LIST = "JustLikeThis/public/index.php/api/mobile/querypurserpost";
   static final String QUERY_PARTTIME_JOB_KIND = "JustLikeThis/public/index.php/api/mobile/queryparttimejobkindbypid";
-  static final String QUERY_PARTTIME_JOB_BY_PAGE = "JustLikeThis/public/index.php/api/queryparttimejobbycity";
+  static final String QUERY_PARTTIME_JOB_BY_PAGE = "JustLikeThis/public/index.php/api/mobile/queryparttimejobbycity";
+  static final String QUERY_PARTTIME_JOB_BY_ID = "JustLikeThis/public/index.php/api/mobile/queryparttimejobbyid";
   static final String QUERY_POST_BY_POSTID = "Post/queryPostByPid";
+  static final String QUERY_USER_AND_CHECK_EXIST = "JustLikeThis/public/index.php/api/mobile/sendsmscode";
+  static final String USER_LOGIN_BY_USERNAME = "/JustLikeThis/public/index.php/api/mobile/userloginbyusername";
   static final String BASE_URL = "https://www.sxystushop.xyz/";
 }

@@ -1,16 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:sauce_app/MainPage.dart';
+import 'package:sauce_app/api/Api.dart';
+import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/common/common_webview_page.dart';
+import 'package:sauce_app/gson/user_entity.dart';
 import 'package:sauce_app/login/third_social_login.dart';
 import 'package:sauce_app/login/user_register_owner_information.dart';
+import 'package:sauce_app/util/AppEncryptionUtil.dart';
+import 'package:sauce_app/util/HttpUtil.dart';
 
 import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
+import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
+import 'package:sauce_app/util/logutil.dart';
 
 import 'package:sauce_app/widget/input_text_fied.dart';
 
@@ -34,7 +44,7 @@ class LoginPage extends StatefulWidget {
   final Function onTapCallback;
 
   /// 是否可以获取验证码，默认为`false`。
-  final bool available;
+  bool available;
 
   LoginPage({
     this.countdown: 60,
@@ -50,6 +60,7 @@ class LoginState extends State<LoginPage> {
   ScreenUtils screenUtil = new ScreenUtils();
   Timer _timer;
   String countryCode = "+（86）中国大陆";
+  String verifyCode = "";
 
   /// 当前倒计时的秒数。
   int _seconds;
@@ -62,7 +73,6 @@ class LoginState extends State<LoginPage> {
 
   /// 启动倒计时的计时器。
   void _startTimer() {
-    // 计时器（`Timer`）组件的定期（`periodic`）构造函数，创建一个新的重复计时器。
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_seconds == 0) {
         _cancelTimer();
@@ -73,7 +83,6 @@ class LoginState extends State<LoginPage> {
       }
       _seconds--;
       _verifyStr = '已发送$_seconds' + 's';
-      setState(() {});
       if (_seconds == 0) {
         _verifyStr = '重新发送';
       }
@@ -86,12 +95,17 @@ class LoginState extends State<LoginPage> {
     _timer?.cancel();
   }
 
+  String smsCode = "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _seconds = widget.countdown;
     loadJson();
+    setState(() {
+      smsCode = getRankCode();
+    });
   }
 
   List<PickerItem> list = new List();
@@ -109,6 +123,32 @@ class LoginState extends State<LoginPage> {
       }
     });
   }
+
+  void sendSMS() async {
+    var response = await HttpUtil.getInstance().post(
+        Api.QUERY_USER_AND_CHECK_EXIST,
+        data: {"telphone": telPhone, "code": smsCode});
+    print("--------------------");
+    print({"telphone": telPhone, "code": smsCode});
+    print(response);
+    print("--------------------");
+    var encode = json.decode(response.toString());
+    var baseResponseEntity = BaseResponseEntity.fromJson(encode);
+    if (baseResponseEntity.code == 200) {
+      _startTimer();
+      inkWellStyle = _unavailableStyle;
+      _verifyStr = '已发送$_seconds' + 's';
+      setState(() {});
+    } else if (baseResponseEntity.code == 201) {
+      setState(() {
+        notRegister = true;
+      });
+    } else if (baseResponseEntity.code == 301) {
+      ToastUtil.showErrorToast("发送验证码失败：" + baseResponseEntity.msg);
+    }
+  }
+
+  bool notRegister = false;
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +244,8 @@ class LoginState extends State<LoginPage> {
                     inputBorder: InputBorder.none,
                     fieldCallBack: (content) {
                       telPhone = content;
-//                print(_phoneNumber);
+
+                      LogUtil.Log(telPhone);
                     }),
               ),
               new Container(
@@ -220,6 +261,11 @@ class LoginState extends State<LoginPage> {
                           style: new TextStyle(
                               fontSize: screenUtil.setFontSize(15)),
                           keyboardType: TextInputType.number,
+                          onChanged: (content) {
+                            setState(() {
+                              verifyCode = content;
+                            });
+                          },
                           decoration: InputDecoration(
                               counterText: "",
                               hintText: '验证码',
@@ -240,15 +286,22 @@ class LoginState extends State<LoginPage> {
                                   '  $_verifyStr  ',
                                   style: inkWellStyle,
                                 ),
-                                onTap: (_seconds == widget.countdown)
-                                    ? () {
-                                        _startTimer();
-                                        inkWellStyle = _unavailableStyle;
-                                        _verifyStr = '已发送$_seconds' + 's';
-                                        setState(() {});
-                                        widget.onTapCallback();
+                                onTap: () {
+                                  if (telPhone.isEmpty) {
+                                    ToastUtil.showCommonToast("电话号码不可为空哦！");
+                                  } else {
+                                    bool isMobile = isChinaPhoneLegal(telPhone);
+                                    if (isMobile) {
+                                      if (_seconds == widget.countdown) {
+                                        sendSMS();
+                                      } else {
+                                        return;
                                       }
-                                    : null,
+                                    } else {
+                                      ToastUtil.showCommonToast("你的电话号码不对哦！");
+                                    }
+                                  }
+                                },
                               )
                             : InkWell(
                                 child: Text(
@@ -271,10 +324,28 @@ class LoginState extends State<LoginPage> {
                     style: new TextStyle(fontWeight: FontWeight.bold),
                   ),
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        new CustomRouteSlide(new UserRegisterInformationPage()),
-                        (route) => route == null);
+                    if (verifyCode == smsCode) {
+                      if (telPhone.isEmpty) {
+                        ToastUtil.showCommonToast("手机号不可为空哦！");
+                        return;
+                      } else {
+                        userLoginByUserName();
+                      }
+                    } else {
+                      ToastUtil.showCommonToast("验证码不对哦！");
+                      return;
+                    }
+//                    if(notRegister){
+//                      ToastUtil.showCommonToast("你还没有注册哦！");
+//                      Navigator.push(context, new MaterialPageRoute(builder: (_) {
+//                        return new UserRegisterInformationPageWithoutAvatar();
+//                      }));
+//                    }else{
+//                      Navigator.pushAndRemoveUntil(
+//                          context,
+//                          new CustomRouteSlide(new UserRegisterInformationPage()),
+//                              (route) => route == null);
+//                    }
                   },
                 ),
               ),
@@ -293,8 +364,12 @@ class LoginState extends State<LoginPage> {
                             ..onTap = () async {
                               Navigator.push(context,
                                   new MaterialPageRoute(builder: (_) {
-                                    return new CommonWebViewPage(title: "用户注册协议",url: "https://sxystushop.xyz/JustLikeThis/public/app/user_register.html",);
-                                  }));
+                                return new CommonWebViewPage(
+                                  title: "用户注册协议",
+                                  url:
+                                      "https://sxystushop.xyz/JustLikeThis/public/app/user_register.html",
+                                );
+                              }));
                             }),
                       TextSpan(
                         text: '和 ',
@@ -308,8 +383,12 @@ class LoginState extends State<LoginPage> {
                             ..onTap = () async {
                               Navigator.push(context,
                                   new MaterialPageRoute(builder: (_) {
-                                    return new CommonWebViewPage(title: "隐私权政策",url: "https://sxystushop.xyz/JustLikeThis/public/app/user_privacy.html",);
-                                  }));
+                                return new CommonWebViewPage(
+                                  title: "隐私权政策",
+                                  url:
+                                      "https://sxystushop.xyz/JustLikeThis/public/app/user_privacy.html",
+                                );
+                              }));
                             })
                     ],
                   ),
@@ -373,5 +452,57 @@ class LoginState extends State<LoginPage> {
         )
       ],
     );
+  }
+
+  Future saveUserData(UserData userData) async {
+    var instance = await SpUtil.getInstance();
+    instance.putString("username", userData.username);
+    instance.putString("avatar", userData.avatar);
+    instance.putString("avatar", userData.avatar);
+    instance.putString("city", userData.city);
+    instance.putString("signature", userData.signature);
+    instance.putString("fans", userData.fans);
+    instance.putString("username", userData.score);
+    instance.putBool("login", true);
+    instance.putString("school", userData.school);
+    instance.putString("nickname", userData.nickname);
+    instance.putString("major", userData.major);
+    instance.putString("observe", userData.observe);
+    instance.putInt("id", userData.id);
+  }
+
+  bool isChinaPhoneLegal(String str) {
+    return new RegExp(
+            '^((13[0-9])|(15[^4])|(166)|(17[0-8])|(18[0-9])|(19[8-9])|(147,145))\\d{8}\$')
+        .hasMatch(str);
+  }
+
+  void userLoginByUserName() async {
+    var post = await HttpUtil.getInstance().post(Api.USER_LOGIN_BY_USERNAME,
+        data: {"username": AppEncryptionUtil.verifyTokenEncode(telPhone)});
+    print(post.toString());
+    var decode = json.decode(post.toString());
+    var userEntity = UserEntity.fromJson(decode);
+    if (userEntity.code == 200) {
+      saveUserData(userEntity.data[0]);
+      Navigator.pushAndRemoveUntil(context,
+          new CustomRouteSlide(new MainPage()), (route) => route == null);
+    } else {
+      ToastUtil.showCommonToast("用户信息获取错误或用户不存在！");
+    }
+  }
+
+  String getRankCode() {
+    String alphabet = "123456789".trim();
+    var code = new StringBuffer();
+    for (var i = 0; i < 6; i++) {
+      var alphabet2 = alphabet[Random().nextInt(6)];
+      code.write(alphabet2);
+    }
+    if (code.length < 6) {
+      getRankCode();
+    } else {
+      return code.toString();
+    }
   }
 }

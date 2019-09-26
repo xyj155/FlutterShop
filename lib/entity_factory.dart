@@ -5,6 +5,7 @@ import 'package:sauce_app/gson/home_title_avatar_entity.dart';
 import 'package:sauce_app/gson/home_user_topic_entity.dart';
 import 'package:sauce_app/gson/part_time_job_list_entity.dart';
 import 'package:sauce_app/gson/shop_kind_list_entity.dart';
+import 'package:sauce_app/gson/single_part_time_job_detail_entity.dart';
 import 'package:sauce_app/gson/square_banner_entity.dart';
 import 'package:sauce_app/gson/square_purse_title_entity.dart';
 import 'package:sauce_app/gson/university_entity.dart';
@@ -32,6 +33,8 @@ class EntityFactory {
       return PartTimeJobListEntity.fromJson(json) as T;
     } else if (T.toString() == "ShopKindListEntity") {
       return ShopKindListEntity.fromJson(json) as T;
+    } else if (T.toString() == "SinglePartTimeJobDetailEntity") {
+      return SinglePartTimeJobDetailEntity.fromJson(json) as T;
     } else if (T.toString() == "SquareBannerEntity") {
       return SquareBannerEntity.fromJson(json) as T;
     } else if (T.toString() == "SquarePurseTitleEntity") {

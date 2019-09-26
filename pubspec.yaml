@@ -83,7 +83,6 @@ flutter:
     - assert/flare/Space.flr
     - assert/imgs/ic_shopcar.png
     - assert/json/country_code_json.json
-    - assert/imgs/square_news.png
     - assert/imgs/tabbar_project_selected.png
     - assert/imgs/tabbar_home_normal.png
     - assert/imgs/message_like.png
@@ -97,10 +96,6 @@ flutter:
     - assert/imgs/loading.gif
     - assert/imgs/login_arrow_rightx.png
     - assert/imgs/closex.png
-    - assert/imgs/school_part_time.png
-    - assert/imgs/school_active.png
-    - assert/imgs/school_shop.png
-    - assert/imgs/school_purse.png
     - assert/imgs/person_arrow_downx.png
     - assert/imgs/login_qq.png
     - assert/imgs/login_wechat.png
@@ -128,15 +123,13 @@ flutter:
     - assert/imgs/video_player.png
     - assert/imgs/ic_user_setting.png
     - assert/imgs/ic_user_view_history.png
-    - assert/imgs/project_comics_new.png
-    - assert/imgs/project_fans_new.png
-    - assert/imgs/project_film_new.png
-    - assert/imgs/project_game_new.png
     - assert/imgs/person_morex.png
     - assert/imgs/person_likex.png
     - assert/imgs/post_more.png
     - assert/imgs/person_share.png
     - assert/imgs/person_commentx.png
+    - assert/imgs/part_time_job_alert.png
+    - assert/imgs/part_job_vertify.png
     - assert/imgs/arrow_down_refund.png
     - assert/imgs/icon_image_delete.png
     - assert/imgs/ic_square_picture.png

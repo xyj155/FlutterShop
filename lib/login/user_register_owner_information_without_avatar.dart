@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:sauce_app/MainPage.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 import 'package:sauce_app/widget/input_text_fied.dart';
@@ -7,14 +8,14 @@ import 'package:sauce_app/widget/input_text_fied.dart';
 import 'university_choose.dart';
 import 'user_register_information.dart';
 
-class UserRegisterInformationPage extends StatefulWidget {
+class UserRegisterInformationPageWithoutAvatar extends StatefulWidget {
   @override
-  _UserRegisterInformationPageState createState() =>
-      _UserRegisterInformationPageState();
+  _UserRegisterInformationPageWithoutAvatarState createState() =>
+      _UserRegisterInformationPageWithoutAvatarState();
 }
 
-class _UserRegisterInformationPageState
-    extends State<UserRegisterInformationPage>
+class _UserRegisterInformationPageWithoutAvatarState
+    extends State<UserRegisterInformationPageWithoutAvatar>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
 
@@ -169,15 +170,13 @@ class _UserRegisterInformationPageState
               color: Color(0xff7c7f88),
               textColor: Colors.white,
               child: new Text(
-                '下一步',
+                '完成',
                 style: new TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: () {
-                Navigator.push(context, new MaterialPageRoute(builder: (_){
-                  return new  UserAvatarRegisterPage(
-
-                  );
-                }));
+                Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (_){
+                  return new  MainPage();
+                }), (route) => route == null);
               },
             ),
           ),

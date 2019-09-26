@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,9 @@ import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/gson/user_post_item_entity.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
+import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
-
 
 void main() {
   runApp(new MaterialApp(
@@ -33,14 +34,13 @@ class _HomePostPurseState extends State<HomePostPurse>
     with AutomaticKeepAliveClientMixin {
   ScreenUtils screenUtil = new ScreenUtils();
 
-
   _HomePostPurseState();
 
   void getPage() async {
     SpUtil sp = await SpUtil.getInstance();
     int value = sp.getInt("page");
     setState(() {
-      _page = value == null || value <= 1 ? 1 : value;
+      _page = value == null  ? 1 : value;
       print("-------------------page-------------------");
       print(value);
       print("-------------------page-------------------");
@@ -52,7 +52,7 @@ class _HomePostPurseState extends State<HomePostPurse>
   void initState() {
     // TODO: implement initState
     super.initState();
-//    getPage();
+    getPage();
   }
 
   Future getNextPagePost() async {
@@ -66,18 +66,18 @@ class _HomePostPurseState extends State<HomePostPurse>
 
   Future getPrePagePost() async {
     SpUtil sp = await SpUtil.getInstance();
-    sp.putInt("page", (_page - 1));
+    sp.putInt("page", (_page + 1));
     setState(() {
       getPrePageData();
     });
   }
 
-  int _page;
+  int _page ;
 
   Future getPrePageData() async {
     SpUtil sp = await SpUtil.getInstance();
     int value = sp.getInt("page");
-    _page = value == null || value <= 1 ? 1 : value;
+    _page = value == null  ? 1 : value;
 
     var response = await HttpUtil.getInstance().get(Api.QUERY_POST_LIST,
         data: {"page": _page.toString(), "userId": "1"});
@@ -99,6 +99,7 @@ class _HomePostPurseState extends State<HomePostPurse>
         header: ClassicalHeader(
             enableInfiniteRefresh: false,
             refreshText: "正在刷新...",
+            completeDuration:Duration(milliseconds: 500),
             refreshReadyText: "下拉我刷新哦！",
             refreshingText: "还在刷新哦！",
             refreshedText: "刷新好了哦！嘻嘻",
@@ -124,6 +125,7 @@ class _HomePostPurseState extends State<HomePostPurse>
         child: getBody(),
         footer: new ClassicalFooter(
             loadText: "",
+            completeDuration:Duration(milliseconds: 500),
             loadReadyText: "放开我啦！",
             loadingText: "努力获取数据中",
             loadedText: "加载完成了！",
@@ -153,8 +155,8 @@ class _HomePostPurseState extends State<HomePostPurse>
   }
 
   void getPurseDataList(int page) async {
-    var response = await HttpUtil.getInstance().get(Api.QUERY_POST_LIST,
-        data: {"page": "10", "userId": "1"});
+    var response = await HttpUtil.getInstance()
+        .get(Api.QUERY_POST_LIST, data: {"page": page, "userId": "1"});
     print("-------------------postType-------------------");
     var decode = json.decode(response.toString());
     print("-------------------postType-------------------");
@@ -163,13 +165,13 @@ class _HomePostPurseState extends State<HomePostPurse>
       userPostItem = userPostItemEntity.data;
     });
   }
+
   @override
   void dispose() {
-
     super.dispose();
   }
-  setUserPostList(UserPostItemData index) {
 
+  setUserPostList(UserPostItemData index) {
     return new GestureDetector(
       child: new Container(
         color: Colors.white,
@@ -282,17 +284,32 @@ class _HomePostPurseState extends State<HomePostPurse>
                           );
                         },
                       )
-                    : new Container(
-                        padding: EdgeInsets.only(
-                            left: screenUtil.setWidgetHeight(20)),
-                        alignment: Alignment.centerLeft,
-                        height: screenUtil.setWidgetHeight(200),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: "assert/imgs/loading.gif",
-                          image: "${index.pictures[0]}" +
-                              "?x-oss-process=video/snapshot,t_5000,f_jpg",
-                          fit: BoxFit.cover,
-                        ),
+                    : new Stack(
+                        children: <Widget>[
+                          new Container(
+                            padding: EdgeInsets.only(
+                                left: screenUtil.setWidgetHeight(20)),
+                            alignment: Alignment.centerLeft,
+                            height: screenUtil.setWidgetHeight(200),
+                            child: FadeInImage.assetNetwork(
+                              placeholder: "assert/imgs/loading.gif",
+                              image: "${index.pictures[0]}" +
+                                  "?x-oss-process=video/snapshot,t_5000,f_jpg",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          new Container(
+                            padding: EdgeInsets.only(
+                                left: screenUtil.setWidgetHeight(20)),
+                            height: screenUtil.setWidgetHeight(200),
+                            alignment: Alignment.center,
+                            child: new Image.asset(
+                              "assert/imgs/video_player.png",
+                              width: screenUtil.setWidgetWidth(40),
+                              height: screenUtil.setWidgetHeight(40),
+                            ),
+                          ),
+                        ],
                       )),
             new Row(
               children: <Widget>[
@@ -301,11 +318,11 @@ class _HomePostPurseState extends State<HomePostPurse>
                   imagePath: "assert/imgs/person_share.png",
                 ),
                 new UserPostDetailList(
-                  title: "评论",
+                  title: "评论"+index.commentCount.toString(),
                   imagePath: "assert/imgs/person_commentx.png",
                 ),
                 new UserPostDetailList(
-                  title: "点赞",
+                  title: "点赞 "+index.thumbCount.toString(),
                   imagePath: "assert/imgs/person_likex.png",
                 ),
                 new Expanded(
@@ -331,8 +348,6 @@ class _HomePostPurseState extends State<HomePostPurse>
       },
     );
   }
-
-
 
   @override
   // TODO: implement wantKeepAlive
