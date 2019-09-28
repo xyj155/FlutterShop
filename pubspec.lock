@@ -225,15 +225,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_custom_bottom_tab_bar:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: e395257904815f7831960f5426dac5b2054924b0
-      url: "https://github.com/LiuC520/flutter_custom_bottom_tab_bar.git"
-    source: git
-    version: "0.0.1"
   flutter_easyrefresh:
     dependency: "direct main"
     description:
@@ -551,6 +542,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.5"
+  qrcode_reader:
+    dependency: "direct main"
+    description:
+      name: qrcode_reader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.4"
   quiver:
     dependency: transitive
     description:

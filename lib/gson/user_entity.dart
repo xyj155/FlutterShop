@@ -52,13 +52,15 @@ class UserData {
 	String createTime;
 	dynamic qqId;
 	int page;
+	int age;
 	dynamic isAllowPlay;
 	dynamic vipDate;
 	String username;
 
-	UserData({this.gameType, this.city, this.signature, this.isRoboot, this.latitude, this.isOnline, this.currentCity, this.hot, this.isInvite, this.observe, this.score, this.major, this.school, this.nickname, this.id, this.longitude, this.gameDesc, this.sex, this.birth, this.updateTime, this.avatar, this.isVip, this.fans, this.isPermit, this.createTime, this.qqId, this.page, this.isAllowPlay, this.vipDate, this.username});
+	UserData({this.age,this.gameType, this.city, this.signature, this.isRoboot, this.latitude, this.isOnline, this.currentCity, this.hot, this.isInvite, this.observe, this.score, this.major, this.school, this.nickname, this.id, this.longitude, this.gameDesc, this.sex, this.birth, this.updateTime, this.avatar, this.isVip, this.fans, this.isPermit, this.createTime, this.qqId, this.page, this.isAllowPlay, this.vipDate, this.username});
 
 	UserData.fromJson(Map<String, dynamic> json) {
+		age = json['age'];
 		gameType = json['gameType'];
 		city = json['city'];
 		signature = json['signature'];
@@ -95,6 +97,7 @@ class UserData {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
 		data['gameType'] = this.gameType;
 		data['city'] = this.city;
+		data['age'] = this.age;
 		data['signature'] = this.signature;
 		data['isRoboot'] = this.isRoboot;
 		data['latitude'] = this.latitude;

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
 import 'package:sauce_app/util/CommonBack.dart';
+
 class CommonWebViewPage extends StatefulWidget {
   String url;
   String title;
 
 
   // In the constructor, require a Todo
-  CommonWebViewPage({Key key, @required this.url,this.title}) : super(key: key);
+  CommonWebViewPage({Key key, @required this.url, @required this.title}) : super(key: key);
 
   @override
   _CommonWebViewPageState createState() => _CommonWebViewPageState();
@@ -15,26 +17,25 @@ class CommonWebViewPage extends StatefulWidget {
 
 class _CommonWebViewPageState extends State<CommonWebViewPage>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-
   @override
   void initState() {
-    _controller = AnimationController(vsync: this);
+//    flutterWebviewPlugin.
+
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
+
+  FlutterWebviewPlugin flutterWebviewPlugin = FlutterWebviewPlugin();
   @override
   Widget build(BuildContext context) {
     return new WebviewScaffold(
-      url:widget.url,
-      // 登录的URL
-      appBar:BackUtil.NavigationBack(context, widget.title),
+      appBar: BackUtil.NavigationBack(context, widget.title),
+      url: widget.url,
       withZoom: false,
       scrollBar: true,
       clearCache: true,
@@ -42,6 +43,5 @@ class _CommonWebViewPageState extends State<CommonWebViewPage>
       withLocalStorage: true,
       withJavascript: true,
     );
-
   }
 }

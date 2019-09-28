@@ -454,21 +454,25 @@ class LoginState extends State<LoginPage> {
     );
   }
 
-  Future saveUserData(UserData userData) async {
+  void saveUserData(UserData userData) async {
     var instance = await SpUtil.getInstance();
     instance.putString("username", userData.username);
     instance.putString("avatar", userData.avatar);
-    instance.putString("avatar", userData.avatar);
+    instance.putString("latitude", userData.latitude);
+    instance.putString("longitude", userData.longitude);
+    instance.putString("currentCity", userData.currentCity);
+    instance.putInt("page", userData.page);
     instance.putString("city", userData.city);
     instance.putString("signature", userData.signature);
     instance.putString("fans", userData.fans);
-    instance.putString("username", userData.score);
+    instance.putString("score", userData.score);
     instance.putBool("login", true);
     instance.putString("school", userData.school);
     instance.putString("nickname", userData.nickname);
     instance.putString("major", userData.major);
     instance.putString("observe", userData.observe);
     instance.putInt("id", userData.id);
+
   }
 
   bool isChinaPhoneLegal(String str) {

@@ -1,9 +1,15 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+
+import 'dart:async';
+import 'package:flutter/services.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:qrcode_reader/qrcode_reader.dart';
 import 'package:sauce_app/api/Api.dart';
+import 'package:sauce_app/common/common_webview_page.dart';
 import 'package:sauce_app/home/home_index.dart';
 import 'package:sauce_app/square/square_little_shop.dart';
 import 'package:sauce_app/square/square_shop_drink_purse.dart';
@@ -16,6 +22,7 @@ import 'package:sauce_app/gson/user_item_entity.dart';
 import 'package:sauce_app/gson/square_purse_title_entity.dart';
 import 'package:sauce_app/gson/square_banner_entity.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/gson/business_shop_list_entity.dart';
 import 'package:sauce_app/widget/common_dialog.dart';
@@ -40,6 +47,29 @@ class SquarePageState extends State<SquarePageIndex>
   List<BusinessShopListData> _shop_list = new List();
   List<SquarePurseTitleData> _purse_title_list = new List();
   bool isLoading = true;
+  Future<String> futureString;
+
+  Future scan() async {
+    futureString = new QRCodeReader()
+        .setForceAutoFocus(true) // default false
+        .setHandlePermissions(true) // default true
+        .setExecuteAfterPermissionGranted(true) // default truefault false
+        .scan();
+    var spUtil = await SpUtil.getInstance();
+    futureString.then((result) {
+      Navigator.push(context, new MaterialPageRoute(builder: (_) {
+        return new CommonWebViewPage(url: result+"&inviteId="+spUtil.getInt("id").toString(), title: "邀请好友");
+      }));
+//      print("------------------");
+//      print(_);
+//      print("------------------");
+    });
+//    new FutureBuilder<String>(
+//        future: futureString,
+//        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+//          return new Text(snapshot.data != null ? snapshot.data : '');
+//        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +93,12 @@ class SquarePageState extends State<SquarePageIndex>
                             child: Container(
                               height: 42,
                               color: Color(0xfff7f7f7),
-                              padding: EdgeInsets.only(left: 15),
-                              margin: EdgeInsets.only(left: 10, right: 10),
+                              padding: EdgeInsets.only(
+                                  left: screenUtils.setWidgetWidth(15),
+                                  right: screenUtils.setWidgetWidth(15)),
+                              margin: EdgeInsets.only(
+                                  left: screenUtils.setWidgetWidth(10),
+                                  right: screenUtils.setWidgetWidth(10)),
                               child: new Row(
                                 children: <Widget>[
                                   new Image.asset(
@@ -78,6 +112,20 @@ class SquarePageState extends State<SquarePageIndex>
                                       color: Color(0xffdbdbdb),
                                     ),
                                   ),
+                                  new Expanded(
+                                      child: new GestureDetector(
+                                    onTap: () {
+                                      scan();
+                                    },
+                                    child: new Container(
+                                      child: new Image.asset(
+                                        "assert/imgs/ic_square_scan.png",
+                                        width: 23,
+                                        height: 23,
+                                      ),
+                                      alignment: Alignment.centerRight,
+                                    ),
+                                  )),
                                 ],
                               ),
                             ),
@@ -374,7 +422,8 @@ class SquarePageState extends State<SquarePageIndex>
                 ),
               ),
               SliverOverlapAbsorber(
-                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                handle:
+                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 child: SliverAppBar(
                   backgroundColor: Colors.white,
                   floating: false,
@@ -500,11 +549,16 @@ class SquarePageState extends State<SquarePageIndex>
         ));
   }
 
+  int index = 0;
+
 //设置推广信息标题和副标题
   Widget _set_purse_title(BuildContext context, int position) {
     return new GestureDetector(
       onTap: () {
         print(_purse_title_list[position].id);
+        setState(() {
+          index = position;
+        });
         getShopList(_purse_title_list[position].id.toString());
       },
       child: new Container(
@@ -516,13 +570,13 @@ class SquarePageState extends State<SquarePageIndex>
               _purse_title_list[position].purseKind,
               style: new TextStyle(
                   fontSize: screenUtils.setFontSize(16),
-                  color: Colors.black,
+                  color: index == position ? Color(0xfffc5a22) : Colors.black,
                   fontWeight: FontWeight.bold),
             ),
             new Text(
               _purse_title_list[position].subtitle,
               style: new TextStyle(
-                  color: Colors.grey,
+                  color: index == position ? Color(0xfffc5a22) : Colors.grey,
                   fontWeight: FontWeight.normal,
                   fontSize: screenUtils.setFontSize(13)),
             )

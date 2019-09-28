@@ -3,7 +3,9 @@
 import 'package:amap_base/amap_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sauce_app/home/home_index.dart';
 import 'MainPage.dart';
+import 'common/index.dart';
 import 'login/login.dart';
 import 'package:platform/platform.dart';
 import 'package:jmessage_flutter/jmessage_flutter.dart';
@@ -57,7 +59,7 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: LoginPage(), //启动MainPage
+        home: IndexPage(), //启动MainPage
       ),
     );
   }

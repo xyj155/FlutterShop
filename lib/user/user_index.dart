@@ -3,25 +3,53 @@ import 'package:sauce_app/common/common_webview_page.dart';
 import 'package:sauce_app/user/user_detail_center.dart';
 import 'package:sauce_app/user/user_setting.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
+import 'package:sauce_app/user/user_observe_fans.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 
 import 'user_game_list.dart';
 
-void main() {
-  runApp(
-    new MaterialApp(
-      title: '',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new UserPageIndex(),
-    ),
-  );
-}
-
 ScreenUtils screenUtil = new ScreenUtils();
 
-class UserPageIndex extends StatelessWidget {
+class UserPageIndex extends StatefulWidget {
+  @override
+  _UserPageIndexState createState() => _UserPageIndexState();
+}
+
+class _UserPageIndexState extends State<UserPageIndex>
+    with SingleTickerProviderStateMixin {
+  @override
+  void initState() {
+    loadUserData();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String instance = "";
+  String nickname = "";
+  String avatar = "";
+  String signature = "";
+  String observe = "";
+  String fans = "";
+  String score = "";
+
+  void loadUserData() async {
+    var instance = await SpUtil.getInstance();
+
+    setState(() {
+      nickname = instance.getString("nickname");
+      avatar = instance.getString("avatar");
+      signature = instance.getString("signature");
+      observe = instance.getString("observe");
+      fans = instance.getString("fans");
+      score = instance.getString("score");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     screenUtil.initUtil(context);
@@ -30,7 +58,10 @@ class UserPageIndex extends StatelessWidget {
       child: new Column(
         children: <Widget>[
           new Container(
-            padding: new EdgeInsets.only(top: screenUtil.setWidgetHeight(16), left: screenUtil.setWidgetWidth(20), bottom: screenUtil.setWidgetHeight(20)),
+            padding: new EdgeInsets.only(
+                top: screenUtil.setWidgetHeight(16),
+                left: screenUtil.setWidgetWidth(20),
+                bottom: screenUtil.setWidgetHeight(20)),
             child: new Text("我的",
                 style: TextStyle(
                     fontSize: 31,
@@ -39,18 +70,22 @@ class UserPageIndex extends StatelessWidget {
             alignment: Alignment.topLeft,
           ),
           new GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               Navigator.push(context, new MaterialPageRoute(builder: (_) {
                 return new UserDetailCenterPage();
               }));
             },
             child: new Container(
-              padding: new EdgeInsets.only(left: screenUtil.setWidgetWidth(20), bottom: screenUtil.setWidgetHeight(5), right:screenUtil.setWidgetWidth(20)),
+              padding: new EdgeInsets.only(
+                  left: screenUtil.setWidgetWidth(20),
+                  bottom: screenUtil.setWidgetHeight(5),
+                  right: screenUtil.setWidgetWidth(20)),
               child: new Row(
                 children: <Widget>[
                   new ClipOval(
                     child: Image.network(
-                      "https://img.zcool.cn/community/011cff5c7e3893a801213f26f4fed1.jpg@2o.jpg",
+                      avatar,
                       fit: BoxFit.fill,
                       height: screenUtil.setWidgetHeight(72),
                       width: screenUtil.setWidgetWidth(72),
@@ -58,26 +93,26 @@ class UserPageIndex extends StatelessWidget {
                   ),
                   new Expanded(
                       child: new Container(
-                        padding: EdgeInsets.only(left: 20),
-                        child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              new Text(
-                                "用户名",
-                                style: new TextStyle(
-                                    fontSize: 27, fontWeight: FontWeight.bold),
-                              ),
-                              new Divider(
-                                color: Colors.transparent,
-                                height: 10,
-                              ),
-                              new Text(
-                                "个性签名",
-                                style: new TextStyle(
-                                    fontSize: 14, color: Color(0xff8a8a8a)),
-                              ),
-                            ]),
-                      )),
+                    padding: EdgeInsets.only(left: 20),
+                    child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Text(
+                            nickname,
+                            style: new TextStyle(
+                                fontSize: 27, fontWeight: FontWeight.bold),
+                          ),
+                          new Divider(
+                            color: Colors.transparent,
+                            height: 10,
+                          ),
+                          new Text(
+                            signature,
+                            style: new TextStyle(
+                                fontSize: 14, color: Color(0xff8a8a8a)),
+                          ),
+                        ]),
+                  )),
                   new Image.asset(
                     "assert/imgs/person_arrow_right_grayx.png",
                     width: 15,
@@ -91,61 +126,84 @@ class UserPageIndex extends StatelessWidget {
           new Row(
             children: <Widget>[
               new Expanded(
-                child: new Column(
-                  children: <Widget>[
-                    new Text(
-                      "0",
-                      style: new TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff000000)),
-                    ),
-                    new Text(
-                      "粉丝",
-                      style: new TextStyle(
-                        fontSize: 15,
+                child: new GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  child: new Column(
+                    children: <Widget>[
+                      new Text(
+                        fans,
+                        style: new TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff000000)),
                       ),
-                    ),
-                  ],
+                      new Text(
+                        "粉丝",
+                        style: new TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                      return new UserObserveFansPage(
+                        type: "0",
+                      );
+                    }));
+                  },
                 ),
               ),
               new Expanded(
-                child: new Column(
-                  children: <Widget>[
-                    new Text(
-                      "0",
-                      style: new TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff000000)),
-                    ),
-                    new Text(
-                      "关注",
-                      style: new TextStyle(
-                        fontSize: 15,
+                child: new GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  child: new Column(
+                    children: <Widget>[
+                      new Text(
+                        observe,
+                        style: new TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff000000)),
                       ),
-                    ),
-                  ],
+                      new Text(
+                        "关注",
+                        style: new TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                      return new UserObserveFansPage(
+                        type: "1",
+                      );
+                    }));
+                  },
                 ),
               ),
               new Expanded(
-                child: new Column(
-                  children: <Widget>[
-                    new Text(
-                      "0",
-                      style: new TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff000000)),
-                    ),
-                    new Text(
-                      "积分",
-                      style: new TextStyle(
-                        fontSize: 15,
+                child: new GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                  child: new Column(
+                    children: <Widget>[
+                      new Text(
+                        score,
+                        style: new TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff000000)),
                       ),
-                    ),
-                  ],
-                ),
+                      new Text(
+                        "积分",
+                        style: new TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ),
             ],
           ),
@@ -212,14 +270,13 @@ class UserPageIndex extends StatelessWidget {
             ),
           ),
           new Container(
-              height: screenUtil.setWidgetHeight(10),
-              color: Color(0xfffafafa)),
+              height: screenUtil.setWidgetHeight(10), color: Color(0xfffafafa)),
           new ListTile(
             onTap: () {
               Navigator.push(context, new MaterialPageRoute(builder: (_) {
                 return new CommonWebViewPage(
                     url:
-                    "http://sxystushop.xyz/JustLikeThis/public/luckdraw/default.html");
+                        "http://sxystushop.xyz/JustLikeThis/public/luckdraw/default.html");
               }));
             },
             title: new Text(
@@ -241,8 +298,8 @@ class UserPageIndex extends StatelessWidget {
             ),
           ),
           new ListTile(
-            onTap: (){
-              Navigator.push(context, new MaterialPageRoute(builder: (_){
+            onTap: () {
+              Navigator.push(context, new MaterialPageRoute(builder: (_) {
                 return new UserGameListPage();
               }));
             },
@@ -284,8 +341,7 @@ class UserPageIndex extends StatelessWidget {
             ),
           ),
           new Container(
-              height: screenUtil.setWidgetHeight(10),
-              color: Color(0xfffafafa)),
+              height: screenUtil.setWidgetHeight(10), color: Color(0xfffafafa)),
           new ListTile(
             onTap: () {
               Navigator.push(
@@ -309,9 +365,10 @@ class UserPageIndex extends StatelessWidget {
               height: 20,
             ),
           ),
-          new Expanded(child: new Container(
-              height: screenUtil.setWidgetHeight(10),
-              color: Color(0xfffafafa))),
+          new Expanded(
+              child: new Container(
+                  height: screenUtil.setWidgetHeight(10),
+                  color: Color(0xfffafafa))),
         ],
       ),
     );
