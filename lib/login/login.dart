@@ -23,6 +23,7 @@ import 'package:sauce_app/util/TransationUtil.dart';
 import 'package:sauce_app/util/logutil.dart';
 
 import 'package:sauce_app/widget/input_text_fied.dart';
+import 'package:sauce_app/widget/loading_dialog.dart';
 
 final TextStyle _availableStyle = TextStyle(
     color: const Color(0xFF2da689),
@@ -324,8 +325,18 @@ class LoginState extends State<LoginPage> {
                     style: new TextStyle(fontWeight: FontWeight.bold),
                   ),
                   onPressed: () {
+                    showDialog<Null>(
+                        context: context, //BuildContext对象
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return new LoadingDialog(
+                            //调用对话框
+                            text: '登陆中...',
+                          );
+                        });
                     if (verifyCode == smsCode) {
                       if (telPhone.isEmpty) {
+                        Navigator.pop(context);
                         ToastUtil.showCommonToast("手机号不可为空哦！");
                         return;
                       } else {
@@ -333,6 +344,7 @@ class LoginState extends State<LoginPage> {
                       }
                     } else {
                       ToastUtil.showCommonToast("验证码不对哦！");
+                      Navigator.pop(context);
                       return;
                     }
 //                    if(notRegister){
@@ -472,7 +484,6 @@ class LoginState extends State<LoginPage> {
     instance.putString("major", userData.major);
     instance.putString("observe", userData.observe);
     instance.putInt("id", userData.id);
-
   }
 
   bool isChinaPhoneLegal(String str) {
@@ -489,10 +500,13 @@ class LoginState extends State<LoginPage> {
     var userEntity = UserEntity.fromJson(decode);
     if (userEntity.code == 200) {
       saveUserData(userEntity.data[0]);
+      Navigator.pop(context);
       Navigator.pushAndRemoveUntil(context,
           new CustomRouteSlide(new MainPage()), (route) => route == null);
+
     } else {
       ToastUtil.showCommonToast("用户信息获取错误或用户不存在！");
+      Navigator.pop(context);
     }
   }
 

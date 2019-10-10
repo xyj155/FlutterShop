@@ -8,6 +8,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/common/picture_preview_dialog.dart';
+import 'package:sauce_app/common/user_detail_page.dart';
 import 'package:sauce_app/home/home_post_item_detail.dart';
 import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
@@ -17,7 +18,9 @@ import 'package:sauce_app/gson/user_post_item_entity.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
+import 'package:sauce_app/util/relative_time_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
+import 'package:share/share.dart';
 
 void main() {
   runApp(new MaterialApp(
@@ -40,7 +43,7 @@ class _HomePostPurseState extends State<HomePostPurse>
     SpUtil sp = await SpUtil.getInstance();
     int value = sp.getInt("page");
     setState(() {
-      _page = value == null  ? 1 : value;
+      _page = value == null ? 1 : value;
       print("-------------------page-------------------");
       print(value);
       print("-------------------page-------------------");
@@ -72,12 +75,12 @@ class _HomePostPurseState extends State<HomePostPurse>
     });
   }
 
-  int _page ;
+  int _page;
 
   Future getPrePageData() async {
     SpUtil sp = await SpUtil.getInstance();
     int value = sp.getInt("page");
-    _page = value == null  ? 1 : value;
+    _page = value == null ? 1 : value;
 
     var response = await HttpUtil.getInstance().get(Api.QUERY_POST_LIST,
         data: {"page": _page.toString(), "userId": "1"});
@@ -99,7 +102,7 @@ class _HomePostPurseState extends State<HomePostPurse>
         header: ClassicalHeader(
             enableInfiniteRefresh: false,
             refreshText: "正在刷新...",
-            completeDuration:Duration(milliseconds: 500),
+            completeDuration: Duration(milliseconds: 500),
             refreshReadyText: "下拉我刷新哦！",
             refreshingText: "还在刷新哦！",
             refreshedText: "刷新好了哦！嘻嘻",
@@ -125,7 +128,7 @@ class _HomePostPurseState extends State<HomePostPurse>
         child: getBody(),
         footer: new ClassicalFooter(
             loadText: "",
-            completeDuration:Duration(milliseconds: 500),
+            completeDuration: Duration(milliseconds: 500),
             loadReadyText: "放开我啦！",
             loadingText: "努力获取数据中",
             loadedText: "加载完成了！",
@@ -179,7 +182,11 @@ class _HomePostPurseState extends State<HomePostPurse>
           children: <Widget>[
             new Row(
               children: <Widget>[
-                new Container(
+                new GestureDetector(
+                    onTap: (){
+                      new CustomRouteSlide(new UserDetailPage(userId:index.user.uid.toString()));
+                    },
+                    child: new Container(
                   padding: EdgeInsets.only(
                       top: screenUtil.setWidgetHeight(20),
                       left: screenUtil.setWidgetWidth(20),
@@ -195,6 +202,8 @@ class _HomePostPurseState extends State<HomePostPurse>
                     ),
                   ),
                 ),
+                ),
+
                 new Column(
                   children: <Widget>[
                     new Container(
@@ -212,7 +221,7 @@ class _HomePostPurseState extends State<HomePostPurse>
                                 fontSize: screenUtil.setFontSize(15)),
                           ),
                           new Text(
-                            "${index.timeDuration}",
+                            "${RelativeDateFormat.format(index.createTime)}",
                             style: new TextStyle(
                                 fontSize: screenUtil.setFontSize(11),
                                 color: Color(0xff9B9B9B)),
@@ -316,13 +325,16 @@ class _HomePostPurseState extends State<HomePostPurse>
                 new UserPostDetailList(
                   title: "分享",
                   imagePath: "assert/imgs/person_share.png",
+                  onTap: () {
+                    Share.share( '【玩安卓Flutter版】\n https://github.com/yechaoa/wanandroid_flutter');
+                  },
                 ),
                 new UserPostDetailList(
-                  title: "评论"+index.commentCount.toString(),
+                  title: "评论" + index.commentCount.toString(),
                   imagePath: "assert/imgs/person_commentx.png",
                 ),
                 new UserPostDetailList(
-                  title: "点赞 "+index.thumbCount.toString(),
+                  title: "点赞 " + index.thumbCount.toString(),
                   imagePath: "assert/imgs/person_likex.png",
                 ),
                 new Expanded(
@@ -344,7 +356,7 @@ class _HomePostPurseState extends State<HomePostPurse>
       ),
       onTap: () {
         Navigator.push(context,
-            CustomRouteSlide(UserPostDetailItemPage(userId: "${index.id}")));
+            CustomRouteSlide(UserPostDetailItemPage(userId: "${index.id.toString()}")));
       },
     );
   }

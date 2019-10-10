@@ -72,17 +72,8 @@ class _UserContactsListPageState extends State<UserContactsListPage>
   List<UserContactListData> _list = new List();
 
   void getUserContactList() async {
-    var response =
-        await HttpUtil.getInstance().get(Api.QUERY_POST_BY_POSTID, data: {
-      "token": AppEncryptionUtil.currentTimeMillis(),
-      "isMobile": AppEncryptionUtil.verifyTokenEncode("true"),
-      "userId": "100481"
-    });
-    print({
-      "token": AppEncryptionUtil.currentTimeMillis(),
-      "isMobile": AppEncryptionUtil.verifyTokenEncode("true"),
-      "userId": "100481"
-    });
+    var response = await HttpUtil.getInstance()
+        .get(Api.QUERY_USER_CONTACT_LIST, data: {"userId": "100481", "page": "1"});
     var decode = json.decode(response.toString());
     print(decode);
     var userPostItemEntity = UserContactListEntity.fromJson(decode);
@@ -98,8 +89,7 @@ class _UserContactsListPageState extends State<UserContactsListPage>
         child: new Container(
       color: Colors.white,
       child: new GestureDetector(
-        child: new Stack(
-          alignment: AlignmentDirectional.bottomEnd, //内容对齐方式
+        child:  new Column(
           children: <Widget>[
             new Row(
               children: <Widget>[
@@ -116,31 +106,38 @@ class _UserContactsListPageState extends State<UserContactsListPage>
                 ),
                 new Expanded(
                     child: new Container(
-                  alignment: Alignment.centerLeft,
-                  child: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      new Container(
-                        child: new Text(
-                          userContactListData.nickname,
-                          style: new TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenUtils.setFontSize(18),
-                              decoration: TextDecoration.none),
-                        ),
-                        padding: EdgeInsets.only(
-                            bottom: screenUtils.setWidgetHeight(8)),
+                      alignment: Alignment.centerLeft,
+                      child: new Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment:CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              new Container(
+                                margin: EdgeInsets.only(right: screenUtils.setWidgetWidth(5)),
+                                child: new Text(
+                                  userContactListData.nickname,
+                                  style: new TextStyle(
+                                      fontSize: screenUtils.setFontSize(16),
+                                      decoration: TextDecoration.none),
+                                ),
+
+                              ),
+                              new Image.asset(
+                                userContactListData.sex.endsWith("1")
+                                    ? "assert/imgs/icon_male.png"
+                                    : "assert/imgs/icon_female.png",
+                                width: screenUtils.setWidgetWidth(16),
+                                height: screenUtils.setWidgetHeight(16),
+                              )
+                            ],
+                          ),
+                          new Text("${userContactListData.age} 岁 · ${userContactListData.school} ")
+                        ],
                       ),
-                      new Image.asset(
-                        userContactListData.sex.endsWith("1")
-                            ? "assert/imgs/manx.png"
-                            : "assert/imgs/womanx.png",
-                        width: screenUtils.setWidgetWidth(12),
-                        height: screenUtils.setWidgetHeight(12),
-                      )
-                    ],
-                  ),
-                ))
+                    ))
               ],
             ),
           ],

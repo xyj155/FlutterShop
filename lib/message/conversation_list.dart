@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+//import 'package:jmessage_flutter/jmessage_flutter.dart'as jmessage;
 import 'package:jmessage_flutter/jmessage_flutter.dart';
 import 'package:sauce_app/message/single_conversation.dart';
 import 'package:sauce_app/util/CommonBack.dart';
@@ -9,6 +14,11 @@ import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 import 'package:platform/platform.dart';
+import 'package:sauce_app/util/relative_time_util.dart';
+import 'package:sauce_app/widget/empty_layout.dart';
+
+import '../event_bus.dart';
+import '../main.dart';
 
 class ConversationListPage extends StatefulWidget {
   @override
@@ -16,50 +26,109 @@ class ConversationListPage extends StatefulWidget {
 }
 
 class _ConversationListPageState extends State<ConversationListPage>
-    with SingleTickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin,    WidgetsBindingObserver  {
   AnimationController _controller;
   List<JMConversationInfo> conversationsList = new List();
   JMessageUtil manager = new JMessageUtil();
+  @override
+  void didUpdateWidget(ConversationListPage oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    print('didUpdateWidget');
+  }
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    print("didChangeDependencies");
+    initJMessageConversation();
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("AppLifecycleState.inactive");
+    switch (state) {
+      case AppLifecycleState.inactive:
+        print('AppLifecycleState.inactive');
+        initJMessageConversation();
+        break;
+      case AppLifecycleState.paused:
+        print('AppLifecycleState.paused');
+        initJMessageConversation();
+        break;
+      // 从后台切回来刷新会话
+      case AppLifecycleState.resumed:
+        print('AppLifecycleState.resumed');
+        initJMessageConversation();
+        break;
+      case AppLifecycleState.suspending:
+        print('AppLifecycleState.suspending');
+        initJMessageConversation();
+        break;
+    }
+    super.didChangeAppLifecycleState(state);
+  }
 
   Future initJMessageConversation() async {
-    MethodChannel channel = MethodChannel('jmessage_flutter');
-    JmessageFlutter jmessage =
-        new JmessageFlutter.private(channel, LocalPlatform());
-    jmessage.login(username: "17374131273", password: "xuyijie19971016");
-    if (jmessage != null) {
-
-      List<JMConversationInfo> conversations =
-          await jmessage.getConversations();
-      final JMSingle kMockUser = JMSingle.fromJson({
-        'username': "xuyijie",
-      });
-//      JMConversationInfo conversation =
-//          await jmessage.createConversation(target: kMockUser);
-      JMTextMessage msg = await jmessage.sendTextMessage(
-        type: kMockUser,
-        text: 'Test!',
-      );
-      print(msg.toString());
-      setState(() {
-        conversationsList = conversations;
-      });
-      ToastUtil.showCommonToast("发送消息成功！");
-    } else {
-      ToastUtil.showCommonToast("获取消息列表失败！");
-    }
+    List<JMConversationInfo> conversationLists =
+        await jmessage.getConversations();
+    print("------------------");
+    print(conversationLists.length);
+    print("------------------");
+    setState(() {
+      conversationsList = conversationLists;
+    });
   }
+
+  Timer _timer;
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this);
+
     super.initState();
     initJMessageConversation();
+    _addListener();
+    WidgetsBinding.instance.addObserver(this);
+  }
+  _updateAllConversation() async {
+    if (conversationsList.length > 0) {
+      conversationsList.clear();
+    }
+    print('数组的长度${conversationsList.length}');
+    List<JMConversationInfo> conversationList = await jmessage.getConversations();
+    if (!mounted) return;
+    setState(() {
+      conversationsList = conversationList;
+    });
+    await Future.delayed(Duration(milliseconds: 400),(){
+      eventBus.fire(UpdateUserInfo(message: 'avatar'));
+    });
+  }
+
+  _addListener() {
+    eventBus.on<UpdateNoteNameAndText>().listen((event) {
+      _updateAllConversation();
+    });
+
+    eventBus.on<ReceiveMessage>().listen((event) async {
+      _updateAllConversation();
+    });
+
+    _timer = Timer.periodic(Duration(minutes: 1), (Timer timer) {
+      _updateAllConversation();
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+    _timer.cancel();
+  }
+
+  Future<String> getUserAvatar(String username) async {
+    Map resJson = await jmessage.downloadOriginalUserAvatar(
+        username: username, appKey: '653c79d202ad111a7925b9e2');
+    return resJson["filePath"];
   }
 
   @override
@@ -70,24 +139,46 @@ class _ConversationListPageState extends State<ConversationListPage>
         body: conversationsList.length != 0
             ? new ListView.builder(
                 itemBuilder: (BuildContext context, int position) {
-                  return userMsgList(conversationsList[position],context);
+                  return userMsgList(conversationsList[position], context);
                 },
                 itemCount: conversationsList.length,
               )
-            : CupertinoActivityIndicator());
+            : new Center(
+                child: new StatusLayout(
+                  statusMsg: "你还没有会话哦！",
+                ),
+              ));
+  }
+  Future resetMsg(String username) async {
+    await jmessage.resetUnreadMessageCount(
+        target:  JMSingle.fromJson({
+          'username': username,
+        })
+    );
   }
 
   ScreenUtils screenUtils = new ScreenUtils();
 
-  Widget userMsgList(JMConversationInfo conversationInfo,BuildContext context) {
-    print("------------------------------");
-    print(conversationInfo.title);
-    print("------------------------------");
-    JMTextMessage jmTextMessage = conversationInfo.latestMessage;
-    return GestureDetector(
-        child: new Container(
+  Widget userMsgList(
+      JMConversationInfo conversationInfo, BuildContext context) {
+    JMNormalMessage jmTextMessage = conversationInfo.latestMessage;
+    JMUserInfo target = conversationInfo.target;
+    String content = "";
+    if (jmTextMessage is JMTextMessage) {
+      content = jmTextMessage.text;
+    } else if (jmTextMessage is JMVoiceMessage) {
+      content = '[语音]';
+    } else if (jmTextMessage is JMImageMessage) {
+      content = '[图片]';
+    }
+    String _avatar = target.avatarThumbPath;
+    var file = new File(_avatar);
+    getUserAvatar(target.username);
+    return new Container(
+      margin: EdgeInsets.only(bottom: screenUtils.setWidgetHeight(1)),
       color: Colors.white,
       child: new GestureDetector(
+        behavior: HitTestBehavior.opaque,
         child: new Stack(
           alignment: AlignmentDirectional.bottomEnd, //内容对齐方式
           children: <Widget>[
@@ -95,11 +186,11 @@ class _ConversationListPageState extends State<ConversationListPage>
               children: <Widget>[
                 new Container(
                   child: new ClipOval(
-                    child: Image.network(
-                      "https://img.zcool.cn/community/011cff5c7e3893a801213f26f4fed1.jpg@2o.jpg",
+                    child: Image.file(
+                      file,
                       fit: BoxFit.fill,
-                      height: 56,
-                      width: 56,
+                      height: screenUtils.setWidgetHeight(58),
+                      width: screenUtils.setWidgetWidth(56),
                     ),
                   ),
                   padding: EdgeInsets.all(screenUtils.setWidgetWidth(12)),
@@ -111,23 +202,56 @@ class _ConversationListPageState extends State<ConversationListPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       new Container(
-                        child: new Text(
-                          conversationInfo.title,
-                          style: new TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenUtils.setFontSize(18),
-                              decoration: TextDecoration.none),
+                        child: new Row(
+                          children: <Widget>[
+                            new Text(
+                              conversationInfo.title,
+                              style: new TextStyle(
+                                  fontSize: screenUtils.setFontSize(17),
+                                  decoration: TextDecoration.none),
+                            ),
+                            conversationInfo.unreadCount == 0
+                                ? new Container()
+                                : new Container(
+                                    child: new ClipRRect(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(100)),
+                                      child: new Container(
+                                        alignment: Alignment.center,
+                                        width: screenUtils.setWidgetWidth(16),
+                                        height: screenUtils.setWidgetHeight(16),
+                                        color: Colors.redAccent,
+                                        child: new Text(
+                                          conversationInfo.unreadCount
+                                              .toString(),
+                                          style: new TextStyle(
+                                              color: Colors.white,
+                                              fontSize:
+                                                  screenUtils.setFontSize(13)),
+                                        ),
+                                      ),
+                                    ),
+                                    margin: EdgeInsets.only(
+                                        left: screenUtils.setWidgetWidth(4)),
+                                  )
+                          ],
                         ),
                         padding: EdgeInsets.only(
                             bottom: screenUtils.setWidgetHeight(8)),
                       ),
-                      new Text(
-                        jmTextMessage.text,
-                        style: new TextStyle(
+                      new Container(
+                        width: screenUtils.setWidgetWidth(200),
+                        child: new Text(
+                          content,
+                          style: new TextStyle(
                             fontWeight: FontWeight.normal,
-                            color: Color(0xff8a8a8a),
+                            color: Colors.grey,
                             fontSize: screenUtils.setFontSize(14),
-                            decoration: TextDecoration.none),
+                            decoration: TextDecoration.none,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -142,19 +266,32 @@ class _ConversationListPageState extends State<ConversationListPage>
                 child:
                     new Text(String.fromCharCode(conversationInfo.unreadCount)),
               ),
-            )
+            ),
+            new Positioned(
+                bottom: screenUtils.setWidgetHeight(4),
+                right: screenUtils.setWidgetWidth(4),
+                child: new Text(
+                  RelativeDateFormat.formatWithStamp(jmTextMessage.createTime),
+                  style: new TextStyle(
+                      color: Colors.grey,
+                      fontSize: screenUtils.setFontSize(12)),
+                ))
           ],
         ),
         onTap: () {
-          JMUserInfo target = conversationInfo.target;
+          resetMsg(target.username);
           Navigator.push(
               context,
-              CustomRouteSlide(SingleConversationPage(
-                userId: target.username,
-                username: target.nickname,
-              )));
+              new CustomRouteSlide(SingleConversationPage(
+                  userId: target.username,
+                  username: target.nickname,
+                  avatar: target.avatarThumbPath)));
         },
       ),
-    ));
+    );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

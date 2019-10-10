@@ -22,7 +22,7 @@ dependencies:
 #  flutter_custom_bottom_tab_bar:
 #    git: https://github.com/LiuC520/flutter_custom_bottom_tab_bar.git
   flutter_swiper: ^1.0.6
-  dio: ^2.1.13
+  dio: ^3.0.2
   flutter_easyrefresh: ^2.0.2
   json_serializable: ^2.0.0 # 解析
   transparent_image: ^0.1.0
@@ -36,6 +36,7 @@ dependencies:
   video_player: ^0.7.2
   qrcode_reader: ^0.4.4
   flutter_ijkplayer: ^0.3.3
+  city_pickers: ^0.0.1
   flutter_picker:
     git: git://github.com/yangyxd/flutter_picker.git
   path_provider: ^0.4.1
@@ -59,6 +60,12 @@ dependencies:
   shared_preferences: ^0.4.3
   amap_base: ^0.3.1
   dropdown_menu: ^1.1.0
+  keyboard_visibility: ^0.5.2
+  event_bus: ^1.1.0
+  share: ^0.6.1+1
+  intl: ^0.15.6
+  flutter_bugly: ^0.1.1
+  badges: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -77,11 +84,17 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assert/imgs/ic_shop_car.png
+    - assert/imgs/post_add_img.png
+    - assert/imgs/user_address_editor.png
+    - assert/imgs/ic_location_receive.png
+    - assert/imgs/ic_user_location.png
     - assert/imgs/tabbar_project_normal.png
     - assert/imgs/manx.png
-    - assert/imgs/manx.png
+    - assert/imgs/ic_game_lol.png
     - assert/imgs/near_a.png
     - assert/flare/Space.flr
+    - assert/imgs/ic_empty_bg.png
     - assert/imgs/ic_shopcar.png
     - assert/json/country_code_json.json
     - assert/imgs/tabbar_project_selected.png
@@ -97,6 +110,14 @@ flutter:
     - assert/imgs/loading.gif
     - assert/imgs/login_arrow_rightx.png
     - assert/imgs/closex.png
+    - assert/imgs/ic_ranting_select.png
+    - assert/imgs/ic_ranting_unselect.png
+    - assert/imgs/ic_shop_home.png
+    - assert/imgs/ic_log_home.png
+    - assert/imgs/ic_active_home.png
+    - assert/imgs/ic_partjob_home.png
+    - assert/imgs/ic_online.png
+    - assert/imgs/ic_game_home.png
     - assert/imgs/person_arrow_downx.png
     - assert/imgs/login_qq.png
     - assert/imgs/login_wechat.png

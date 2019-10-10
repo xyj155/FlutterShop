@@ -17,7 +17,7 @@ class ScreenUtils {
   }
 
   void initUtil(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: 375, height: 812)..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 375, height: 785)..init(context);
   }
 
   setWidgetWidth(int width) {

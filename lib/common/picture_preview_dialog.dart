@@ -7,7 +7,9 @@ import 'package:photo_view/photo_view_gallery.dart';
 class PhotoGalleryPage extends StatefulWidget {
   final List photoList;
   final int index;
+
   PhotoGalleryPage({this.photoList, this.index});
+
   @override
   _PhotoGalleryPageState createState() => _PhotoGalleryPageState();
 }
@@ -18,6 +20,7 @@ class _PhotoGalleryPageState extends State<PhotoGalleryPage> {
   int initialIndex; //初始index
   int length;
   int title;
+
   @override
   void initState() {
     currentIndex = widget.index;
@@ -35,9 +38,12 @@ class _PhotoGalleryPageState extends State<PhotoGalleryPage> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: BackUtil.NavigationBack(context, "图片预览"),
-      body: Container(
+    return new GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        Navigator.pop(context);
+      },
+      child: Container(
           decoration: BoxDecoration(
             color: Colors.black,
           ),
@@ -62,16 +68,10 @@ class _PhotoGalleryPageState extends State<PhotoGalleryPage> {
                 backgroundDecoration: BoxDecoration(
                   color: Colors.black,
                 ),
-                pageController: PageController(initialPage: initialIndex), //点进去哪页默认就显示哪一页
+                pageController: PageController(initialPage: initialIndex),
+                //点进去哪页默认就显示哪一页
                 onPageChanged: onPageChanged,
               ),
-              Container(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Image ${currentIndex + 1}",
-                  style: const TextStyle(color: Colors.white, fontSize: 17.0, decoration: null),
-                ),
-              )
             ],
           )),
     );

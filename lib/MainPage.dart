@@ -199,6 +199,7 @@ class FloatingActionButtonDemo extends StatelessWidget {
                           Navigator.push(context, new MaterialPageRoute(builder: (_){
                             return new TextPostPage();
                           }));
+//                          Navigator.pop(context);
                         },
                         child: new Column(
                           children: <Widget>[
@@ -216,6 +217,7 @@ class FloatingActionButtonDemo extends StatelessWidget {
                           Navigator.push(context, new MaterialPageRoute(builder: (_){
                             return new PostPicturePage();
                           }));
+                          Navigator.pop(context);
                         },
                         child: new Column(
                           children: <Widget>[
@@ -224,7 +226,7 @@ class FloatingActionButtonDemo extends StatelessWidget {
                               height: screenUtils.setWidgetHeight(80),
                               width: screenUtils.setWidgetHeight(67),
                             ),
-                            new Text("图片签到")
+                            new Text("图片分享")
                           ],
                         )),
                       ),
@@ -233,6 +235,7 @@ class FloatingActionButtonDemo extends StatelessWidget {
                           Navigator.push(context, new MaterialPageRoute(builder: (_){
                             return new PostVideoPage();
                           }));
+                          Navigator.pop(context);
                         },
                         child: new Column(
                           children: <Widget>[

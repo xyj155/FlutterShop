@@ -34,10 +34,10 @@ class HttpUtil {
       //Http请求头.
       headers: {
         //do something
-        "token":  AppEncryptionUtil.currentTimeMillis(),
+        "token": AppEncryptionUtil.currentTimeMillis(),
         "isMobile": AppEncryptionUtil.verifyTokenEncode("true")
       },
-      contentType: ContentType.json,
+      contentType: "application/json",
       responseType: ResponseType.json,
     );
 
@@ -54,7 +54,6 @@ class HttpUtil {
       // Do something with response data
       return response; // continue
     }, onError: (DioError e) {
-          ToastUtil.showErrorToast(e.error);
       print("错误之前");
       // Do something with response error
       return e; //continue
@@ -64,12 +63,14 @@ class HttpUtil {
   /*
    * get请求
    */
-  get(url, { data, options, cancelToken}) async {
+  get(url, {data, options, cancelToken}) async {
     Response response;
+    print('get error---------' + url);
     try {
       response = await dio.get(url,
           queryParameters: data, options: options, cancelToken: cancelToken);
     } on DioError catch (e) {
+      ToastUtil.showErrorToast("请求出错，请重试！");
       print('get error---------$e');
       formatError(e);
     }
@@ -79,16 +80,17 @@ class HttpUtil {
   /*
    * post请求
    */
-  post(url, { data, options, cancelToken}) async {
+  post(url, {data, options, cancelToken}) async {
     Response response;
     try {
       response = await dio.post(url,
           queryParameters: data, options: options, cancelToken: cancelToken);
     } on DioError catch (e) {
+      ToastUtil.showErrorToast("请求出错，请重试！");
       print('post error---------$e');
       formatError(e);
     }
-    return response;
+    return response.toString();
   }
 
   /*
@@ -116,22 +118,27 @@ class HttpUtil {
   void formatError(DioError e) {
     if (e.type == DioErrorType.CONNECT_TIMEOUT) {
       // It occurs when url is opened timeout.
-      print("连接超时");
+      ToastUtil.showCommonToast("连接超时");
     } else if (e.type == DioErrorType.SEND_TIMEOUT) {
       // It occurs when url is sent timeout.
       print("请求超时");
+      ToastUtil.showCommonToast("请求超时");
     } else if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
       //It occurs when receiving timeout
       print("响应超时");
+      ToastUtil.showCommonToast("响应超时");
     } else if (e.type == DioErrorType.RESPONSE) {
       // When the server response, but with a incorrect status, such as 404, 503...
       print("出现异常");
+      ToastUtil.showCommonToast("出现异常");
     } else if (e.type == DioErrorType.CANCEL) {
       // When the request is cancelled, dio will throw a error with this type.
       print("请求取消");
+      ToastUtil.showCommonToast("请求取消");
     } else {
       //DEFAULT Default error type, Some other Error. In this case, you can read the DioError.error if it is not null.
       print("未知错误");
+      ToastUtil.showCommonToast("未知错误");
     }
   }
 
@@ -144,7 +151,4 @@ class HttpUtil {
   void cancelRequests(CancelToken token) {
     token.cancel("cancelled");
   }
-
-
-
 }

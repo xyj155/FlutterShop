@@ -8,6 +8,7 @@ import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 import 'package:platform/platform.dart';
 
+import '../main.dart';
 import 'conversation_list.dart';
 
 class MessagePageIndex extends StatefulWidget {
@@ -31,12 +32,11 @@ class _MessagePageIndexState extends State<MessagePageIndex>
   JMessageUtil manager = new JMessageUtil();
 
   Future initJMessageConversation() async {
-    MethodChannel channel = MethodChannel('jmessage_flutter');
-    JmessageFlutter jmessage =
-        new JmessageFlutter.private(channel, const LocalPlatform());
-    jmessage.login(username: "17374131273", password: "xuyijie19971016");
+
+
     if (jmessage != null) {
       conversations = await jmessage.getConversations();
+
 //      JMConversationInfo createConversation =
 //          await manager.createConversation();
 //      manager.createMessage();

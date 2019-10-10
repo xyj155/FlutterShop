@@ -55,6 +55,7 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
                 handle:
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 child: SliverAppBar(
+                  elevation: 0,
                   backgroundColor: Colors.white,
                   floating: false,
                   pinned: true,
@@ -176,33 +177,7 @@ void _onListItemTap(
   }
 }
 
-class SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
-  final TabBar widget;
-  final Color color;
 
-  const SliverTabBarDelegate(this.widget, {this.color})
-      : assert(widget != null);
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return new Container(
-      child: widget,
-      color: color,
-    );
-  }
-
-  @override
-  bool shouldRebuild(SliverTabBarDelegate oldDelegate) {
-    return false;
-  }
-
-  @override
-  double get maxExtent => widget.preferredSize.height;
-
-  @override
-  double get minExtent => widget.preferredSize.height;
-}
 
 class HomeTabList {
   String text;

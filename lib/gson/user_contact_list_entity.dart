@@ -27,6 +27,8 @@ class UserContactListEntity {
 class UserContactListData {
 	int uid;
 	String sex;
+	int age;
+	String school;
 	String nickname;
 	String isOnline;
 	String avatar;
@@ -34,10 +36,12 @@ class UserContactListData {
 	int userId;
 	String username;
 
-	UserContactListData({this.uid, this.sex, this.nickname, this.isOnline, this.avatar, this.id, this.userId, this.username});
+	UserContactListData({this.school,this.age,this.uid, this.sex, this.nickname, this.isOnline, this.avatar, this.id, this.userId, this.username});
 
 	UserContactListData.fromJson(Map<String, dynamic> json) {
 		uid = json['uid'];
+		age = json['age'];
+		school = json['school'];
 		sex = json['sex'];
 		nickname = json['nickname'];
 		isOnline = json['isOnline'];
@@ -50,11 +54,13 @@ class UserContactListData {
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
 		data['uid'] = this.uid;
+		data['school'] = this.school;
 		data['sex'] = this.sex;
 		data['nickname'] = this.nickname;
 		data['isOnline'] = this.isOnline;
 		data['avatar'] = this.avatar;
 		data['id'] = this.id;
+		data['age'] = this.age;
 		data['userId'] = this.userId;
 		data['username'] = this.username;
 		return data;

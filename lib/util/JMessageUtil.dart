@@ -12,7 +12,7 @@ class JMessageUtil {
   JMessageUtil._internal() {
     MethodChannel channel = MethodChannel('jmessage_flutter');
     jmessage = new JmessageFlutter.private(channel, const LocalPlatform());
-    jmessage.login(username: "17374131273", password: "xuyijie19971016");
+    jmessage.login(username: "765274940", password: "765274940");
   }
 
   static JMessageUtil _getInstance() {
@@ -22,11 +22,8 @@ class JMessageUtil {
     return _instance;
   }
 
-
-
-
   Future<JMConversationInfo> createConversation(String username) async {
-    JMSingle   kMockUser = JMSingle.fromJson({
+    JMSingle kMockUser = JMSingle.fromJson({
       'username': username,
     });
     JMConversationInfo conversation =
@@ -34,11 +31,14 @@ class JMessageUtil {
     return conversation;
   }
 
-  createTextMessage() async {
-//        JMTextMessage msg = await jmessage.sendTextMessage(
-//      type: kMockUser,
-//      text: 'Text Message Test!',
-//    );
+  createTextMessage(String username) async {
+    JMSingle kMockUser = JMSingle.fromJson({
+      'username': username,
+    });
+    JMTextMessage msg = await jmessage.sendTextMessage(
+      type: kMockUser,
+      text: 'Text Message Test!',
+    );
 //    Map<String, String> userMap = new Map();
 //    userMap.putIfAbsent("username", () => "1234567");
 //    JMTextMessage msg = await jmessage.sendTextMessage(

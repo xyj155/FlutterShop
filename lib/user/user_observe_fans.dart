@@ -8,6 +8,7 @@ import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
+import 'package:sauce_app/util/event_bus.dart';
 
 class UserObserveFansPage extends StatefulWidget {
   String type;
@@ -61,6 +62,12 @@ class _UserObserveFansPageState extends State<UserObserveFansPage>
   @override
   Widget build(BuildContext context) {
     screenUtils.initUtil(context);
+    EventBusUtil.getDefault().register((String i) {
+      if (i == "addressUpdate") {
+        getUserFansByUid();
+      }
+
+    });
     return new Scaffold(
       appBar:
           BackUtil.NavigationBack(context, widget.type == "1" ? "关注" : "粉丝"),
