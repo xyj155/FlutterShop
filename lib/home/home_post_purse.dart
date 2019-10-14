@@ -9,6 +9,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/common/picture_preview_dialog.dart';
 import 'package:sauce_app/common/user_detail_page.dart';
+import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/home/home_post_item_detail.dart';
 import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
@@ -18,6 +19,7 @@ import 'package:sauce_app/gson/user_post_item_entity.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
+import 'package:sauce_app/util/event_bus.dart';
 import 'package:sauce_app/util/relative_time_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
 import 'package:share/share.dart';
@@ -153,13 +155,16 @@ class _HomePostPurseState extends State<HomePostPurse>
           });
     } else {
       // 加载菊花
-      return CupertinoActivityIndicator();
+      return new Center(
+        child: CupertinoActivityIndicator(),
+      );
     }
   }
 
   void getPurseDataList(int page) async {
-    var response = await HttpUtil.getInstance()
-        .get(Api.QUERY_POST_LIST, data: {"page": page, "userId": "1"});
+    var spUtil = await SpUtil.getInstance();
+    var response = await HttpUtil.getInstance().get(Api.QUERY_POST_LIST,
+        data: {"page": page, "userId": spUtil.getInt("id").toString()});
     print("-------------------postType-------------------");
     var decode = json.decode(response.toString());
     print("-------------------postType-------------------");
@@ -175,6 +180,13 @@ class _HomePostPurseState extends State<HomePostPurse>
   }
 
   setUserPostList(UserPostItemData index) {
+    print("--------------------------");
+    print(index.like);
+    print("--------------------------");
+    var like_bumlb = index.like == 1
+        ? "assert/imgs/detail_like_selectedx.png"
+        : "assert/imgs/person_likex.png";
+    int thumb_count = int.parse(index.thumbCount);
     return new GestureDetector(
       child: new Container(
         color: Colors.white,
@@ -183,27 +195,27 @@ class _HomePostPurseState extends State<HomePostPurse>
             new Row(
               children: <Widget>[
                 new GestureDetector(
-                    onTap: (){
-                      new CustomRouteSlide(new UserDetailPage(userId:index.user.uid.toString()));
-                    },
-                    child: new Container(
-                  padding: EdgeInsets.only(
-                      top: screenUtil.setWidgetHeight(20),
-                      left: screenUtil.setWidgetWidth(20),
-                      right: screenUtil.setWidgetWidth(6)),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(22),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: "assert/imgs/loading.gif",
-                      image: "${index.user.avatar}",
-                      fit: BoxFit.cover,
-                      width: 44,
-                      height: 44,
+                  onTap: () {
+                    new CustomRouteSlide(
+                        new UserDetailPage(userId: index.user.uid.toString()));
+                  },
+                  child: new Container(
+                    padding: EdgeInsets.only(
+                        top: screenUtil.setWidgetHeight(20),
+                        left: screenUtil.setWidgetWidth(20),
+                        right: screenUtil.setWidgetWidth(6)),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: FadeInImage.assetNetwork(
+                        placeholder: "assert/imgs/loading.gif",
+                        image: "${index.user.avatar}",
+                        fit: BoxFit.cover,
+                        width: 44,
+                        height: 44,
+                      ),
                     ),
                   ),
                 ),
-                ),
-
                 new Column(
                   children: <Widget>[
                     new Container(
@@ -326,7 +338,8 @@ class _HomePostPurseState extends State<HomePostPurse>
                   title: "分享",
                   imagePath: "assert/imgs/person_share.png",
                   onTap: () {
-                    Share.share( '【玩安卓Flutter版】\n https://github.com/yechaoa/wanandroid_flutter');
+                    Share.share(
+                        '【玩安卓Flutter版】\n https://github.com/yechaoa/wanandroid_flutter');
                   },
                 ),
                 new UserPostDetailList(
@@ -334,15 +347,30 @@ class _HomePostPurseState extends State<HomePostPurse>
                   imagePath: "assert/imgs/person_commentx.png",
                 ),
                 new UserPostDetailList(
-                  title: "点赞 " + index.thumbCount.toString(),
-                  imagePath: "assert/imgs/person_likex.png",
+                  onTap: () {
+                    if (index.like == 1) {
+                      return;
+                    }
+                    userThumb(index).then((isSuccess) {
+                      print(isSuccess);
+                      if (isSuccess) {
+                        setState(() {
+                          like_bumlb = 'assert/imgs/detail_like_selectedx.png';
+                          index.like = 1;
+                          index.thumbCount=(int.parse(index.thumbCount) + 1).toString();
+                        });
+                      }
+                    });
+                  },
+                  title: "点赞 " + thumb_count.toString(),
+                  imagePath: like_bumlb,
                 ),
                 new Expanded(
                     child: new Container(
                         child: new Image.asset(
                           "assert/imgs/post_more.png",
-                          width: 24,
-                          height: 21,
+                          width: screenUtil.setWidgetWidth(24),
+                          height: screenUtil.setWidgetHeight(21),
                         ),
                         alignment: Alignment.centerRight))
               ],
@@ -355,10 +383,29 @@ class _HomePostPurseState extends State<HomePostPurse>
         ),
       ),
       onTap: () {
-        Navigator.push(context,
-            CustomRouteSlide(UserPostDetailItemPage(userId: "${index.id.toString()}")));
+//        Navigator.push(
+//            context,
+//            CustomRouteSlide(
+//                UserPostDetailItemPage(userId: "${index.id.toString()}")));
       },
     );
+  }
+
+  Future<bool> userThumb(UserPostItemData postId) async {
+    var spUtil = await SpUtil.instance;
+    var id = spUtil.getInt("id");
+
+    var reponse = await HttpUtil.getInstance().post(Api.USER_UPDATE_BY_POST_ID,
+        data: {"userId": id.toString(), "postId": postId.id.toString()});
+    var decode = json.decode(reponse);
+    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
+    if (baseResponseEntity.code != 200) {
+      ToastUtil.showCommonToast("点赞失败！");
+      return false;
+    } else {
+      ToastUtil.showErrorToast("点赞成功");
+      return true;
+    }
   }
 
   @override

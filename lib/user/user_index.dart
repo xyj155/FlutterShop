@@ -1,12 +1,24 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_luban/flutter_luban.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/common/common_webview_page.dart';
+import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/user/user_address_page.dart';
 import 'package:sauce_app/user/user_detail_center.dart';
 import 'package:sauce_app/user/user_setting.dart';
+import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/user/user_observe_fans.dart';
+import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
+import 'package:sauce_app/widget/Post_detail.dart';
 
 import 'user_game_list.dart';
 import 'user_receive_added_page.dart';
@@ -18,11 +30,11 @@ class UserPageIndex extends StatefulWidget {
   _UserPageIndexState createState() => _UserPageIndexState();
 }
 
-class _UserPageIndexState extends State<UserPageIndex>
-    with SingleTickerProviderStateMixin {
+class _UserPageIndexState extends State<UserPageIndex> {
   @override
   void initState() {
     loadUserData();
+    print("///////////////////////////");
     super.initState();
   }
 
@@ -41,13 +53,12 @@ class _UserPageIndexState extends State<UserPageIndex>
 
   void loadUserData() async {
     var instance = await SpUtil.getInstance();
-
     setState(() {
       nickname = instance.getString("nickname");
       avatar = instance.getString("avatar");
-      print("════════════════════════════════════");
+      print("══════════════****══════════════════════");
       print(avatar);
-      print("════════════════════════════════════");
+      print("══════════════****══════════════════════");
       signature = instance.getString("signature");
       observe = instance.getString("observe");
       fans = instance.getString("fans");
@@ -55,9 +66,58 @@ class _UserPageIndexState extends State<UserPageIndex>
     });
   }
 
+  String _avatar_path = "";
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    Directory documentsDir = await getApplicationDocumentsDirectory();
+    String documentsPath = documentsDir.path;
+    CompressObject compressObject =
+        CompressObject(imageFile: image, path: documentsPath);
+    Luban.compressImage(compressObject).then((_path) {
+      setState(() {
+        print(_path);
+        _avatar_path = _path;
+        uploadAvatar();
+      });
+    }).catchError((e) {
+      ToastUtil.showCommonToast("上传头像失败，请重新选择！" + e.toString());
+    });
+  }
+
+  Future uploadAvatar() async {
+    var spUtil = await SpUtil.getInstance();
+    var string = spUtil.getInt("id").toString();
+    FormData formData = new FormData.fromMap({
+      "userId": string,
+      "avatar": await MultipartFile.fromFileSync(_avatar_path),
+    });
+    var response = await HttpUtil.getInstance()
+        .getDio()
+        .post(Api.UPDATE_USER_AVATAR, data: formData);
+    var decode = json.decode(response.toString());
+    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
+    if (baseResponseEntity.code == 200) {
+      setState(() {
+        avatar = baseResponseEntity.msg;
+        spUtil.putString("avatar", avatar);
+        loadUserData();
+      });
+      ToastUtil.showCommonToast("头像设置成功");
+    } else {
+      ToastUtil.showErrorToast("上传头像失败" + baseResponseEntity.msg);
+    }
+  }
+  var _user_thumb = [
+    "assert/imgs/person_likex.png",
+    "assert/imgs/detail_like_selectedx.png"
+  ];
+
   @override
   Widget build(BuildContext context) {
     screenUtil.initUtil(context);
+    String _default_thumb =_user_thumb[0];
+    int thumb_count = 3;
     return new CustomScrollView(
       physics: ScrollPhysics(),
       slivers: <Widget>[
@@ -92,13 +152,21 @@ class _UserPageIndexState extends State<UserPageIndex>
                         right: screenUtil.setWidgetWidth(20)),
                     child: new Row(
                       children: <Widget>[
-                        new ClipOval(
-                          child: Image.network(
-                            avatar,
-                            fit: BoxFit.fill,
-                            height: screenUtil.setWidgetHeight(72),
-                            width: screenUtil.setWidgetWidth(72),
+                        new GestureDetector(
+                          child: new ClipRRect(
+                            child: Image.network(
+                              avatar,
+                              fit: BoxFit.cover,
+                              height: screenUtil.setWidgetHeight(74),
+                              width: screenUtil.setWidgetWidth(72),
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(screenUtil.setWidgetHeight(74)),
+                            ),
                           ),
+                          onTap: () {
+                            getImage();
+                          },
                         ),
                         new Expanded(
                             child: new Container(
@@ -366,7 +434,8 @@ class _UserPageIndexState extends State<UserPageIndex>
                   onTap: () {
                     Navigator.push(context, new MaterialPageRoute(builder: (_) {
                       return new CommonWebViewPage(
-                          url: 'https://sxystushop.xyz/Admini/app/inviteFriend.html',
+                          url:
+                              'http://47.98.122.133/Admini/app/inviteFriend.html',
                           title: "邀请好友");
                     }));
                   },

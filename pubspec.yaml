@@ -22,7 +22,7 @@ dependencies:
 #  flutter_custom_bottom_tab_bar:
 #    git: https://github.com/LiuC520/flutter_custom_bottom_tab_bar.git
   flutter_swiper: ^1.0.6
-  dio: ^3.0.2
+  dio: ^3.0.3
   flutter_easyrefresh: ^2.0.2
   json_serializable: ^2.0.0 # 解析
   transparent_image: ^0.1.0
@@ -85,10 +85,14 @@ flutter:
 
   assets:
     - assert/imgs/ic_shop_car.png
+    - assert/imgs/detail_like_selectedx.png
+    - assert/amap/
+    - assert/imgs/
     - assert/imgs/post_add_img.png
     - assert/imgs/user_address_editor.png
     - assert/imgs/ic_location_receive.png
     - assert/imgs/ic_user_location.png
+    - assert/imgs/img_arrow.png
     - assert/imgs/tabbar_project_normal.png
     - assert/imgs/manx.png
     - assert/imgs/ic_game_lol.png
@@ -124,7 +128,6 @@ flutter:
     - assert/imgs/icon_activity.png
     - assert/imgs/icon_comment.png
     - assert/imgs/icon_emoticon.png
-    - assert/imgs/icon_gift.png
     - assert/imgs/icon_label.png
     - assert/imgs/message_reply_arrow_right.png
     - assert/imgs/message_notice_arrow_right.png

@@ -60,6 +60,10 @@ class HttpUtil {
     }));
   }
 
+  Dio getDio() {
+    return dio;
+  }
+
   /*
    * get请求
    */
@@ -76,6 +80,8 @@ class HttpUtil {
     }
     return response.toString();
   }
+
+
 
   /*
    * post请求

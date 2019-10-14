@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class UserPostDetailList extends StatelessWidget {
-   UserPostDetailList({
+class UserPostDetailList extends StatefulWidget {
+  UserPostDetailList({
     Key key,
     this.title,
     this.onTap,
@@ -12,8 +12,11 @@ class UserPostDetailList extends StatelessWidget {
   final Function onTap;
 
   final String imagePath;
+  @override
+  UserPostDetailListState createState() => new UserPostDetailListState();
+}
 
-
+class UserPostDetailListState extends State<UserPostDetailList> {
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +27,31 @@ class UserPostDetailList extends StatelessWidget {
         child: new Row(
           children: <Widget>[
             new Image.asset(
-              imagePath,
+              widget.imagePath,
               width: 24,
               height: 21,
             ),
             new Text(
-              title,
+              widget.title,
               style: new TextStyle(color: Color(0xffbcbfc3)),
             ),
           ],
         ),
-        onTap:onTap,
+        onTap: widget.onTap,
       ),
     );
   }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  
 }

@@ -141,7 +141,7 @@ class MyBottomNavigationBar extends StatefulWidget {
   /// The [iconSize], [selectedFontSize], [unselectedFontSize], and [elevation]
   /// arguments must be non-null and non-negative.
   ///
-  /// If [selectedLabelStyle.color] and [unselectedLabelStyle.color] values
+  /// If [selectedLabelStyle.font_color] and [unselectedLabelStyle.font_color] values
   /// are non-null, they will be used instead of [selectedItemColor] and
   /// [unselectedItemColor].
   ///

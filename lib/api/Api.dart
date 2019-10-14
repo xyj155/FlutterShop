@@ -29,5 +29,9 @@
   static final String QUERY_USER_RECEIVER_LIST = "/JustLikeThis/public/index.php/api/mobile/queryuserreceiveaddressbyuid";
   static final String ALIPAY_TRADE_PASSIVE = "/JustLikeThis/public/index.php/api/mobile/doalipayment";
   static final String QUERY_POST_COMMENT_BY_ID = "JustLikeThis/public/index.php/api/mobile/queryuserpostcommentbyid";
+  static final String QUERY_SCHOOL_ACTIVITY_ = "JustLikeThis/public/index.php/api/mobile/queryschoolactivity";
+  static final String UPDATE_USER_AVATAR = "JustLikeThis/public/index.php/api/mobile/updateuseravatar";
+  static final String UPDATE_USER_FILED = "JustLikeThis/public/index.php/api/mobile/updateuserfiledbyuserid";
+  static final String USER_UPDATE_BY_POST_ID = "JustLikeThis/public/index.php/api/mobile/userthumbbypostid";
   static final String BASE_URL = "http://47.98.122.133/";
 }

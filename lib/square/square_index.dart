@@ -34,6 +34,8 @@ import 'package:sauce_app/widget/progress_dialog.dart';
 
 import 'food_kind/square_shop_all_purse.dart';
 import 'food_kind/square_shop_play_purse.dart';
+import 'school_activity_page.dart';
+import 'shop_recharge_page.dart';
 import 'square_part_time_job.dart';
 import 'square_play_together.dart';
 
@@ -172,7 +174,9 @@ class SquarePageState extends State<SquarePageIndex>
                             itemCount: _banner_list.length,
                             scrollDirection: Axis.horizontal,
                             autoplay: true,
-                            onTap: (index) => print('点击了第$index个'),
+                            onTap: (index) => Navigator.push(context, new MaterialPageRoute(builder: (_){
+                              return new CommonWebViewPage(url: _banner_list[index].bannerUrl, title: "");
+                            })),
                           )),
                       new Container(
                         margin: EdgeInsets.only(
@@ -205,7 +209,11 @@ class SquarePageState extends State<SquarePageIndex>
                                     )
                                   ],
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(context, new MaterialPageRoute(builder: (_){
+                                    return new ShopRechargeIndex();
+                                  }));
+                                },
                               ),
                             ),
                             new Expanded(
@@ -279,25 +287,32 @@ class SquarePageState extends State<SquarePageIndex>
                             ),
                             new Expanded(
                               flex: 1,
-                              child: new Column(
-                                children: <Widget>[
-                                  new Image.asset(
-                                      "assert/imgs/ic_shop_home.png",
-                                      width: screenUtils.setWidgetWidth(30),
-                                      height: screenUtils.setWidgetHeight(30)),
-                                  new Container(
-                                    child: new Text(
-                                      "校园活动",
-                                      style: new TextStyle(
-                                          fontSize: screenUtils.setFontSize(13),
-                                          color: Colors.black),
-                                    ),
-                                    margin: EdgeInsets.only(
-                                        top: screenUtils.setWidgetHeight(8)),
-                                    padding: EdgeInsets.all(
-                                        screenUtils.setWidgetHeight(5)),
-                                  )
-                                ],
+                              child: new GestureDetector(
+                                onTap: (){
+                                  Navigator.push(context, new MaterialPageRoute(builder: (_){
+                                    return new SchoolActivityPage();
+                                  }));
+                                },
+                                child: new Column(
+                                  children: <Widget>[
+                                    new Image.asset(
+                                        "assert/imgs/ic_shop_home.png",
+                                        width: screenUtils.setWidgetWidth(30),
+                                        height: screenUtils.setWidgetHeight(30)),
+                                    new Container(
+                                      child: new Text(
+                                        "校园活动",
+                                        style: new TextStyle(
+                                            fontSize: screenUtils.setFontSize(13),
+                                            color: Colors.black),
+                                      ),
+                                      margin: EdgeInsets.only(
+                                          top: screenUtils.setWidgetHeight(8)),
+                                      padding: EdgeInsets.all(
+                                          screenUtils.setWidgetHeight(5)),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                             new Expanded(
@@ -357,7 +372,7 @@ class SquarePageState extends State<SquarePageIndex>
                             top: screenUtils.setWidgetHeight(6),
                             right: screenUtils.setWidgetWidth(10),
                             left: screenUtils.setWidgetWidth(10)),
-                        height: screenUtils.setWidgetHeight(50),
+                        height: screenUtils.setWidgetHeight(60),
                         child: _purse_title_list == null
                             ? new CupertinoActivityIndicator()
                             : new ListView.builder(
@@ -372,7 +387,7 @@ class SquarePageState extends State<SquarePageIndex>
                                         _set_purse_title(context, position),
                                         new Container(
                                           height:
-                                              screenUtils.setWidgetHeight(50),
+                                              screenUtils.setWidgetHeight(60),
                                           margin: EdgeInsets.only(
                                               top: screenUtils
                                                   .setWidgetHeight(10),
@@ -653,7 +668,7 @@ class SquarePageState extends State<SquarePageIndex>
   List<SquareBannerData> _banner_list = new List();
 
   getBanner() async {
-    var response = await HttpUtil().get(Api.SQUARE_BANNER);
+    var response = await HttpUtil().get(Api.SQUARE_BANNER,data: {"type":"1"});
     final body = json.decode(response);
     var squareBannerEntity = SquareBannerEntity.fromJson(body);
     print(body);

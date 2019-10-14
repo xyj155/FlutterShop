@@ -8,7 +8,7 @@ class BackUtil {
           onPressed: () {
             Navigator.pop(context);
           }),
-      elevation: 1,
+      elevation: 0.5,
       iconTheme: new IconThemeData(color: Colors.black),
       backgroundColor: Colors.white,
       title: new Text(title,style:new TextStyle(color: Color(0xff000000))),

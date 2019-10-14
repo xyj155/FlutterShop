@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'dart:math';
 
 import 'package:event_bus/event_bus.dart';
@@ -191,25 +192,25 @@ class _LittleShopPageState extends State<LittleShopPage> {
                           ),
                         ),
                       ),
-                      new Positioned(
-                        child: new ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(14)),
-                          child: new Container(
-                            alignment: Alignment.center,
-                            width: screenUtils.setWidgetWidth(20),
-                            height: screenUtils.setWidgetHeight(20),
-                            color: Colors.redAccent,
-                            child: new Text(
-                              goodsCount > 99 ? "99" : goodsCount.toString(),
-                              style: new TextStyle(
-                                  color: Colors.white,
-                                  fontSize: screenUtils.setFontSize(14)),
-                            ),
-                          ),
-                        ),
-                        right: screenUtils.setWidgetWidth(2),
-                        top: screenUtils.setWidgetHeight(2),
-                      ),
+                     goodsCount==0?new Container():new Positioned(
+                       child: new ClipRRect(
+                         borderRadius: BorderRadius.all(Radius.circular(14)),
+                         child: new Container(
+                           alignment: Alignment.center,
+                           width: screenUtils.setWidgetWidth(20),
+                           height: screenUtils.setWidgetHeight(20),
+                           color: Colors.redAccent,
+                           child: new Text(
+                             goodsCount > 99 ? "99" : goodsCount.toString(),
+                             style: new TextStyle(
+                                 color: Colors.white,
+                                 fontSize: screenUtils.setFontSize(14)),
+                           ),
+                         ),
+                       ),
+                       right: screenUtils.setWidgetWidth(2),
+                       top: screenUtils.setWidgetHeight(2),
+                     ) ,
                     ],
                   ),
                   new Positioned(
@@ -470,12 +471,17 @@ class _LittleShopPageState extends State<LittleShopPage> {
         Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
         data: {"userId": instance.getInt("id").toString()});
     if (response != null) {
+      print("-----------------------");
+      print(response.toString());
+      print("-----------------------");
       var decode = json.decode(response.toString());
       var userShopCarEntity = UserShopCarEntity.fromJson(decode);
-      var price = userShopCarEntity.data.price;
-      var count = userShopCarEntity.data.shopCarCount;
-      goodsPrice = price;
-      goodsCount = count;
+      if(userShopCarEntity.code==200){
+        var price = userShopCarEntity.data.price;
+        var count = userShopCarEntity.data.shopCarCount;
+        goodsPrice = price;
+        goodsCount = count;
+      }
     } else {
       getUserShopCar();
     }

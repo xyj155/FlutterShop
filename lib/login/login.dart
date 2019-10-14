@@ -432,7 +432,8 @@ class LoginState extends State<LoginPage> {
                         context, CustomRouteSlide(ThirdSocialLoginPage()));
                   },
                 )),
-              )
+              ),
+
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
           ),
@@ -470,6 +471,7 @@ class LoginState extends State<LoginPage> {
     var instance = await SpUtil.getInstance();
     instance.putString("username", userData.username);
     instance.putString("avatar", userData.avatar);
+    instance.putString("sex", userData.sex);
     instance.putString("latitude", userData.latitude);
     instance.putString("longitude", userData.longitude);
     instance.putString("currentCity", userData.currentCity);

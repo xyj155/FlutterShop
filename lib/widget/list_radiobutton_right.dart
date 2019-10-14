@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 
-class RightListTitle extends StatelessWidget {
+class RightListRadioButton extends StatelessWidget {
   String title;
   String value;
-  final Function onTap;
+  final ValueChanged<bool> onTap;
 
-  RightListTitle({Key key, this.title, this.value, this.onTap})
+  RightListRadioButton({Key key, this.title, this.value, this.onTap})
       : super(key: key);
 
   @override
@@ -20,7 +20,6 @@ class RightListTitle extends StatelessWidget {
         color: Colors.white,
         height: 60,
         child: new ListTile(
-          onTap: onTap,
           leading: new Text(
             title,
             style: new TextStyle(
@@ -30,11 +29,7 @@ class RightListTitle extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: new Text(value),
           ),
-          trailing: new Image.asset(
-            "assert/imgs/person_arrow_right_grayx.png",
-            height: 15,
-            width: 15,
-          ),
+          trailing:new Switch(value: false, onChanged: onTap),
         ),
       ),
     );

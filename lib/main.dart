@@ -8,11 +8,15 @@ import 'package:sauce_app/post/post_picture_page.dart';
 import 'package:sauce_app/post/post_text_page.dart';
 import 'package:sauce_app/square/square_user_snack_order.dart';
 import 'package:sauce_app/user/user_address_page.dart';
+import 'package:sauce_app/user/user_detail_center.dart';
+import 'package:sauce_app/user/user_index.dart';
 import 'package:sauce_app/util/JMessageUtil.dart';
 import 'MainPage.dart';
+import 'common/common_webview_page.dart';
 import 'common/index.dart';
 import 'event_bus.dart';
 import 'home/home_post_item_detail.dart';
+import 'login/invite_code_input_page.dart';
 import 'login/login.dart';
 import 'package:platform/platform.dart';
 import 'package:jmessage_flutter/jmessage_flutter.dart';
@@ -23,6 +27,8 @@ import 'login/user_register_owner_information.dart';
 import 'message/conversation_list.dart';
 import 'post/post_video_page.dart';
 import 'square/part_time_job_detail_page.dart';
+import 'square/school_activity_page.dart';
+import 'square/shop_recharge_page.dart';
 import 'square/square_little_shop.dart';
 import 'square/square_part_time_job.dart';
 import 'square/square_play_together.dart';
@@ -85,7 +91,7 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: UserSettingPageIndex(), //启动MainPage
+        home: IndexPage(), //启动MainPage
       ),
     );
   }

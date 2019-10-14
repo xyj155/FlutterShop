@@ -38,6 +38,7 @@ class UserPostItemData {
 	String commentCount;
 	String timeDuration;
 	String shareCount;
+
 	String createTime;
 	String duration;
 	int isObserve;
