@@ -383,10 +383,10 @@ class _HomePostPurseState extends State<HomePostPurse>
         ),
       ),
       onTap: () {
-//        Navigator.push(
-//            context,
-//            CustomRouteSlide(
-//                UserPostDetailItemPage(userId: "${index.id.toString()}")));
+        Navigator.push(
+            context,
+            CustomRouteSlide(
+                UserPostDetailItemPage(userId: "${index.id.toString()}")));
       },
     );
   }

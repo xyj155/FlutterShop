@@ -33,5 +33,7 @@
   static final String UPDATE_USER_AVATAR = "JustLikeThis/public/index.php/api/mobile/updateuseravatar";
   static final String UPDATE_USER_FILED = "JustLikeThis/public/index.php/api/mobile/updateuserfiledbyuserid";
   static final String USER_UPDATE_BY_POST_ID = "JustLikeThis/public/index.php/api/mobile/userthumbbypostid";
+  static final String QUERY_ALL_CITY_SHOP = "JustLikeThis/public/index.php/api/mobile/queryallcitypurse";
+  static final String QUERY_SHOP_BY_CHILD_TYPE = "JustLikeThis/public/index.php/api/mobile/querybusinessshopbychildtypeid";
   static final String BASE_URL = "http://47.98.122.133/";
 }

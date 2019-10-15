@@ -35,7 +35,9 @@ class BusinessShopListData {
 	String purseTag;
 	String chargeMan;
 	String shopTag;
+	String averagePrice;
 	String specialTagContent;
+	int isBook;
 	String specialTagList;
 	int rankScore;
 	String chargeTel;
@@ -49,10 +51,12 @@ class BusinessShopListData {
 	String longitude;
 	String createDate;
 
-	BusinessShopListData({this.rankScore,this.shopTag,this.latitude, this.businessName, this.createDay, this.remark, this.businessDesc, this.special, this.shopDetail, this.purseTag, this.chargeMan, this.specialTagContent, this.specialTagList, this.chargeTel, this.shopId, this.shopType, this.businessAddress, this.businessTel, this.isPurse, this.businessPicture, this.purseActiveId, this.longitude, this.createDate});
+	BusinessShopListData({this.isBook,this.averagePrice,this.rankScore,this.shopTag,this.latitude, this.businessName, this.createDay, this.remark, this.businessDesc, this.special, this.shopDetail, this.purseTag, this.chargeMan, this.specialTagContent, this.specialTagList, this.chargeTel, this.shopId, this.shopType, this.businessAddress, this.businessTel, this.isPurse, this.businessPicture, this.purseActiveId, this.longitude, this.createDate});
 
 	BusinessShopListData.fromJson(Map<String, dynamic> json) {
 		latitude = json['latitude'];
+		averagePrice = json['averagePrice'];
+		isBook = json['isBook'];
 		rankScore = json['rankScore'];
 		shopTag = json['shopTag'];
 		businessName = json['businessName'];
@@ -83,8 +87,10 @@ class BusinessShopListData {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
 		data['latitude'] = this.latitude;
 		data['rankScore'] = this.rankScore;
+		data['isBook'] = this.isBook;
 		data['businessName'] = this.businessName;
 		data['createDay'] = this.createDay;
+		data['averagePrice'] = this.averagePrice;
 		data['remark'] = this.remark;
 		data['businessDesc'] = this.businessDesc;
 		if (this.special != null) {

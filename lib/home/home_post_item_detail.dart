@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ijkplayer/flutter_ijkplayer.dart';
 import 'package:sauce_app/api/Api.dart';
+import 'package:sauce_app/common/picture_preview_dialog.dart';
 import 'package:sauce_app/gson/user_post_item_detail_entity.dart';
 import 'package:sauce_app/gson/post_comment_list_entity.dart';
 
@@ -15,6 +16,7 @@ import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/relative_time_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
+import 'package:share/share.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:ui' as ui;
 
@@ -168,7 +170,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                                                 screenUtil.setFontSize(15)),
                                       ),
                                       new Text(
-                                        "${userPostItem.timeDuration}",
+                                        "${RelativeDateFormat.format(userPostItem.createTime)}",
                                         style: new TextStyle(
                                             fontSize:
                                                 screenUtil.setFontSize(11),
@@ -217,13 +219,28 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                                     itemCount: userPostItem.pictures.length,
                                     itemBuilder:
                                         (BuildContext context, int indexs) {
-                                      return FadeInImage.assetNetwork(
-                                        placeholder: "assert/imgs/loading.gif",
-                                        image:
+                                      return new GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => PhotoGalleryPage(
+                                                  index: indexs,
+                                                  photoList: userPostItem.pictures,
+                                                )),
+                                          );
+                                        },
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                                          child: FadeInImage.assetNetwork(
+                                            placeholder: "assert/imgs/loading.gif",
+                                            image:
                                             "${userPostItem.pictures[indexs]}",
-                                        fit: BoxFit.cover,
-                                        width: 44,
-                                        height: 44,
+                                            fit: BoxFit.cover,
+                                            width: 44,
+                                            height: 44,
+                                          ),
+                                        ),
                                       );
                                     },
                                   )
@@ -235,15 +252,20 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                         new Row(
                           children: <Widget>[
                             new UserPostDetailList(
+                              onTap: (){
+                                Share.share(
+                                    '【玩安卓Flutter版】\n https://github.com/yechaoa/wanandroid_flutter');
+
+                              },
                               title: "分享",
                               imagePath: "assert/imgs/person_share.png",
                             ),
                             new UserPostDetailList(
-                              title: "评论",
+                              title: "评论 ${userPostItem.commentCount}",
                               imagePath: "assert/imgs/person_commentx.png",
                             ),
                             new UserPostDetailList(
-                              title: "点赞",
+                              title: "点赞 ${userPostItem.thumbCount}",
                               imagePath: "assert/imgs/person_likex.png",
                             ),
                             new Expanded(
