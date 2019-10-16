@@ -14,6 +14,7 @@ import 'package:sauce_app/util/JMessageUtil.dart';
 import 'MainPage.dart';
 import 'common/common_webview_page.dart';
 import 'common/index.dart';
+import 'common/user_detail_page.dart';
 import 'event_bus.dart';
 import 'home/home_post_item_detail.dart';
 import 'login/invite_code_input_page.dart';
@@ -91,7 +92,7 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: IndexPage(), //启动MainPage
+        home: UserDetailPage(), //启动MainPage
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 
@@ -23,6 +24,8 @@ import 'package:sauce_app/util/event_bus.dart';
 import 'package:sauce_app/util/relative_time_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
 import 'package:share/share.dart';
+
+import 'common_vide_player.dart';
 
 void main() {
   runApp(new MaterialApp(
@@ -305,32 +308,42 @@ class _HomePostPurseState extends State<HomePostPurse>
                           );
                         },
                       )
-                    : new Stack(
-                        children: <Widget>[
-                          new Container(
-                            padding: EdgeInsets.only(
-                                left: screenUtil.setWidgetHeight(20)),
-                            alignment: Alignment.centerLeft,
-                            height: screenUtil.setWidgetHeight(200),
-                            child: FadeInImage.assetNetwork(
-                              placeholder: "assert/imgs/loading.gif",
-                              image: "${index.pictures[0]}" +
-                                  "?x-oss-process=video/snapshot,t_5000,f_jpg",
-                              fit: BoxFit.cover,
+                    : new GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              new MaterialPageRoute(builder: (_) {
+                            return new CommonVideoPlayer(
+                              videoUrl: index.pictures[0],
+                            );
+                          }));
+                        },
+                        child: new Stack(
+                          children: <Widget>[
+                            new Container(
+                              padding: EdgeInsets.only(
+                                  left: screenUtil.setWidgetHeight(20)),
+                              alignment: Alignment.centerLeft,
+                              height: screenUtil.setWidgetHeight(200),
+                              child: FadeInImage.assetNetwork(
+                                placeholder: "assert/imgs/loading.gif",
+                                image: "${index.pictures[0]}" +
+                                    "?x-oss-process=video/snapshot,t_5000,f_jpg",
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          new Container(
-                            padding: EdgeInsets.only(
-                                left: screenUtil.setWidgetHeight(20)),
-                            height: screenUtil.setWidgetHeight(200),
-                            alignment: Alignment.center,
-                            child: new Image.asset(
-                              "assert/imgs/video_player.png",
-                              width: screenUtil.setWidgetWidth(40),
-                              height: screenUtil.setWidgetHeight(40),
+                            new Container(
+                              padding: EdgeInsets.only(
+                                  left: screenUtil.setWidgetHeight(20)),
+                              height: screenUtil.setWidgetHeight(200),
+                              alignment: Alignment.center,
+                              child: new Image.asset(
+                                "assert/imgs/video_player.png",
+                                width: screenUtil.setWidgetWidth(40),
+                                height: screenUtil.setWidgetHeight(40),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       )),
             new Row(
               children: <Widget>[
@@ -357,7 +370,8 @@ class _HomePostPurseState extends State<HomePostPurse>
                         setState(() {
                           like_bumlb = 'assert/imgs/detail_like_selectedx.png';
                           index.like = 1;
-                          index.thumbCount=(int.parse(index.thumbCount) + 1).toString();
+                          index.thumbCount =
+                              (int.parse(index.thumbCount) + 1).toString();
                         });
                       }
                     });

@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ijkplayer/flutter_ijkplayer.dart';
+
 import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/common/picture_preview_dialog.dart';
 import 'package:sauce_app/gson/user_post_item_detail_entity.dart';
@@ -13,11 +13,11 @@ import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
-import 'package:sauce_app/util/ToastUtil.dart';
+
 import 'package:sauce_app/util/relative_time_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
 import 'package:share/share.dart';
-import 'package:video_player/video_player.dart';
+
 import 'dart:ui' as ui;
 
 // ignore: must_be_immutable
@@ -36,7 +36,7 @@ class UserPostDetailItemPage extends StatefulWidget {
 class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
   ScreenUtils screenUtil = new ScreenUtils();
   UserPostItemDetailData userPostItem;
-  IjkMediaController controller = IjkMediaController();
+
 
   void getPageData() async {
     var response = await HttpUtil.getInstance().get(Api.QUERY_POST_BY_POSTID,
@@ -46,20 +46,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
     var userPostItemEntity = UserPostItemDetailEntity.fromJson(decode);
     setState(() {
       userPostItem = userPostItemEntity.data;
-//
-//      var ijkplayer = IjkPlayer(
-//        mediaController: controller,
-//      );
-//      controller.setNetworkDataSource("${userPostItem.pictures[0]}");
-//      controller.play();
-////      _videoPlayerController2 = ChewieController(
-////          videoPlayerController:
-////              VideoPlayerController.network("${userPostItem.pictures[0]}"),
-////          autoPlay: true,
-////          looping: false,
-////          showControls: true,
-////          aspectRatio:9/16
-////         );
+
     });
   }
 
@@ -384,7 +371,6 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
 
   @override
   void dispose() {
-    controller.dispose();
 //    _videoPlayerController2.dispose();
 //    _videoPlayerController2.pause();
     super.dispose();

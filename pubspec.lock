@@ -127,6 +127,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  chewie:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "9b539f034f2d8981f97841e3b3ffba405aa9e5fa"
+      url: "https://github.com/brianegan/chewie.git"
+    source: git
+    version: "0.9.8+1"
   city_pickers:
     dependency: "direct main"
     description:
@@ -253,13 +262,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.4"
-  flutter_ijkplayer:
-    dependency: "direct main"
-    description:
-      name: flutter_ijkplayer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.3"
   flutter_luban:
     dependency: "direct main"
     description:
@@ -298,7 +300,7 @@ packages:
       name: flutter_screenutil
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.6"
+    version: "0.5.3"
   flutter_swiper:
     dependency: "direct main"
     description:
@@ -507,6 +509,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.6+3"
+  open_iconic_flutter:
+    dependency: transitive
+    description:
+      name: open_iconic_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   package_config:
     dependency: transitive
     description:
@@ -605,6 +614,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
+  screen:
+    dependency: transitive
+    description:
+      name: screen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.5"
   share:
     dependency: "direct main"
     description:
@@ -773,4 +789,4 @@ packages:
     version: "2.1.16"
 sdks:
   dart: ">2.4.0 <3.0.0"
-  flutter: ">=1.7.8+hotfix.3 <2.0.0"
+  flutter: ">=1.9.1 <2.0.0"

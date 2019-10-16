@@ -17,18 +17,19 @@ class ScreenUtils {
   }
 
   void initUtil(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: 375, height: 785)..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 375, height: 785,allowFontScaling: true)..init(context);
+
   }
 
   setWidgetWidth(int width) {
-    return ScreenUtil().setWidth(width);
+    return ScreenUtil().setWidth(width.toDouble());
   }
 
   setWidgetHeight(int height) {
-    return ScreenUtil().setHeight(height);
+    return ScreenUtil().setHeight(height.toDouble());
   }
 
   setFontSize(int size) {
-    return ScreenUtil().setSp(size);
+    return ScreenUtil().setSp(size.toDouble());
   }
 }

@@ -72,48 +72,47 @@ class SquarePageState extends State<SquarePageIndex>
     });
   }
 
+  TabController _tab_controller;
+
   @override
   Widget build(BuildContext context) {
     screenUtils.initUtil(context);
-    return DefaultTabController(
-      length: myTabs.length,
+    return new Container(
+      color: Colors.white,
       child: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverToBoxAdapter(
-              child: new Wrap(
-                alignment: WrapAlignment.end,
+              child: new Column(
                 children: <Widget>[
-                  new Column(
-                    children: <Widget>[
-                      new Container(
-                        color: Colors.white,
-                        child: new ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            height: screenUtils.setWidgetHeight(45),
-                            color: Color(0xfff7f7f7),
-                            padding: EdgeInsets.only(
-                                left: screenUtils.setWidgetWidth(15),
-                                right: screenUtils.setWidgetWidth(15)),
-                            margin: EdgeInsets.only(
-                                left: screenUtils.setWidgetWidth(10),
-                                right: screenUtils.setWidgetWidth(10)),
-                            child: new Row(
-                              children: <Widget>[
-                                new Image.asset(
-                                  "assert/imgs/ic_square_search.png",
-                                  width: 23,
-                                  height: 23,
-                                ),
-                                new Text(
-                                  "    搜索你想的帖子",
-                                  style: new TextStyle(
-                                    color: Color(0xffdbdbdb),
-                                  ),
-                                ),
-                                new Expanded(
-                                    child: new GestureDetector(
+                  new Container(
+                    color: Colors.white,
+                    child: new ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        height: screenUtils.setWidgetHeight(45),
+                        color: Color(0xfff7f7f7),
+                        padding: EdgeInsets.only(
+                            left: screenUtils.setWidgetWidth(15),
+                            right: screenUtils.setWidgetWidth(15)),
+                        margin: EdgeInsets.only(
+                            left: screenUtils.setWidgetWidth(10),
+                            right: screenUtils.setWidgetWidth(10)),
+                        child: new Row(
+                          children: <Widget>[
+                            new Image.asset(
+                              "assert/imgs/ic_square_search.png",
+                              width: 23,
+                              height: 23,
+                            ),
+                            new Text(
+                              "    搜索你想的帖子",
+                              style: new TextStyle(
+                                color: Color(0xffdbdbdb),
+                              ),
+                            ),
+                            new Expanded(
+                                child: new GestureDetector(
                                   behavior: HitTestBehavior.opaque,
                                   onTap: () {
                                     scan();
@@ -127,337 +126,333 @@ class SquarePageState extends State<SquarePageIndex>
                                     alignment: Alignment.centerRight,
                                   ),
                                 )),
+                          ],
+                        ),
+                      ),
+                    ),
+                    margin: EdgeInsets.only(top: screenUtils.setWidgetHeight(17)),
+                  ),
+                  new Container(
+                    padding: EdgeInsets.only(
+                        top: screenUtils.setWidgetHeight(6),
+                        right: screenUtils.setWidgetWidth(5),
+                        left: screenUtils.setWidgetWidth(5)),
+                    height: screenUtils.setWidgetHeight(110),
+                    child: _user_purse_items == null
+                        ? new CupertinoActivityIndicator()
+                        : new ListView.builder(
+                        itemCount: _user_purse_items.length,
+                        itemBuilder:
+                            (BuildContext context, int position) {
+                          print("===================================" +
+                              String.fromCharCode(position));
+                          return homeTitleItemView(context, position);
+                        },
+                        scrollDirection: Axis.horizontal),
+                  ),
+                  new Container(
+                      margin: EdgeInsets.only(left: 13, right: 13),
+                      width: MediaQuery.of(context).size.width,
+                      height: 130.0,
+                      child: Swiper(
+                        pagination: new SwiperPagination(
+                            alignment: Alignment.bottomCenter,
+                            builder: new SwiperCustomPagination(builder:
+                                (BuildContext context,
+                                SwiperPluginConfig config) {
+                              return new PageIndicator(
+                                layout: PageIndicatorLayout.NIO,
+                                size: 10.0,
+                                space: 15.0,
+                                count: _banner_list.length,
+                                controller: config.pageController,
+                              );
+                            })),
+                        itemBuilder: _swiperBuilder,
+                        itemCount: _banner_list.length,
+                        scrollDirection: Axis.horizontal,
+                        autoplay: true,
+                        onTap: (index) => Navigator.push(context,
+                            new MaterialPageRoute(builder: (_) {
+                              return new CommonWebViewPage(
+                                  url: _banner_list[index].bannerUrl, title: "");
+                            })),
+                      )),
+
+                  new Container(
+                    margin:
+                    EdgeInsets.only(top: screenUtils.setWidgetHeight(15)),
+                    child: Row(
+                      children: <Widget>[
+                        new Expanded(
+                          flex: 1,
+                          child: new GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            child: new Column(
+                              children: <Widget>[
+                                new Image.asset("assert/imgs/ic_log_home.png",
+                                    width: screenUtils.setWidgetWidth(30),
+                                    height: screenUtils.setWidgetHeight(30)),
+                                new Container(
+                                  child: new Text(
+                                    "店铺优惠",
+                                    style: new TextStyle(
+                                        fontSize: screenUtils.setFontSize(13),
+                                        color: Colors.black),
+                                  ),
+                                  margin: EdgeInsets.only(
+                                      top: screenUtils.setWidgetHeight(8)),
+                                  padding: EdgeInsets.all(
+                                      screenUtils.setWidgetHeight(5)),
+                                )
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                    return new ShopRechargeIndex();
+                                  }));
+                            },
+                          ),
+                        ),
+                        new Expanded(
+                          flex: 1,
+                          child: new GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                    return new PartTimeJobPage();
+                                  }));
+                            },
+                            child: new Column(
+                              children: <Widget>[
+                                new Image.asset(
+                                    "assert/imgs/ic_partjob_home.png",
+                                    width: screenUtils.setWidgetWidth(30),
+                                    height: screenUtils.setWidgetHeight(30)),
+                                new Container(
+                                  child: new Text(
+                                    "校园兼职",
+                                    style: new TextStyle(
+                                        fontSize: screenUtils.setFontSize(13),
+                                        color: Colors.black),
+                                  ),
+                                  margin: EdgeInsets.only(
+                                      top: screenUtils.setWidgetHeight(8)),
+                                  padding: EdgeInsets.all(
+                                      screenUtils.setWidgetHeight(5)),
+                                )
                               ],
                             ),
                           ),
                         ),
-                        margin: EdgeInsets.only(
-                            top: screenUtils.setWidgetHeight(17)),
-                      ),
-                      new Container(
-                        padding: EdgeInsets.only(
-                            top: screenUtils.setWidgetHeight(6),
-                            right: screenUtils.setWidgetWidth(5),
-                            left: screenUtils.setWidgetWidth(5)),
-                        height: screenUtils.setWidgetHeight(110),
-                        child: _user_purse_items == null
-                            ? new CupertinoActivityIndicator()
-                            : new ListView.builder(
-                                itemCount: _user_purse_items.length,
-                                itemBuilder:
-                                    (BuildContext context, int position) {
-                                  print("===================================" +
-                                      String.fromCharCode(position));
-                                  return homeTitleItemView(context, position);
-                                },
-                                scrollDirection: Axis.horizontal),
-                      ),
-                      new Container(
-                          margin: EdgeInsets.only(left: 13, right: 13),
-                          width: MediaQuery.of(context).size.width,
-                          height: 130.0,
-                          child: Swiper(
-                            pagination: new SwiperPagination(
-                                alignment: Alignment.bottomCenter,
-                                builder: new SwiperCustomPagination(builder:
-                                    (BuildContext context,
-                                        SwiperPluginConfig config) {
-                                  return new PageIndicator(
-                                    layout: PageIndicatorLayout.NIO,
-                                    size: 10.0,
-                                    space: 15.0,
-                                    count: _banner_list.length,
-                                    controller: config.pageController,
-                                  );
-                                })),
-                            itemBuilder: _swiperBuilder,
-                            itemCount: _banner_list.length,
-                            scrollDirection: Axis.horizontal,
-                            autoplay: true,
-                            onTap: (index) => Navigator.push(context, new MaterialPageRoute(builder: (_){
-                              return new CommonWebViewPage(url: _banner_list[index].bannerUrl, title: "");
-                            })),
-                          )),
-                      new Container(
-                        margin: EdgeInsets.only(
-                            top: screenUtils.setWidgetHeight(15)),
-                        child: Row(
-                          children: <Widget>[
-                            new Expanded(
-                              flex: 1,
-                              child: new GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                child: new Column(
-                                  children: <Widget>[
-                                    new Image.asset(
-                                        "assert/imgs/ic_log_home.png",
-                                        width: screenUtils.setWidgetWidth(30),
-                                        height:
-                                            screenUtils.setWidgetHeight(30)),
-                                    new Container(
-                                      child: new Text(
-                                        "店铺优惠",
-                                        style: new TextStyle(
-                                            fontSize:
-                                                screenUtils.setFontSize(13),
-                                            color: Colors.black),
-                                      ),
-                                      margin: EdgeInsets.only(
-                                          top: screenUtils.setWidgetHeight(8)),
-                                      padding: EdgeInsets.all(
-                                          screenUtils.setWidgetHeight(5)),
-                                    )
-                                  ],
-                                ),
-                                onTap: () {
-                                  Navigator.push(context, new MaterialPageRoute(builder: (_){
-                                    return new ShopRechargeIndex();
-                                  }));
-                                },
-                              ),
+                        new Expanded(
+                          flex: 1,
+                          child: new GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (context) =>
+                                      new LittleShopPage()));
+                            },
+                            child: new Column(
+                              children: <Widget>[
+                                new Image.asset(
+                                    "assert/imgs/ic_active_home.png",
+                                    width: screenUtils.setWidgetWidth(30),
+                                    height: screenUtils.setWidgetHeight(30)),
+                                new Container(
+                                  child: new Text(
+                                    "小卖部",
+                                    style: new TextStyle(
+                                        fontSize: screenUtils.setFontSize(13),
+                                        color: Colors.black),
+                                  ),
+                                  margin: EdgeInsets.only(
+                                      top: screenUtils.setWidgetHeight(8)),
+                                  padding: EdgeInsets.all(
+                                      screenUtils.setWidgetHeight(5)),
+                                )
+                              ],
                             ),
-                            new Expanded(
-                              flex: 1,
-                              child: new GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  Navigator.push(context,
-                                      new MaterialPageRoute(builder: (_) {
-                                    return new PartTimeJobPage();
-                                  }));
-                                },
-                                child: new Column(
-                                  children: <Widget>[
-                                    new Image.asset(
-                                        "assert/imgs/ic_partjob_home.png",
-                                        width: screenUtils.setWidgetWidth(30),
-                                        height:
-                                            screenUtils.setWidgetHeight(30)),
-                                    new Container(
-                                      child: new Text(
-                                        "校园兼职",
-                                        style: new TextStyle(
-                                            fontSize:
-                                                screenUtils.setFontSize(13),
-                                            color: Colors.black),
-                                      ),
-                                      margin: EdgeInsets.only(
-                                          top: screenUtils.setWidgetHeight(8)),
-                                      padding: EdgeInsets.all(
-                                          screenUtils.setWidgetHeight(5)),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            new Expanded(
-                              flex: 1,
-                              child: new GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      new MaterialPageRoute(
-                                          builder: (context) =>
-                                              new LittleShopPage()));
-                                },
-                                child: new Column(
-                                  children: <Widget>[
-                                    new Image.asset(
-                                        "assert/imgs/ic_active_home.png",
-                                        width: screenUtils.setWidgetWidth(30),
-                                        height:
-                                            screenUtils.setWidgetHeight(30)),
-                                    new Container(
-                                      child: new Text(
-                                        "小卖部",
-                                        style: new TextStyle(
-                                            fontSize:
-                                                screenUtils.setFontSize(13),
-                                            color: Colors.black),
-                                      ),
-                                      margin: EdgeInsets.only(
-                                          top: screenUtils.setWidgetHeight(8)),
-                                      padding: EdgeInsets.all(
-                                          screenUtils.setWidgetHeight(5)),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            new Expanded(
-                              flex: 1,
-                              child: new GestureDetector(
-                                onTap: (){
-                                  Navigator.push(context, new MaterialPageRoute(builder: (_){
+                          ),
+                        ),
+                        new Expanded(
+                          flex: 1,
+                          child: new GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
                                     return new SchoolActivityPage();
                                   }));
-                                },
-                                child: new Column(
-                                  children: <Widget>[
-                                    new Image.asset(
-                                        "assert/imgs/ic_shop_home.png",
-                                        width: screenUtils.setWidgetWidth(30),
-                                        height: screenUtils.setWidgetHeight(30)),
-                                    new Container(
-                                      child: new Text(
-                                        "校园活动",
-                                        style: new TextStyle(
-                                            fontSize: screenUtils.setFontSize(13),
-                                            color: Colors.black),
-                                      ),
-                                      margin: EdgeInsets.only(
-                                          top: screenUtils.setWidgetHeight(8)),
-                                      padding: EdgeInsets.all(
-                                          screenUtils.setWidgetHeight(5)),
-                                    )
-                                  ],
-                                ),
-                              ),
+                            },
+                            child: new Column(
+                              children: <Widget>[
+                                new Image.asset(
+                                    "assert/imgs/ic_shop_home.png",
+                                    width: screenUtils.setWidgetWidth(30),
+                                    height: screenUtils.setWidgetHeight(30)),
+                                new Container(
+                                  child: new Text(
+                                    "校园活动",
+                                    style: new TextStyle(
+                                        fontSize: screenUtils.setFontSize(13),
+                                        color: Colors.black),
+                                  ),
+                                  margin: EdgeInsets.only(
+                                      top: screenUtils.setWidgetHeight(8)),
+                                  padding: EdgeInsets.all(
+                                      screenUtils.setWidgetHeight(5)),
+                                )
+                              ],
                             ),
-                            new Expanded(
-                              flex: 1,
-                              child: new GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  Navigator.push(context,
-                                      new MaterialPageRoute(builder: (_) {
+                          ),
+                        ),
+                        new Expanded(
+                          flex: 1,
+                          child: new GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
                                     return new SquarePlayTogetherPage();
                                   }));
-                                },
-                                child: new Column(
-                                  children: <Widget>[
-                                    new Image.asset(
-                                        "assert/imgs/ic_game_home.png",
-                                        width: screenUtils.setWidgetWidth(30),
-                                        height:
-                                            screenUtils.setWidgetHeight(30)),
-                                    new Container(
-                                      child: new Text(
-                                        "打游戏",
-                                        style: new TextStyle(
-                                            fontSize:
-                                                screenUtils.setFontSize(13),
-                                            color: Colors.black),
-                                      ),
-                                      margin: EdgeInsets.only(
-                                          top: screenUtils.setWidgetHeight(8)),
-                                      padding: EdgeInsets.all(
-                                          screenUtils.setWidgetHeight(5)),
-                                    ),
-                                  ],
+                            },
+                            child: new Column(
+                              children: <Widget>[
+                                new Image.asset(
+                                    "assert/imgs/ic_game_home.png",
+                                    width: screenUtils.setWidgetWidth(30),
+                                    height: screenUtils.setWidgetHeight(30)),
+                                new Container(
+                                  child: new Text(
+                                    "打游戏",
+                                    style: new TextStyle(
+                                        fontSize: screenUtils.setFontSize(13),
+                                        color: Colors.black),
+                                  ),
+                                  margin: EdgeInsets.only(
+                                      top: screenUtils.setWidgetHeight(8)),
+                                  padding: EdgeInsets.all(
+                                      screenUtils.setWidgetHeight(5)),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                      new Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(
-                            left: screenUtils.setWidgetHeight(18),
-                            top: screenUtils.setWidgetHeight(8),
-                            bottom: screenUtils.setWidgetHeight(8)),
-                        child: new Text(
-                          "最新优惠",
-                          style: new TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenUtils.setFontSize(17),
-                              decoration: TextDecoration.none),
-                        ),
-                      ),
-                      new Container(
-                        padding: EdgeInsets.only(
-                            top: screenUtils.setWidgetHeight(6),
-                            right: screenUtils.setWidgetWidth(10),
-                            left: screenUtils.setWidgetWidth(10)),
-                        height: screenUtils.setWidgetHeight(60),
-                        child: _purse_title_list == null
-                            ? new CupertinoActivityIndicator()
-                            : new ListView.builder(
-                                physics: new ClampingScrollPhysics(),
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _purse_title_list.length,
-                                itemBuilder:
-                                    (BuildContext context, int position) {
-                                  return new Container(
-                                    child: new Row(
-                                      children: <Widget>[
-                                        _set_purse_title(context, position),
-                                        new Container(
-                                          height:
-                                              screenUtils.setWidgetHeight(60),
-                                          margin: EdgeInsets.only(
-                                              top: screenUtils
-                                                  .setWidgetHeight(10),
-                                              bottom: screenUtils
-                                                  .setWidgetHeight(10)),
-                                          color: Color(0xffebebeb),
-                                          width: screenUtils.setWidgetWidth(1),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                      ),
-                      new Container(
-                        padding: EdgeInsets.only(
-                            top: screenUtils.setWidgetHeight(6),
-                            right: screenUtils.setWidgetWidth(10),
-                            left: screenUtils.setWidgetWidth(10)),
-                        height: screenUtils.setWidgetHeight(150),
-                        child: _shop_list == null
-                            ? new CupertinoActivityIndicator()
-                            : new ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _shop_list.length,
-                                itemBuilder:
-                                    (BuildContext context, int position) {
-                                  return _set_widget_location_shop(
-                                      context, position);
-                                },
-                              ),
-                      ),
-                    ],
-                  )
+                      ],
+                    ),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.only(top: screenUtils.setWidgetHeight(7)),
+                    height: screenUtils.setWidgetHeight(7),
+                    color: Color(0xfffafafa),
+                  ),
+                  new Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(
+                        left: screenUtils.setWidgetHeight(18),
+                        top: screenUtils.setWidgetHeight(8),
+                        bottom: screenUtils.setWidgetHeight(8)),
+                    child: new Text(
+                      "最新优惠",
+                      style: new TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: screenUtils.setFontSize(17),
+                          decoration: TextDecoration.none),
+                    ),
+                  ),
+                  new Container(
+                    padding: EdgeInsets.only(
+                        top: screenUtils.setWidgetHeight(6),
+                        right: screenUtils.setWidgetWidth(10),
+                        left: screenUtils.setWidgetWidth(10)),
+                    height: screenUtils.setWidgetHeight(60),
+                    child: _purse_title_list == null
+                        ? new CupertinoActivityIndicator()
+                        : new ListView.builder(
+                      physics: new ClampingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _purse_title_list.length,
+                      itemBuilder:
+                          (BuildContext context, int position) {
+                        return new Container(
+                          child: new Row(
+                            children: <Widget>[
+                              _set_purse_title(context, position),
+                              new Container(
+                                height: screenUtils.setWidgetHeight(60),
+                                margin: EdgeInsets.only(
+                                    top:
+                                    screenUtils.setWidgetHeight(10),
+                                    bottom: screenUtils
+                                        .setWidgetHeight(10)),
+                                color: Color(0xffebebeb),
+                                width: screenUtils.setWidgetWidth(1),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  new Container(
+                    padding: EdgeInsets.only(
+                        top: screenUtils.setWidgetHeight(6),
+                        right: screenUtils.setWidgetWidth(10),
+                        left: screenUtils.setWidgetWidth(10)),
+                    height: screenUtils.setWidgetHeight(150),
+                    child: _shop_list == null
+                        ? new CupertinoActivityIndicator()
+                        : new ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _shop_list.length,
+                      itemBuilder:
+                          (BuildContext context, int position) {
+                        return _set_widget_location_shop(
+                            context, position);
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
-            SliverOverlapAbsorber(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-              child: SliverAppBar(
-                elevation: 0,
-                backgroundColor: Colors.white,
-                floating: false,
-                pinned: true,
-                snap: false,
-                forceElevated: innerBoxIsScrolled,
-                title: TabBar(
-                  isScrollable: false,
-                  indicatorColor: Color(0xff4ddfa9),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  unselectedLabelStyle: new TextStyle(
-                      fontSize: screenUtils.setFontSize(17),
-                      fontWeight: FontWeight.bold),
-                  labelStyle: new TextStyle(
-                      fontSize: screenUtils.setFontSize(17),
-                      fontWeight: FontWeight.bold),
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Color(0xff707070),
-                  indicatorWeight: screenUtils.setFontSize(4),
-                  tabs: myTabs.map((HomeTabList item) {
-                    return new Tab(text: item.text == null ? '错误' : item.text);
-                  }).toList(),
-                ),
+            SliverAppBar(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              floating: false,
+              pinned: true,
+              snap: false,
+              forceElevated: innerBoxIsScrolled,
+              title: TabBar(
+                controller: _tab_controller,
+                isScrollable: false,
+                indicatorColor: Color(0xff4ddfa9),
+                indicatorSize: TabBarIndicatorSize.tab,
+                unselectedLabelStyle: new TextStyle(
+                    fontSize: screenUtils.setFontSize(17),
+                    fontWeight: FontWeight.bold),
+                labelStyle: new TextStyle(
+                    fontSize: screenUtils.setFontSize(17),
+                    fontWeight: FontWeight.bold),
+                labelColor: Colors.black,
+                unselectedLabelColor: Color(0xff707070),
+                indicatorWeight: screenUtils.setFontSize(4),
+                tabs: myTabs.map((HomeTabList item) {
+                  return new Tab(text: item.text == null ? '错误' : item.text);
+                }).toList(),
               ),
-            ),
+            )
           ];
         },
         body: new Container(
-          margin: EdgeInsets.only(top: screenUtils.setWidgetHeight(55)),
+//        margin: EdgeInsets.only(top: screenUtils.setWidgetHeight(55)),
           child: TabBarView(
+            controller: _tab_controller,
             children: myTabs.map((item) {
               return item.goodList;
             }).toList(),
@@ -648,6 +643,7 @@ class SquarePageState extends State<SquarePageIndex>
     getPurseUserList();
     getShopList("1");
     getPurseTitle();
+    _tab_controller = new TabController(length: myTabs.length, vsync: this);
   }
 
 //获取推荐用户
@@ -668,7 +664,7 @@ class SquarePageState extends State<SquarePageIndex>
   List<SquareBannerData> _banner_list = new List();
 
   getBanner() async {
-    var response = await HttpUtil().get(Api.SQUARE_BANNER,data: {"type":"1"});
+    var response = await HttpUtil().get(Api.SQUARE_BANNER, data: {"type": "1"});
     final body = json.decode(response);
     var squareBannerEntity = SquareBannerEntity.fromJson(body);
     print(body);
@@ -701,28 +697,27 @@ class SquarePageState extends State<SquarePageIndex>
         behavior: HitTestBehavior.opaque,
         child: new Column(
           children: <Widget>[
-         new GestureDetector(
-
-           child:    new Container(
-             child: ClipRRect(
-               borderRadius:
-               BorderRadius.circular(screenUtils.setWidgetWidth(24)),
-               child: FadeInImage.assetNetwork(
-                 placeholder: "assert/imgs/loading.gif",
-                 image: "${model.avatar}",
-                 fit: BoxFit.cover,
-                 width: screenUtils.setWidgetWidth(48),
-                 height: screenUtils.setWidgetHeight(50),
-               ),
-             ),
-             decoration: new BoxDecoration(
-               color: Colors.white,
-               borderRadius: BorderRadius.all(
-                   Radius.circular(screenUtils.setWidgetHeight(52))),
-               border: new Border.all(width: 4, color: Color(0xff4ddfa9)),
-             ),
-           ),
-         ),
+            new GestureDetector(
+              child: new Container(
+                child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(screenUtils.setWidgetWidth(24)),
+                  child: FadeInImage.assetNetwork(
+                    placeholder: "assert/imgs/loading.gif",
+                    image: "${model.avatar}",
+                    fit: BoxFit.cover,
+                    width: screenUtils.setWidgetWidth(48),
+                    height: screenUtils.setWidgetHeight(50),
+                  ),
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(screenUtils.setWidgetHeight(52))),
+                  border: new Border.all(width: 4, color: Color(0xff4ddfa9)),
+                ),
+              ),
+            ),
             new Container(
               width: screenUtils.setWidgetWidth(48),
               alignment: Alignment.center,
@@ -745,3 +740,26 @@ class SquarePageState extends State<SquarePageIndex>
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final Widget _tabBar;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return _tabBar;
+  }
+
+  @override
+  double get maxExtent => 55;
+
+  @override
+  double get minExtent => 55;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
+  }
+}
+

@@ -23,9 +23,40 @@ class _UserDetailPageState extends State<UserDetailPage> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BackUtil.NavigationBack(context, "用户"),
+      appBar: new AppBar(
+        leading: new IconButton(
+            icon: new Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        elevation: 0.5,
+        iconTheme: new IconThemeData(color: Colors.black),
+        backgroundColor: Colors.transparent,
+      ),
       body: new Container(
+        child: new CustomScrollView(
+          slivers: <Widget>[
 
+          ],
+        ),
+      ),
+      bottomNavigationBar: new Container(
+        child: new Row(
+          children: <Widget>[
+            new Expanded(child: new Container(
+              color: Color(0xff1fb5c6),
+              child: new Text("私聊",style:new TextStyle(
+                color: Colors.white
+              )),
+            )),
+            new Expanded(child: new Container(
+              color: Color(0xff00caa4),
+              child: new Text("关注",style:new TextStyle(
+                  color: Colors.white
+              )),
+            )),
+          ],
+        ),
       ),
     );
   }
