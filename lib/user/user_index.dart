@@ -70,19 +70,22 @@ class _UserPageIndexState extends State<UserPageIndex> {
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    Directory documentsDir = await getApplicationDocumentsDirectory();
-    String documentsPath = documentsDir.path;
-    CompressObject compressObject =
-        CompressObject(imageFile: image, path: documentsPath);
-    Luban.compressImage(compressObject).then((_path) {
-      setState(() {
-        print(_path);
-        _avatar_path = _path;
-        uploadAvatar();
+    if(image!=null){
+      Directory documentsDir = await getApplicationDocumentsDirectory();
+      String documentsPath = documentsDir.path;
+      CompressObject compressObject =
+      CompressObject(imageFile: image, path: documentsPath);
+      Luban.compressImage(compressObject).then((_path) {
+        setState(() {
+          print(_path);
+          _avatar_path = _path;
+          uploadAvatar();
+        });
+      }).catchError((e) {
+        ToastUtil.showCommonToast("上传头像失败，请重新选择！" + e.toString());
       });
-    }).catchError((e) {
-      ToastUtil.showCommonToast("上传头像失败，请重新选择！" + e.toString());
-    });
+    }
+
   }
 
   Future uploadAvatar() async {

@@ -199,8 +199,12 @@ class _HomePostPurseState extends State<HomePostPurse>
               children: <Widget>[
                 new GestureDetector(
                   onTap: () {
-                    new CustomRouteSlide(
-                        new UserDetailPage(userId: index.user.uid.toString()));
+                    print("--------------------------------------");
+                    print(index.user.toJson());
+                    print("--------------------------------------");
+                    Navigator.push(context, new MaterialPageRoute(builder: (_){
+                      return new UserDetailPage(userId: index.user.id.toString());
+                    }));
                   },
                   child: new Container(
                     padding: EdgeInsets.only(

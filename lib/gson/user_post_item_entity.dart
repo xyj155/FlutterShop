@@ -91,7 +91,7 @@ class UserPostItemData {
 }
 
 class UserPostItemDataUser {
-	int uid;
+	int id;
 	String city;
 	String school;
 
@@ -100,10 +100,10 @@ class UserPostItemDataUser {
 	String avatar;
 	String username;
 
-	UserPostItemDataUser({this.uid, this.city, this.school,  this.sex, this.nickname, this.avatar, this.username});
+	UserPostItemDataUser({this.id, this.city, this.school,  this.sex, this.nickname, this.avatar, this.username});
 
 	UserPostItemDataUser.fromJson(Map<String, dynamic> json) {
-		uid = json['uid'];
+		id= json['id'];
 		city = json['city'];
 		school = json['school'];
 		sex = json['sex'];
@@ -114,7 +114,7 @@ class UserPostItemDataUser {
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
-		data['uid'] = this.uid;
+		data['id'] = this.id;
 		data['city'] = this.city;
 		data['school'] = this.school;
 		data['sex'] = this.sex;

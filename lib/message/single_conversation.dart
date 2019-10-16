@@ -449,22 +449,25 @@ class _SingleConversationPageState extends State<SingleConversationPage>
 
   Future _getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    var sendImageMessage =
-        await jmessage.sendImageMessage(type: kMockUser, path: image.path);
-    var isSend = sendImageMessage.isSend;
-
-    if (isSend) {
-      setState(() {
-        _msgList.insert(0, sendImageMessage);
-        from = from + 1;
+    if(image!=null){
+      var sendImageMessage =
+      await jmessage.sendImageMessage(type: kMockUser, path: image.path);
+      var isSend = sendImageMessage.isSend;
+      if (isSend) {
+        setState(() {
+          _msgList.insert(0, sendImageMessage);
+          from = from + 1;
+          Navigator.pop(context);
+          print("------------------------------");
+          print(_msgList.length);
+        });
+        scrollToBottom();
+      } else {
         Navigator.pop(context);
-        print("------------------------------");
-        print(_msgList.length);
-      });
-      scrollToBottom();
-    } else {
+        ToastUtil.showCommonToast("图片发送失败");
+      }
+    }else{
       Navigator.pop(context);
-      ToastUtil.showCommonToast("图片发送失败");
     }
   }
 }

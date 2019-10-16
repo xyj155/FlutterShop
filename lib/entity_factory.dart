@@ -19,6 +19,7 @@ import 'package:sauce_app/gson/user_post_item_detail_entity.dart';
 import 'package:sauce_app/gson/user_post_item_entity.dart';
 import 'package:sauce_app/gson/user_receive_address_entity.dart';
 import 'package:sauce_app/gson/user_shop_car_entity.dart';
+import 'package:sauce_app/gson/user_view_detail_entity.dart';
 
 class EntityFactory {
   static T generateOBJ<T>(json) {
@@ -66,6 +67,8 @@ class EntityFactory {
       return UserReceiveAddressEntity.fromJson(json) as T;
     } else if (T.toString() == "UserShopCarEntity") {
       return UserShopCarEntity.fromJson(json) as T;
+    } else if (T.toString() == "UserViewDetailEntity") {
+      return UserViewDetailEntity.fromJson(json) as T;
     } else {
       return null;
     }

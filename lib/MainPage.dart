@@ -195,6 +195,7 @@ class FloatingActionButtonDemo extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       new Expanded(child: new GestureDetector(
+                        behavior:HitTestBehavior.opaque,
                         onTap: (){
                           Navigator.push(context, new MaterialPageRoute(builder: (_){
                             return new TextPostPage();
@@ -213,11 +214,11 @@ class FloatingActionButtonDemo extends StatelessWidget {
                         ),
                       )),
                       new Expanded(child: new GestureDetector(
+                          behavior:HitTestBehavior.opaque,
                         onTap: (){
                           Navigator.push(context, new MaterialPageRoute(builder: (_){
                             return new PostPicturePage();
                           }));
-                          Navigator.pop(context);
                         },
                         child: new Column(
                           children: <Widget>[
@@ -231,11 +232,11 @@ class FloatingActionButtonDemo extends StatelessWidget {
                         )),
                       ),
                       new Expanded(child: new GestureDetector(
+                        behavior:HitTestBehavior.opaque,
                         onTap: (){
                           Navigator.push(context, new MaterialPageRoute(builder: (_){
                             return new PostVideoPage();
                           }));
-                          Navigator.pop(context);
                         },
                         child: new Column(
                           children: <Widget>[

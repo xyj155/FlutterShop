@@ -1,5 +1,4 @@
 //import 'package:amap_base_map/amap_base_map.dart';
-import 'package:amap_base/amap_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
@@ -63,9 +62,7 @@ _fireMessagaeEvent() async {
   eventBus.fire(event);
 }
 
-void initAMap() async {
-  await AMap.init('30f75cebf01d9a3cfbf88670e2fc4344');
-}
+
 
 void initBugly() {
   FlutterBugly.init(
@@ -86,13 +83,12 @@ class MyApp extends StatelessWidget {
     jmessage.applyPushAuthority(
         new JMNotificationSettingsIOS(sound: true, alert: true, badge: true));
     startupJpush();
-    initAMap();
     initBugly();
     return Material(
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: UserDetailPage(), //启动MainPage
+        home: PostVideoPage(), //启动MainPage
       ),
     );
   }

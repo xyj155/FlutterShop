@@ -59,14 +59,14 @@ dependencies:
   image_picker: ^0.4.12+1
   flutter_luban: ^0.1.1
   shared_preferences: ^0.4.3
-  amap_base: ^0.3.1
+#  amap_base: ^0.3.1
   dropdown_menu: ^1.1.0
   keyboard_visibility: ^0.5.2
   event_bus: ^1.1.0
   share: ^0.6.1+1
   intl: ^0.15.6
   flutter_bugly: ^0.1.1
-  badges: ^1.1.0
+  photo: ^0.4.3+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -86,6 +86,9 @@ flutter:
 
   assets:
     - assert/imgs/ic_shop_car.png
+    - assert/imgs/ic_user_boy.png
+    - assert/imgs/ic_user_girl.png
+    - assert/imgs/ic_back.png
     - assert/imgs/detail_like_selectedx.png
     - assert/amap/
     - assert/imgs/
