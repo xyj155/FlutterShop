@@ -45,10 +45,15 @@ class _CommonVideoPlayerState extends State<CommonVideoPlayer>
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black,
-      child: new Center(
-        child: Chewie(
-          controller: chewieController,
-        ),
+      child: new Stack(
+        children: <Widget>[
+          new Center(
+            child: Chewie(
+              controller: chewieController,
+            ),
+          ),
+
+        ],
       ),
     );
   }

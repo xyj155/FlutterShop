@@ -1,4 +1,7 @@
 //import 'package:amap_base_map/amap_base_map.dart';
+
+
+import 'package:amap_location/amap_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
@@ -55,6 +58,12 @@ void startupJpush() async {
     eventBus.fire(ReceiveMessage(message: 'new'));
   });
   _fireMessagaeEvent();
+  _initAmap();
+}
+
+Future _initAmap() async {
+//  AMap.init('30f75cebf01d9a3cfbf88670e2fc4344');
+  AMapLocationClient.setApiKey("30f75cebf01d9a3cfbf88670e2fc4344");
 }
 
 _fireMessagaeEvent() async {
@@ -62,16 +71,13 @@ _fireMessagaeEvent() async {
   eventBus.fire(event);
 }
 
-
-
 void initBugly() {
   FlutterBugly.init(
-      androidAppId: "e7a846133c",
-      iOSAppId: "your iOS app id",
-  autoDownloadOnWifi: true,
+    androidAppId: "e7a846133c",
+    iOSAppId: "your iOS app id",
+    autoDownloadOnWifi: true,
   );
-  FlutterBugly.checkUpgrade(isManual: true,isSilence: false);
-
+  FlutterBugly.checkUpgrade(isManual: true, isSilence: false);
 }
 
 class MyApp extends StatelessWidget {

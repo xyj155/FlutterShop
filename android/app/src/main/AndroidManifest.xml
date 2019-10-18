@@ -107,8 +107,8 @@
                 <action android:name="com.xiaomi.mipush.ERROR" />
             </intent-filter>
         </receiver>
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="30f75cebf01d9a3cfbf88670e2fc4344" />
+<!--        <meta-data-->
+<!--            android:name="com.amap.api.v2.apikey"-->
+<!--            android:value="30f75cebf01d9a3cfbf88670e2fc4344" />-->
   </application>
 </manifest>

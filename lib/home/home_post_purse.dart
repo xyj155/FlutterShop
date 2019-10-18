@@ -25,7 +25,7 @@ import 'package:sauce_app/util/relative_time_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
 import 'package:share/share.dart';
 
-import 'common_vide_player.dart';
+import '../common/common_vide_player.dart';
 
 void main() {
   runApp(new MaterialApp(

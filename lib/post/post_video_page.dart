@@ -1,13 +1,22 @@
+import 'dart:io';
+
+
+import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
 import 'package:photo/photo.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:sauce_app/gson/home_user_topic_entity.dart';
 
-import './preview.dart';
+import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/ToastUtil.dart';
+import 'package:sauce_app/widget/list_title_right.dart';
+import 'package:simple_permissions/simple_permissions.dart';
+import 'package:video_player/video_player.dart';
 
-
-
-
+import 'topic_choose.dart';
 
 class PostVideoPage extends StatefulWidget {
   PostVideoPage({Key key, this.title}) : super(key: key);
@@ -35,6 +44,13 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
   }
 
   @override
+  void dispose() {
+//    videoPlayerController2.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget buildPreviewLoading(
       BuildContext context, AssetEntity entity, Color themeColor) {
     return Center(
@@ -48,101 +64,336 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
     );
   }
 
+  ScreenUtils _screenUtils = new ScreenUtils();
+  TextEditingController _contentController = new TextEditingController();
+  FocusNode _contentFocusNode = FocusNode();
+  String _content = "";
+  String _topic_default = "@请选择话题";
+  String _visible_type = "公开";
+  String _topic_img_url = "";
+  Color font_color = Colors.grey;
+  Color bg_color = Colors.transparent;
+  bool isChoose = false;
+  final TapGestureRecognizer recognizer = TapGestureRecognizer();
+
+  @override
+  void initState() {
+    _checkPersmission();
+    super.initState();
+  }
+
+  void _checkPersmission() async {
+    bool hasPermission =
+        await SimplePermissions.checkPermission(Permission.WhenInUseLocation);
+    if (!hasPermission) {
+      PermissionStatus requestPermissionResult =
+          await SimplePermissions.requestPermission(
+              Permission.WhenInUseLocation);
+      if (requestPermissionResult != PermissionStatus.authorized) {
+        ToastUtil.showCommonToast("申请定位权限失败");
+        return;
+      }
+    }
+
+    //    final options = LocationClientOptions(
+//      isOnceLocation: true,
+//      locatingWithReGeocode: true,
+//    );
+//    _amapLocation
+//        .getLocation(options)
+//        .then(_result.add)
+//        .then((_) => setState(() {
+//          print(_result[0].address);
+//    }));
+  }
+
   @override
   Widget build(BuildContext context) {
+    _screenUtils.initUtil(context);
+    var _file_path = [];
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(""),
-        actions: <Widget>[
-          FlatButton(
-            child: Icon(Icons.image),
-            onPressed: _testPhotoListParams,
-          ),
+        leading: new IconButton(
+            icon: new Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        elevation: 0.5,
+        iconTheme: new IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        title: new Text("视频帖子", style: new TextStyle(color: Color(0xff000000))),
+      ),
+      body: new CustomScrollView(
+        slivers: <Widget>[
+          new SliverToBoxAdapter(
+            child: new Container(
+              color: Colors.white,
+              child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new Container(
+                    color: Color(0xfffafafa),
+                    padding: EdgeInsets.all(_screenUtils.setWidgetHeight(15)),
+                    height: _screenUtils.setWidgetHeight(250),
+                    child: TextFormField(
+                      maxLines: 999,
+                      decoration: InputDecoration(
+                          hintText: "说一点东西吧！",
+                          hintStyle: new TextStyle(
+                            color: Colors.grey,
+                          ),
+                          border: InputBorder.none),
+                      autofocus: true,
+                      onChanged: (content) {},
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: _screenUtils.setFontSize(15)),
+                      cursorColor: Colors.black,
+                      focusNode: _contentFocusNode,
+                      controller: _contentController,
+                    ),
+                  ),
+                  new Container(
+                    padding: EdgeInsets.all(_screenUtils.setWidgetHeight(15)),
+                    child: new Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new ClipRRect(
+                          borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(
+                                  _screenUtils.setWidgetWidth(4)),
+                              topLeft: Radius.circular(
+                                  _screenUtils.setWidgetWidth(4)),
+                              topRight: Radius.circular(
+                                  _screenUtils.setWidgetWidth(4))),
+                          child: new GestureDetector(
+                            onTap: () {
+                              _navigationWithMsg();
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.only(
+                                  left: _screenUtils.setWidgetWidth(4),
+                                  right: _screenUtils.setWidgetWidth(4),
+                                  top: _screenUtils.setWidgetHeight(3),
+                                  bottom: _screenUtils.setWidgetHeight(3)),
+                              color: bg_color,
+                              child: new RichText(
+                                  text: new TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () async {
+                                    _navigationWithMsg();
+                                  },
+                                text: _topic_default,
+                                style: new TextStyle(
+                                    color: font_color,
+                                    fontSize: _screenUtils.setFontSize(15)),
+                              )),
+                            ),
+                          ),
+                        ),
+                        isChoose
+                            ? new Container(
+                                margin: EdgeInsets.only(
+                                    left: _screenUtils.setWidgetWidth(5),
+                                    right: _screenUtils.setWidgetWidth(5)),
+                                child: new ClipRRect(
+                                  child: new Image.network(
+                                    _topic_img_url,
+                                    width: _screenUtils.setWidgetWidth(35),
+                                    height: _screenUtils.setWidgetHeight(35),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                          _screenUtils.setWidgetHeight(35))),
+                                ),
+                              )
+                            : new Container(),
+                      ],
+                    ),
+                  ),
+                  new Container(
+                    color: Colors.white,
+                    margin:
+                        EdgeInsets.only(top: _screenUtils.setWidgetHeight(30)),
+                    child: new RightListTitle(
+                      value: _visible_type,
+                      title: "谁可见",
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return new SimpleDialog(
+                                title: new Text(
+                                  '谁可见',
+                                  style: new TextStyle(
+                                      fontSize: _screenUtils.setFontSize(15)),
+                                ),
+                                children: <Widget>[
+                                  new SimpleDialogOption(
+                                    child: new Text(
+                                      '仅自己',
+                                      style: new TextStyle(
+                                          fontSize:
+                                              _screenUtils.setFontSize(17),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _visible_type = '仅自己';
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  new SimpleDialogOption(
+                                    child: new Text(
+                                      '公开',
+                                      style: new TextStyle(
+                                          fontSize:
+                                              _screenUtils.setFontSize(17),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      setState(() {
+                                        _visible_type = '公开';
+                                      });
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                    ),
+                  ),
+                  new Container(
+                    height: _screenUtils.setWidgetHeight(8),
+                    color: Color(0xfffafafa),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.all(_screenUtils.setWidgetHeight(15)),
+                    child: new GridView.builder(
+                        shrinkWrap: true,
+                        itemCount:
+                            _file_path.length == 9 ? _file_path.length : 9,
+                        gridDelegate:
+                            new SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 3.0,
+                                crossAxisSpacing: 3.0,
+                                childAspectRatio: 1.0),
+                        itemBuilder: (BuildContext content, int position) {
+                          if (position == _file_path.length) {
+                            return new GestureDetector(
+                              onTap: () {
+                                _pickAsset(
+                                  PickType.onlyVideo,
+                                );
+                              },
+                              child: new Container(
+                                padding: EdgeInsets.all(
+                                    _screenUtils.setWidgetHeight(2)),
+                                child: new ClipRRect(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                          _screenUtils.setWidgetHeight(4))),
+                                  child: new Image.asset(
+                                      "assert/imgs/post_add_img.png",
+                                      fit: BoxFit.contain),
+                                ),
+                              ),
+                            );
+                          } else {
+                            print(_file_path.length > position
+                                ? _file_path[position]
+                                : _file_path.length);
+                            return new Container(
+                              child: _file_path.length > position
+                                  ? new ClipRRect(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(
+                                              _screenUtils.setWidgetHeight(4))),
+                                      child: new Image.file(
+                                        new File(_file_path[position]),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : new Container(),
+                            );
+                          }
+                        }),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
-      body: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              IconTextButton(
-                  icon: Icons.photo,
-                  text: "photo",
-                  onTap: () => _pickAsset(PickType.onlyImage)),
-              IconTextButton(
-                  icon: Icons.videocam,
-                  text: "video",
-                  onTap: () => _pickAsset(PickType.onlyVideo)),
-              IconTextButton(
-                  icon: Icons.album,
-                  text: "all",
-                  onTap: () => _pickAsset(PickType.all)),
-              Text(
-                '$currentSelected',
-                textAlign: TextAlign.center,
-              ),
-            ],
+      bottomNavigationBar: new Container(
+        width: MediaQuery.of(context).size.width,
+        height: _screenUtils.setWidgetHeight(50),
+        child: new MaterialButton(
+          color: Color(0xff4ddfa9),
+          textColor: Colors.white,
+          child: new Text(
+            '发布',
+            style: new TextStyle(fontWeight: FontWeight.bold),
           ),
+          onPressed: () {
+//            showDialog<Null>(
+//                context: context, //BuildContext对象
+//                barrierDismissible: false,
+//                builder: (BuildContext context) {
+//                  return new LoadingDialog();
+//                });
+//            submitGameInvite();
+//          Navigator.push(context, new MaterialPageRoute(builder: (_) {
+//            return new ChooseGameName();
+//          }));
+          },
         ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _pickAsset(PickType.all),
-        tooltip: 'pickImage',
-        child: new Icon(Icons.add),
       ),
     );
   }
 
-  void _testPhotoListParams() async {
-    var assetPathList = await PhotoManager.getImageAsset();
-    _pickAsset(PickType.all, pathList: assetPathList);
+  Future _navigationWithMsg() async {
+    var result = await Navigator.push(context,
+        new MaterialPageRoute(builder: (context) => new UserTopicChoosePage()));
+    if (result != null) {
+//      var decode = json.decode(result);
+      var homeUserTopicDataChild = HomeUserTopicDataChild.fromJson(result);
+      setState(() {
+        _topic_default = "@ " + homeUserTopicDataChild.topicName;
+        _topic_img_url = homeUserTopicDataChild.topicPicUrl;
+        isChoose = true;
+        font_color = Colors.white;
+        bg_color = Color(0xff4ddfa9);
+      });
+    }
   }
 
   void _pickAsset(PickType type, {List<AssetPathEntity> pathList}) async {
     List<AssetEntity> imgList = await PhotoPicker.pickAsset(
-      // BuildContext required
       context: context,
-
-      /// The following are optional parameters.
-      themeColor: Colors.green,
-      // the title color and bottom color
-
-      textColor: Colors.white,
-      // text color
+      themeColor: Colors.white,
+      textColor: Colors.black,
       padding: 1.0,
-      // item padding
       dividerColor: Colors.grey,
-      // divider color
       disableColor: Colors.grey.shade300,
-      // the check box disable color
-      itemRadio: 0.88,
-      // the content item radio
-      maxSelected: 8,
-      // max picker image count
-      // provider: I18nProvider.english,
+      maxSelected: 1,
       provider: I18nProvider.chinese,
-      // i18n provider ,default is chinese. , you can custom I18nProvider or use ENProvider()
       rowCount: 3,
-      // item row count
-
       thumbSize: 150,
-      // preview thumb size , default is 64
       sortDelegate: SortDelegate.common,
-      // default is common ,or you make custom delegate to sort your gallery
       checkBoxBuilderDelegate: DefaultCheckBoxBuilderDelegate(
         activeColor: Colors.white,
         unselectedColor: Colors.white,
-        checkColor: Colors.green,
+        checkColor: Color(0xff4ddfa9),
       ),
-      // default is DefaultCheckBoxBuilderDelegate ,or you make custom delegate to create checkbox
-
       loadingDelegate: this,
-      // if you want to build custom loading widget,extends LoadingDelegate, [see example/lib/main.dart]
-
       badgeDelegate: const DurationBadgeDelegate(),
-      // badgeDelegate to show badge widget
-
       pickType: type,
-
       photoPathList: pathList,
     );
 
@@ -158,29 +409,72 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
 
       List<AssetEntity> preview = [];
       preview.addAll(imgList);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (_) => PreviewPage(list: preview)));
+      var file = await preview[0].file;
+      var width = preview[0].width;
+      var height = preview[0].height;
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => VideoPreViewPage(
+                    list: file,
+                    width: width,
+                    height: height,
+                  )));
     }
-    setState(() {});
   }
 }
 
-class IconTextButton extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final Function onTap;
+class VideoPreViewPage extends StatefulWidget {
+  final File list;
+  final int width;
+  final int height;
 
-  const IconTextButton({Key key, this.icon, this.text, this.onTap})
+  const VideoPreViewPage({Key key, this.list, this.width, this.height})
       : super(key: key);
 
   @override
+  _VideoPreViewPageState createState() => _VideoPreViewPageState();
+}
+
+class _VideoPreViewPageState extends State<VideoPreViewPage>
+    with SingleTickerProviderStateMixin {
+  var chewieController;
+  var videoPlayerController2;
+
+  @override
+  void initState() {
+    getVideoFile();
+    super.initState();
+  }
+
+  Future getVideoFile() async {
+    videoPlayerController2 = new VideoPlayerController.file(widget.list);
+    chewieController = new ChewieController(
+      showControls: false,
+      videoPlayerController: videoPlayerController2,
+      aspectRatio: widget.width / widget.height,
+      autoPlay: true,
+      looping: true,
+    );
+    print("-----------------------------------");
+    print(chewieController == null);
+    print("-----------------------------------");
+  }
+
+  @override
+  void dispose() {
+    videoPlayerController2.dispose();
+    chewieController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        child: ListTile(
-          leading: Icon(icon ?? Icons.device_unknown),
-          title: Text(text ?? ""),
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: new Chewie(
+          controller: chewieController,
         ),
       ),
     );

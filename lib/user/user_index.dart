@@ -12,6 +12,7 @@ import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/user/user_address_page.dart';
 import 'package:sauce_app/user/user_detail_center.dart';
 import 'package:sauce_app/user/user_setting.dart';
+import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
@@ -91,9 +92,9 @@ class _UserPageIndexState extends State<UserPageIndex> {
   Future uploadAvatar() async {
     var spUtil = await SpUtil.getInstance();
     var string = spUtil.getInt("id").toString();
-    FormData formData = new FormData.fromMap({
+    FormData formData = new FormData.from({
       "userId": string,
-      "avatar": await MultipartFile.fromFileSync(_avatar_path),
+      "avatar":  new UploadFileInfo(new File(_avatar_path),Base642Text.encodeBase64(new TimeOfDay.now().toString())),
     });
     var response = await HttpUtil.getInstance()
         .getDio()

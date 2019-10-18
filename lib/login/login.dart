@@ -265,6 +265,7 @@ class LoginState extends State<LoginPage> {
                           onChanged: (content) {
                             setState(() {
                               verifyCode = content;
+                              ToastUtil.showCommonToast("验证码："+verifyCode);
                             });
                           },
                           decoration: InputDecoration(

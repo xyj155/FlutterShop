@@ -22,7 +22,7 @@ dependencies:
 #  flutter_custom_bottom_tab_bar:
 #    git: https://github.com/LiuC520/flutter_custom_bottom_tab_bar.git
   flutter_swiper: ^1.0.6
-  dio: ^3.0.3
+  dio: ^2.2.2
   flutter_easyrefresh: ^2.0.2
   json_serializable: ^2.0.0 # 解析
   transparent_image: ^0.1.0
@@ -64,9 +64,13 @@ dependencies:
   keyboard_visibility: ^0.5.2
   event_bus: ^1.1.0
   share: ^0.6.1+1
+  uuid: 2.0.1
   intl: ^0.15.6
   flutter_bugly: ^0.1.1
   photo: ^0.4.3+1
+  amap_location: 0.1.0
+  crypto: ^2.1.3
+  simple_permissions:
 dev_dependencies:
   flutter_test:
     sdk: flutter

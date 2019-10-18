@@ -36,5 +36,7 @@
   static final String QUERY_ALL_CITY_SHOP = "JustLikeThis/public/index.php/api/mobile/queryallcitypurse";
   static final String QUERY_SHOP_BY_CHILD_TYPE = "JustLikeThis/public/index.php/api/mobile/querybusinessshopbychildtypeid";
   static final String QUERY_VIEW_USER_DETAIL_BY_ID = "JustLikeThis/public/index.php/api/mobile/queryuserdetailbyuserId";
+  static final String SUBMIT_USER_TEXT_POST = "JustLikeThis/public/index.php/api/mobile/submitusertextpostbyuserid";
+  static final String SUBMIT_USER_PICTURE_POST = "JustLikeThis/public/index.php/api/mobile/uploaduserpicturebyuserid";
   static final String BASE_URL = "http://47.98.122.133/";
 }

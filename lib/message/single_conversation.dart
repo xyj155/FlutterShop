@@ -229,7 +229,7 @@ class _SingleConversationPageState extends State<SingleConversationPage>
                 '653c79d202ad111a7925b9e2:250b8ef0b9d8d8cfc53f1772'),
         "Content-Type": "application/json; charset=utf-8",
       },
-      contentType: "application/json; charset=utf-8 ",
+      contentType: ContentType.parse("application/json; charset=utf-8"),
       responseType: ResponseType.json,
     );
     Dio dio = Dio(options);
