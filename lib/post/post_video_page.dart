@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
-
+import 'package:amap_location/amap_location.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -8,12 +10,21 @@ import 'package:flutter/material.dart';
 
 import 'package:photo/photo.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:sauce_app/api/AliApi.dart';
+import 'package:sauce_app/api/Api.dart';
+import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/gson/home_user_topic_entity.dart';
+import 'package:sauce_app/util/HttpUtil.dart';
 
 import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
+import 'package:sauce_app/util/ali_oss_upload_util.dart';
+import 'package:sauce_app/util/amap_location_util.dart';
 import 'package:sauce_app/widget/list_title_right.dart';
+import 'package:sauce_app/widget/loading_dialog.dart';
 import 'package:simple_permissions/simple_permissions.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
 import 'topic_choose.dart';
@@ -45,8 +56,6 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
 
   @override
   void dispose() {
-//    videoPlayerController2.dispose();
-
     super.dispose();
   }
 
@@ -70,16 +79,39 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
   String _content = "";
   String _topic_default = "@请选择话题";
   String _visible_type = "公开";
+  String _visible_code = "1";
   String _topic_img_url = "";
   Color font_color = Colors.grey;
   Color bg_color = Colors.transparent;
   bool isChoose = false;
   final TapGestureRecognizer recognizer = TapGestureRecognizer();
 
+//  @override
+//  void initState() {
+//
+//    super.initState();
+//  }
+  String _location = "";
+  String _latitude = "";
+  String _longitude = "";
+
   @override
   void initState() {
-    _checkPersmission();
     super.initState();
+    _checkPersmission();
+    AmapUtil.startLocation((location) {
+      AMapLocation aMapLocation = location;
+      print("---------------------------------");
+      print(aMapLocation.street);
+      print(aMapLocation.longitude);
+      print(aMapLocation.latitude);
+      setState(() {
+        _location = aMapLocation.city + " · " + aMapLocation.street;
+        _latitude = aMapLocation.latitude.toString();
+        _longitude = aMapLocation.longitude.toString();
+      });
+      print("---------------------------------");
+    });
   }
 
   void _checkPersmission() async {
@@ -107,10 +139,12 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
 //    }));
   }
 
+  var _file_path = [];
+
   @override
   Widget build(BuildContext context) {
     _screenUtils.initUtil(context);
-    var _file_path = [];
+
     return new Scaffold(
       appBar: new AppBar(
         leading: new IconButton(
@@ -144,7 +178,9 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
                           ),
                           border: InputBorder.none),
                       autofocus: true,
-                      onChanged: (content) {},
+                      onChanged: (content) {
+                        _content = content;
+                      },
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: _screenUtils.setFontSize(15)),
@@ -242,6 +278,7 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
                                     onPressed: () {
                                       setState(() {
                                         _visible_type = '仅自己';
+                                        _visible_code = "0";
                                       });
                                       Navigator.of(context).pop();
                                     },
@@ -258,6 +295,7 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
                                       Navigator.of(context).pop();
                                       setState(() {
                                         _visible_type = '公开';
+                                        _visible_code = "1";
                                       });
                                     },
                                   ),
@@ -276,7 +314,7 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
                     child: new GridView.builder(
                         shrinkWrap: true,
                         itemCount:
-                            _file_path.length == 9 ? _file_path.length : 9,
+                            _file_path.length == 1 ? _file_path.length : 1,
                         gridDelegate:
                             new SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3,
@@ -309,14 +347,22 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
                                 ? _file_path[position]
                                 : _file_path.length);
                             return new Container(
+                              color: Colors.black,
                               child: _file_path.length > position
                                   ? new ClipRRect(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(
                                               _screenUtils.setWidgetHeight(4))),
-                                      child: new Image.file(
-                                        new File(_file_path[position]),
-                                        fit: BoxFit.cover,
+                                      child: new Chewie(
+                                        controller: new ChewieController(
+                                          showControls: false,
+                                          videoPlayerController:
+                                              videoPlayerController,
+                                          aspectRatio:
+                                              _video_width / _video_heiht,
+                                          autoPlay: true,
+                                          looping: true,
+                                        ),
                                       ),
                                     )
                                   : new Container(),
@@ -341,13 +387,15 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
             style: new TextStyle(fontWeight: FontWeight.bold),
           ),
           onPressed: () {
-//            showDialog<Null>(
-//                context: context, //BuildContext对象
-//                barrierDismissible: false,
-//                builder: (BuildContext context) {
-//                  return new LoadingDialog();
-//                });
-//            submitGameInvite();
+            showDialog<Null>(
+                context: context, //BuildContext对象
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return new LoadingDialog(
+                    text: "上传中...",
+                  );
+                });
+            submitUserVideo();
 //          Navigator.push(context, new MaterialPageRoute(builder: (_) {
 //            return new ChooseGameName();
 //          }));
@@ -357,21 +405,67 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
     );
   }
 
+  Future submitUserVideo() async {
+    var uuid = new Uuid();
+    var spUtil = await SpUtil.getInstance();
+    var uuid_code = uuid.v1();
+    String _file = AliApi.MANGO_USER_PICTURE + uuid_code + ".mp4";
+    AliUploadUtil.uploadAliOSS(
+        AliApi.MANGO_USER_PICTURE, _video_choose_file, uuid_code + ".mp4");
+    var string = spUtil.getInt("id").toString();
+    var data = {
+      "userId": string,
+      "content": _content,
+      "visible": _visible_code.toString(),
+      "location": _location,
+      "latitude": _latitude,
+      "postTopic": _topic_id,
+//      "postTopic": 1,
+      "longitude": _longitude,
+      "videoUrl": _file,
+      "height": _video_heiht,
+      "weight": _video_width,
+      "duration": _duration
+    };
+    print(data);
+    var response = await HttpUtil.getInstance()
+        .post(Api.SUBMIT_USER_VIDEO_POST, data: data);
+    var decode = json.decode(response);
+    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
+    if (baseResponseEntity.code == 200) {
+      ToastUtil.showCommonToast("提交成功");
+      Navigator.pop(context);
+      Navigator.pop(context);
+    } else {
+      ToastUtil.showErrorToast("提交失败");
+      Navigator.pop(context);
+    }
+  }
+
+  var videoPlayerController;
+  var _topic_id = "";
+
   Future _navigationWithMsg() async {
     var result = await Navigator.push(context,
         new MaterialPageRoute(builder: (context) => new UserTopicChoosePage()));
     if (result != null) {
-//      var decode = json.decode(result);
       var homeUserTopicDataChild = HomeUserTopicDataChild.fromJson(result);
       setState(() {
         _topic_default = "@ " + homeUserTopicDataChild.topicName;
         _topic_img_url = homeUserTopicDataChild.topicPicUrl;
+        _topic_id = homeUserTopicDataChild.id.toString();
         isChoose = true;
         font_color = Colors.white;
         bg_color = Color(0xff4ddfa9);
       });
     }
   }
+
+  bool _is_choose = false;
+  String _video_choose_file;
+  String _duration;
+  int _video_width;
+  int _video_heiht;
 
   void _pickAsset(PickType type, {List<AssetPathEntity> pathList}) async {
     List<AssetEntity> imgList = await PhotoPicker.pickAsset(
@@ -410,16 +504,34 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
       List<AssetEntity> preview = [];
       preview.addAll(imgList);
       var file = await preview[0].file;
+      var duration = preview[0].videoDuration.inMinutes;
       var width = preview[0].width;
       var height = preview[0].height;
-      Navigator.push(
+      var result = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (_) => VideoPreViewPage(
                     list: file,
                     width: width,
+                    duration: duration,
                     height: height,
                   )));
+      if (result != null) {
+        var decode = json.decode(result);
+        setState(() {
+          _is_choose = true;
+          _video_choose_file = decode["videoPath"];
+          _video_heiht = decode["height"];
+          _video_width = decode["width"];
+          _duration = decode["duration"].toString();
+          _file_path.add(_video_choose_file);
+          videoPlayerController =
+              new VideoPlayerController.file(new File(_video_choose_file));
+        });
+      }
+      print("--------------==================--------------------");
+      print(result);
+      print("--------------==================--------------------");
     }
   }
 }
@@ -428,8 +540,10 @@ class VideoPreViewPage extends StatefulWidget {
   final File list;
   final int width;
   final int height;
+  final int duration;
 
-  const VideoPreViewPage({Key key, this.list, this.width, this.height})
+  const VideoPreViewPage(
+      {Key key, this.duration, this.list, this.width, this.height})
       : super(key: key);
 
   @override
@@ -468,15 +582,45 @@ class _VideoPreViewPageState extends State<VideoPreViewPage>
     super.dispose();
   }
 
+  ScreenUtils _screenUtils = new ScreenUtils();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      child: Center(
-        child: new Chewie(
-          controller: chewieController,
+    _screenUtils.initUtil(context);
+    return new Stack(
+      children: <Widget>[
+        Container(
+          color: Colors.black,
+          child: Center(
+            child: new Chewie(
+              controller: chewieController,
+            ),
+          ),
         ),
-      ),
+        new Positioned(
+          child: new MaterialButton(
+            color: Color(0xff4ddfa9),
+            onPressed: () {
+              var video_json = {
+                "videoPath": widget.list.path,
+                "width": widget.width,
+                "duration": widget.duration,
+                "height": widget.height
+              };
+              var encode = json.encode(video_json);
+              Navigator.pop(context, encode);
+            },
+            child: new Text(
+              "确认",
+              style: new TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+          bottom: _screenUtils.setWidgetHeight(10),
+          right: _screenUtils.setWidgetWidth(10),
+        )
+      ],
     );
   }
 }

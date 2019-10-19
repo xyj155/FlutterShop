@@ -28,8 +28,8 @@
         android:name=".MyApplication"
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:label="sauce_app"
-        android:icon="@mipmap/ic_launcher">
+        android:label="@string/appName"
+        android:icon="@mipmap/app_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

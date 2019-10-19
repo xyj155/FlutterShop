@@ -50,7 +50,8 @@ dependencies:
   fluwx: ^1.0.4
   flutter_tags: ^0.4.3
   jmessage_flutter: ^0.2.0
-  jpush_flutter: ^0.0.8
+  jpush_flutter:
+    git: https://github.com/jpush/jpush-flutter-plugin.git
   tobias: ^1.1.0+1
   flutter_marquee:
     git: https://github.com/LiuC520/flutter_marquee.git

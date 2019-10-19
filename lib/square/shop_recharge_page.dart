@@ -261,17 +261,6 @@ class ShopRechargePageState extends State<ShopRechargePage> {
               )
             ],
           ),
-         new Positioned(child: new ClipRRect(
-           borderRadius: BorderRadius.all(Radius.circular(3)),
-           child: new Container(
-             padding: EdgeInsets.only(left: _screenUtils.setWidgetWidth(10),right: _screenUtils.setWidgetWidth(10),bottom: _screenUtils.setWidgetHeight(5),top: _screenUtils.setWidgetHeight(5)),
-             color: Color(0xff0e86ff),
-             child: new Text(
-               "获取详情",
-               style: new TextStyle(color: Colors.white,fontSize: _screenUtils.setFontSize(13)),
-             ),
-           ),
-         ),right: 10,bottom: 0,)
         ],
       ),
     );

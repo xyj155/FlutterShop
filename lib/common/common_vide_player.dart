@@ -5,8 +5,10 @@ import 'package:video_player/video_player.dart';
 
 class CommonVideoPlayer extends StatefulWidget {
   String videoUrl;
+  dynamic width;
+  dynamic height;
 
-  CommonVideoPlayer({this.videoUrl}) : super();
+  CommonVideoPlayer({this.videoUrl, this.height, this.width}) : super();
 
   @override
   _CommonVideoPlayerState createState() => _CommonVideoPlayerState();
@@ -19,6 +21,10 @@ class _CommonVideoPlayerState extends State<CommonVideoPlayer>
 
   @override
   void initState() {
+    print(widget.width);
+    print(widget.height);
+    int _width =   int.parse(widget.width);
+    int _height =   int.parse(widget.height);
     String _video_url = widget.videoUrl;
     videoPlayerController2 = VideoPlayerController.network(widget.videoUrl);
     chewieController = ChewieController(
@@ -27,7 +33,7 @@ class _CommonVideoPlayerState extends State<CommonVideoPlayer>
           ? new Duration(seconds: 5)
           : new Duration(seconds: 0),
       videoPlayerController: videoPlayerController2,
-      aspectRatio: 3 / 2,
+      aspectRatio: _width / _height,
       autoPlay: true,
       looping: true,
     );
@@ -52,7 +58,6 @@ class _CommonVideoPlayerState extends State<CommonVideoPlayer>
               controller: chewieController,
             ),
           ),
-
         ],
       ),
     );

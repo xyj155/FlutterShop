@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/home/home_post_local.dart';
 import 'package:sauce_app/home/home_post_observe.dart';
@@ -13,6 +14,7 @@ import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/gson/home_title_avatar_entity.dart';
 
 import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 
 class HomePage extends StatefulWidget {
@@ -93,16 +95,31 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
     );
   }
 
+  JPush _jPush = new JPush();
+
   @override
   void initState() {
     super.initState();
     getTitleAvatarData();
+    initJPushTag();
+  }
+
+  Future initJPushTag() async {
+    var spUtil = await SpUtil.getInstance();
+    _jPush.setup(
+        appKey: "a96bfaaaaa323f4e0e137fb0",
+        channel: "developer-default",
+        debug: true);
+    print("------------------------------------------");
+    await _jPush.setAlias(spUtil.getString("username"));
+    await _jPush.setTags(spUtil.getString("username"));
+    print("------------------------------------------");
   }
 
   Widget home_top_menu(BuildContext context) {
     return new Container(
       padding: EdgeInsets.only(top: 10),
-      height: screenUtil.setWidgetHeight(116),
+      height: screenUtil.setWidgetHeight(120),
       child: _items == null
           ? CupertinoActivityIndicator()
           : new ListView.builder(
@@ -114,7 +131,7 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
 
   getTitleAvatarData() async {
     var response = await HttpUtil().get(Api.HOME_TITLE_AVATAR);
-    print('========================='+response);
+    print('=========================' + response);
     final body = json.decode(response.toString());
     var code = HomeTitleAvatarEntity.fromJson(body);
     if (body != null)
@@ -138,7 +155,7 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
                   image: "${model.activePicture}",
                   fit: BoxFit.cover,
                   width: screenUtil.setWidgetWidth(56),
-                  height: screenUtil.setWidgetHeight(56),
+                  height: screenUtil.setWidgetHeight(58),
                 ),
               ),
               decoration: new BoxDecoration(
@@ -176,8 +193,6 @@ void _onListItemTap(
     Navigator.push(context, CustomRouteSlide(UserTopicPage()));
   }
 }
-
-
 
 class HomeTabList {
   String text;

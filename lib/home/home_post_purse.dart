@@ -42,7 +42,6 @@ class _HomePostPurseState extends State<HomePostPurse>
     with AutomaticKeepAliveClientMixin {
   ScreenUtils screenUtil = new ScreenUtils();
 
-  _HomePostPurseState();
 
   void getPage() async {
     SpUtil sp = await SpUtil.getInstance();
@@ -84,11 +83,12 @@ class _HomePostPurseState extends State<HomePostPurse>
 
   Future getPrePageData() async {
     SpUtil sp = await SpUtil.getInstance();
+    var userId = sp.getInt("id");
     int value = sp.getInt("page");
     _page = value == null ? 1 : value;
 
     var response = await HttpUtil.getInstance().get(Api.QUERY_POST_LIST,
-        data: {"page": _page.toString(), "userId": "1"});
+        data: {"page": _page.toString(), "userId": userId.toString()});
     var decode = json.decode(response.toString());
     var userPostItemEntity = UserPostItemEntity.fromJson(decode);
 
@@ -130,7 +130,6 @@ class _HomePostPurseState extends State<HomePostPurse>
             });
           });
         },
-        child: getBody(),
         footer: new ClassicalFooter(
             loadText: "",
             completeDuration: Duration(milliseconds: 500),
@@ -142,6 +141,8 @@ class _HomePostPurseState extends State<HomePostPurse>
             infoText: "",
             bgColor: Colors.white,
             infoColor: Colors.white),
+        child: getBody(),
+
       ),
     );
   }
@@ -190,6 +191,11 @@ class _HomePostPurseState extends State<HomePostPurse>
         ? "assert/imgs/detail_like_selectedx.png"
         : "assert/imgs/person_likex.png";
     int thumb_count = int.parse(index.thumbCount);
+    var _picture_list = [];
+    var pictures = index.pictures;
+    for (var o in pictures) {
+      _picture_list.add(o.postPictureUrl);
+    }
     return new GestureDetector(
       child: new Container(
         color: Colors.white,
@@ -202,8 +208,9 @@ class _HomePostPurseState extends State<HomePostPurse>
                     print("--------------------------------------");
                     print(index.user.toJson());
                     print("--------------------------------------");
-                    Navigator.push(context, new MaterialPageRoute(builder: (_){
-                      return new UserDetailPage(userId: index.user.id.toString());
+                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                      return new UserDetailPage(
+                          userId: index.user.id.toString());
                     }));
                   },
                   child: new Container(
@@ -285,18 +292,19 @@ class _HomePostPurseState extends State<HomePostPurse>
                           mainAxisSpacing: 6.0,
                           crossAxisSpacing: 6.0,
                         ),
-                        itemCount: index.pictures.length,
+                        itemCount: _picture_list.length,
                         itemBuilder: (BuildContext context, int indexs) {
                           return new GestureDetector(
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: FadeInImage.assetNetwork(
                                 placeholder: "assert/imgs/loading.gif",
-                                image: "${index.pictures[indexs]}" +
-                                    "?x-oss-process=style/image_press",
+                                image:
+                                    "${_picture_list[indexs]}" +
+                                        "?x-oss-process=style/image_press",
                                 fit: BoxFit.cover,
-                                width: 54,
-                                height: 54,
+                                width: screenUtil.setWidgetWidth(54),
+                                height: screenUtil.setWidgetWidth(54),
                               ),
                             ),
                             onTap: () {
@@ -305,7 +313,7 @@ class _HomePostPurseState extends State<HomePostPurse>
                                 MaterialPageRoute(
                                     builder: (context) => PhotoGalleryPage(
                                           index: indexs,
-                                          photoList: index.pictures,
+                                          photoList: _picture_list,
                                         )),
                               );
                             },
@@ -314,10 +322,16 @@ class _HomePostPurseState extends State<HomePostPurse>
                       )
                     : new GestureDetector(
                         onTap: () {
+                          print("-------------------------------------------");
+                          print(index.pictures[0].height);
+                          print(index.pictures[0].weight);
+                          print("-------------------------------------------");
                           Navigator.push(context,
                               new MaterialPageRoute(builder: (_) {
                             return new CommonVideoPlayer(
-                              videoUrl: index.pictures[0],
+                              videoUrl: index.pictures[0].postPictureUrl,
+                              height: index.pictures[0].height,
+                              width: index.pictures[0].weight,
                             );
                           }));
                         },
@@ -326,11 +340,11 @@ class _HomePostPurseState extends State<HomePostPurse>
                             new Container(
                               padding: EdgeInsets.only(
                                   left: screenUtil.setWidgetHeight(20)),
-                              alignment: Alignment.centerLeft,
+                              alignment: Alignment.center,
                               height: screenUtil.setWidgetHeight(200),
                               child: FadeInImage.assetNetwork(
                                 placeholder: "assert/imgs/loading.gif",
-                                image: "${index.pictures[0]}" +
+                                image: "${index.pictures[0].postPictureUrl}" +
                                     "?x-oss-process=video/snapshot,t_5000,f_jpg",
                                 fit: BoxFit.cover,
                               ),

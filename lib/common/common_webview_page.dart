@@ -54,7 +54,7 @@ class _CommonWebViewPageState extends State<CommonWebViewPage>
   Widget build(BuildContext context) {
     return new WebviewScaffold(
       appBar: BackUtil.NavigationBack(context, _title),
-      url: 'http://47.98.122.133/JustLikeThis/form.html',
+      url: widget.url,
       withZoom: false,
       scrollBar: true,
       clearCache: true,

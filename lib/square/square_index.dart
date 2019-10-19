@@ -730,7 +730,11 @@ class SquarePageState extends State<SquarePageIndex>
             ),
           ],
         ),
-        onTap: () {},
+        onTap: () {
+          Navigator.push(context, new MaterialPageRoute(builder: (_){
+            return new UserDetailPage(userId: model.id.toString(),);
+          }));
+        },
       ),
       margin: EdgeInsets.all(10),
     );

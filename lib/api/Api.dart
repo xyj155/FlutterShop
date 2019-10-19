@@ -38,5 +38,8 @@
   static final String QUERY_VIEW_USER_DETAIL_BY_ID = "JustLikeThis/public/index.php/api/mobile/queryuserdetailbyuserId";
   static final String SUBMIT_USER_TEXT_POST = "JustLikeThis/public/index.php/api/mobile/submitusertextpostbyuserid";
   static final String SUBMIT_USER_PICTURE_POST = "JustLikeThis/public/index.php/api/mobile/uploaduserpicturebyuserid";
+  static final String SUBMIT_USER_VIDEO_POST = "JustLikeThis/public/index.php/api/mobile/submituservideopostbyuserid";
+  static final String QUERY_LOCATION_USER_POST = "JustLikeThis/public/index.php/api/mobile/querynearuserpostbyuserid";
+  static final String SUBMIT_POST_COMMENT_BY_USER_ID = "JustLikeThis/public/index.php/api/mobile/submitpostcommentbyuserid";
   static final String BASE_URL = "http://47.98.122.133/";
 }

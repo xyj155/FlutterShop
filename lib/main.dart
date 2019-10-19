@@ -19,6 +19,7 @@ import 'common/index.dart';
 import 'common/user_detail_page.dart';
 import 'event_bus.dart';
 import 'home/home_post_item_detail.dart';
+import 'home/post_topic_page.dart';
 import 'login/invite_code_input_page.dart';
 import 'login/login.dart';
 import 'package:platform/platform.dart';
@@ -53,6 +54,8 @@ void startupJpush() async {
       appKey: "a96bfaaaaa323f4e0e137fb0",
       channel: "developer-default",
       debug: true);
+
+
   print("初始化jpush成功");
   jmessage.addReceiveMessageListener((message) {
     eventBus.fire(ReceiveMessage(message: 'new'));
@@ -94,7 +97,7 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: PostVideoPage(), //启动MainPage
+        home: IndexPage(), //启动MainPage
       ),
     );
   }
