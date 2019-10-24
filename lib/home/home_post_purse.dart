@@ -26,12 +26,9 @@ import 'package:sauce_app/widget/Post_detail.dart';
 import 'package:share/share.dart';
 
 import '../common/common_vide_player.dart';
+import 'post_topic_page.dart';
 
-void main() {
-  runApp(new MaterialApp(
-    home: new HomePostPurse(),
-  ));
-}
+
 
 class HomePostPurse extends StatefulWidget {
   @override
@@ -320,7 +317,7 @@ class _HomePostPurseState extends State<HomePostPurse>
                           );
                         },
                       )
-                    : new GestureDetector(
+                    : index.pictures.length==0?new Container():new GestureDetector(
                         onTap: () {
                           print("-------------------------------------------");
                           print(index.pictures[0].height);
@@ -363,6 +360,32 @@ class _HomePostPurseState extends State<HomePostPurse>
                           ],
                         ),
                       )),
+            new GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: (){
+                Navigator.push(context, new MaterialPageRoute(builder: (_){
+                  return new TopicPostPage(topicPicture: index.topicPicUrl,
+                  topicId: index.topicId.toString(),topicName: index.topicName,);
+                }));
+              },
+              child: new Container(
+                margin: EdgeInsets.only(left: screenUtil.setWidgetWidth(15),
+                  top: screenUtil.setWidgetHeight(6),),
+                alignment: Alignment.centerLeft,
+                child:   new ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  child: new Container(
+                    padding: EdgeInsets.only(left: screenUtil.setWidgetWidth(4),
+                        right:screenUtil.setWidgetWidth(4),top: screenUtil.setWidgetHeight(2), bottom: screenUtil.setWidgetHeight(2)),
+                    color: Color(0xff4ddfa9),
+                    child: new Text("${index.topicName} | # ",style: new TextStyle(
+                      color: Colors.white,
+
+                    ),),
+                  ),
+                ),
+              ),
+            ),
             new Row(
               children: <Widget>[
                 new UserPostDetailList(
@@ -418,7 +441,7 @@ class _HomePostPurseState extends State<HomePostPurse>
         Navigator.push(
             context,
             CustomRouteSlide(
-                UserPostDetailItemPage(userId: "${index.id.toString()}")));
+                UserPostDetailItemPage(postId: "${index.id.toString()}")));
       },
     );
   }
@@ -428,7 +451,7 @@ class _HomePostPurseState extends State<HomePostPurse>
     var id = spUtil.getInt("id");
 
     var reponse = await HttpUtil.getInstance().post(Api.USER_UPDATE_BY_POST_ID,
-        data: {"userId": id.toString(), "postId": postId.id.toString()});
+        data: {"userId": id.toString(), "postId": postId.id.toString(),"postUserId":postId.user.id.toString()});
     var decode = json.decode(reponse);
     var baseResponseEntity = BaseResponseEntity.fromJson(decode);
     if (baseResponseEntity.code != 200) {

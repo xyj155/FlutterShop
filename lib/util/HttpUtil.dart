@@ -68,7 +68,7 @@ class HttpUtil {
       response = await dio.get(url,
           queryParameters: data, options: options, cancelToken: cancelToken);
     } on DioError catch (e) {
-      ToastUtil.showErrorToast("请求出错，请重试！");
+
       print('get error---------$e');
       formatError(e);
     }
@@ -86,7 +86,7 @@ class HttpUtil {
       response = await dio.post(url,
           queryParameters: data, options: options, cancelToken: cancelToken);
     } on DioError catch (e) {
-      ToastUtil.showErrorToast("请求出错，请重试！");
+
       print('post error---------$e');
       formatError(e);
     }
@@ -129,7 +129,6 @@ class HttpUtil {
       ToastUtil.showCommonToast("响应超时");
     } else if (e.type == DioErrorType.RESPONSE) {
       // When the server response, but with a incorrect status, such as 404, 503...
-      print("出现异常");
       ToastUtil.showCommonToast("出现异常");
     } else if (e.type == DioErrorType.CANCEL) {
       // When the request is cancelled, dio will throw a error with this type.

@@ -5,7 +5,7 @@ typedef InputCompleteCallback(String content);
 
 class CellInput extends StatefulWidget {
   int cellCount = 6;
-  InputType inputType = InputType.number;
+  InputType inputType = InputType.text;
   InputCompleteCallback inputCompleteCallback;
   bool autofocus = true;
   BorderRadiusGeometry borderRadius;

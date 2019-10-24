@@ -1,10 +1,14 @@
 //import 'package:amap_base_map/amap_base_map.dart';
 
+import 'dart:convert';
 
 import 'package:amap_location/amap_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
+import 'package:flutter_getuuid/flutter_getuuid.dart';
+import 'package:sauce_app/api/Api.dart';
+import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/home/home_index.dart';
 import 'package:sauce_app/post/post_picture_page.dart';
 import 'package:sauce_app/post/post_text_page.dart';
@@ -12,6 +16,7 @@ import 'package:sauce_app/square/square_user_snack_order.dart';
 import 'package:sauce_app/user/user_address_page.dart';
 import 'package:sauce_app/user/user_detail_center.dart';
 import 'package:sauce_app/user/user_index.dart';
+import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/JMessageUtil.dart';
 import 'MainPage.dart';
 import 'common/common_webview_page.dart';
@@ -29,8 +34,10 @@ import 'login/third_social_login.dart';
 import 'login/user_register_information.dart';
 import 'login/user_register_owner_information.dart';
 import 'message/conversation_list.dart';
+import 'message/message_index.dart';
+import 'message/user_message_replay_thumb.dart';
 import 'post/post_video_page.dart';
-import 'square/part_time_job_detail_page.dart';
+import 'dart:io';
 import 'square/school_activity_page.dart';
 import 'square/shop_recharge_page.dart';
 import 'square/square_little_shop.dart';
@@ -54,7 +61,6 @@ void startupJpush() async {
       appKey: "a96bfaaaaa323f4e0e137fb0",
       channel: "developer-default",
       debug: true);
-
 
   print("初始化jpush成功");
   jmessage.addReceiveMessageListener((message) {
@@ -97,8 +103,10 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: IndexPage(), //启动MainPage
+        home: UserAddressPage(), //启动MainPage
       ),
     );
   }
+
+
 }

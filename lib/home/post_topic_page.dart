@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
+
 const APPBAE_SCROLL_OFFSET = 100;
+
 class TopicPostPage extends StatefulWidget {
-  TopicPostPage({Key key, String topicId}) : super();
+  String topicId;
+  String topicPicture;String topicName;
+
+  TopicPostPage({Key key, this.topicId, this.topicPicture, this.topicName}) : super();
 
   @override
   _TopicPostPageState createState() => _TopicPostPageState();
@@ -23,6 +28,7 @@ class _TopicPostPageState extends State<TopicPostPage>
   void dispose() {
     super.dispose();
   }
+
   ScreenUtils _screenUtils = new ScreenUtils();
 
   double alphaAppBar = 0;
@@ -39,6 +45,7 @@ class _TopicPostPageState extends State<TopicPostPage>
     });
     print(alphaAppBar);
   }
+
   @override
   Widget build(BuildContext context) {
     _screenUtils.initUtil(context);
@@ -54,8 +61,7 @@ class _TopicPostPageState extends State<TopicPostPage>
                   context: context,
                   child: NotificationListener(
                       onNotification: (scrollNotification) {
-                        if (scrollNotification
-                        is ScrollUpdateNotification) {
+                        if (scrollNotification is ScrollUpdateNotification) {
                           _onScroll(scrollNotification.metrics.pixels);
                         }
                         return false;
@@ -68,13 +74,12 @@ class _TopicPostPageState extends State<TopicPostPage>
                               new Column(
                                 children: <Widget>[
                                   new Container(
-                                      height: _screenUtils
-                                          .setWidgetHeight(160),
+                                      height: _screenUtils.setWidgetHeight(160),
                                       color: Colors.black54,
                                       child: Stack(
                                         children: [
                                           Image.network(
-                                            "https://user-picture-store.oss-cn-hangzhou.aliyuncs.com/e45fb920-cea0-11e9-dc67-f1d1e9dcbdef.png",
+                                            widget.topicPicture,
                                             width: MediaQuery.of(context)
                                                 .size
                                                 .width,
@@ -86,10 +91,9 @@ class _TopicPostPageState extends State<TopicPostPage>
                                             filter: new ImageFilter.blur(
                                                 sigmaX: 8, sigmaY: 8),
                                             child: new Container(
-                                              color: Colors.white
-                                                  .withOpacity(0.2),
-                                              width:
-                                              MediaQuery.of(context)
+                                              color:
+                                                  Colors.white.withOpacity(0.2),
+                                              width: MediaQuery.of(context)
                                                   .size
                                                   .width,
                                               height: _screenUtils
@@ -98,23 +102,20 @@ class _TopicPostPageState extends State<TopicPostPage>
                                           ),
                                           new Container(
                                             padding: EdgeInsets.only(
-                                                top: ScreenUtil
-                                                    .statusBarHeight),
+                                                top:
+                                                    ScreenUtil.statusBarHeight),
                                             child: new AppBar(
                                               leading: new IconButton(
-                                                  icon: new Icon(Icons
-                                                      .arrow_back_ios),
+                                                  icon: new Icon(
+                                                      Icons.arrow_back_ios),
                                                   onPressed: () {
-                                                    Navigator.pop(
-                                                        context);
+                                                    Navigator.pop(context);
                                                   }),
                                               elevation: 0.5,
-                                              iconTheme:
-                                              new IconThemeData(
-                                                  color:
-                                                  Colors.white),
+                                              iconTheme: new IconThemeData(
+                                                  color: Colors.white),
                                               backgroundColor:
-                                              Colors.transparent,
+                                                  Colors.transparent,
                                             ),
                                           ),
                                           new Positioned(
@@ -123,25 +124,19 @@ class _TopicPostPageState extends State<TopicPostPage>
                                               bottom: 10,
                                               child: new Row(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                                mainAxisSize:
-                                                MainAxisSize.min,
+                                                    MainAxisAlignment.end,
+                                                mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .end,
+                                                    CrossAxisAlignment.end,
                                                 children: <Widget>[
                                                   new Text(
-                                                   "话题名称",
+                                                    widget.topicName,
                                                     style: new TextStyle(
-                                                        color: Colors
-                                                            .white,
+                                                        color: Colors.white,
                                                         fontWeight:
-                                                        FontWeight
-                                                            .bold,
-                                                        fontSize:
-                                                        _screenUtils
-                                                            .setFontSize(
-                                                            26)),
+                                                            FontWeight.bold,
+                                                        fontSize: _screenUtils
+                                                            .setFontSize(26)),
                                                   ),
                                                 ],
                                               ))
@@ -149,12 +144,9 @@ class _TopicPostPageState extends State<TopicPostPage>
                                       )),
                                   new Container(
                                     padding: EdgeInsets.only(
-                                        left: _screenUtils
-                                            .setWidgetWidth(110),
-                                        top: _screenUtils
-                                            .setWidgetHeight(15)),
-                                    height:
-                                    _screenUtils.setWidgetHeight(80),
+                                        left: _screenUtils.setWidgetWidth(110),
+                                        top: _screenUtils.setWidgetHeight(15)),
+                                    height: _screenUtils.setWidgetHeight(80),
                                     color: Colors.white,
                                     child: new Row(
                                       children: <Widget>[
@@ -166,8 +158,7 @@ class _TopicPostPageState extends State<TopicPostPage>
                                                   fontSize: _screenUtils
                                                       .setFontSize(23),
                                                   color: Colors.black,
-                                                  fontWeight:
-                                                  FontWeight.bold),
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                             new Text(
                                               "已加入",
@@ -176,28 +167,42 @@ class _TopicPostPageState extends State<TopicPostPage>
                                                       .setFontSize(13),
                                                   color: Colors.grey,
                                                   fontWeight:
-                                                  FontWeight.normal),
+                                                      FontWeight.normal),
                                             )
                                           ],
                                         ),
                                         new Container(
-                                          width: _screenUtils
-                                              .setWidgetWidth(15),
+                                          width:
+                                              _screenUtils.setWidgetWidth(15),
                                         ),
-                                        new Expanded(child: new Container(
-                                          padding: EdgeInsets.only(right: _screenUtils.setWidgetWidth(15)),
+                                        new Expanded(
+                                            child: new Container(
+                                          padding: EdgeInsets.only(
+                                              right: _screenUtils
+                                                  .setWidgetWidth(15)),
                                           alignment: Alignment.centerRight,
                                           child: new ClipRRect(
-                                            borderRadius: BorderRadius.all(Radius.circular(_screenUtils.setWidgetWidth(35))),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(_screenUtils
+                                                    .setWidgetWidth(35))),
                                             child: new Container(
-                                              padding: EdgeInsets.only(left: _screenUtils.setWidgetWidth(15),
-                                              right: _screenUtils.setWidgetWidth(15),
-                                              bottom: _screenUtils.setWidgetHeight(5),top: _screenUtils.setWidgetHeight(5)),
+                                              padding: EdgeInsets.only(
+                                                  left: _screenUtils
+                                                      .setWidgetWidth(15),
+                                                  right: _screenUtils
+                                                      .setWidgetWidth(15),
+                                                  bottom: _screenUtils
+                                                      .setWidgetHeight(5),
+                                                  top: _screenUtils
+                                                      .setWidgetHeight(5)),
                                               color: Color(0xff4ddfa9),
-                                              child: new Text("+ 加入",style: new TextStyle(
-                                                color: Colors.white,
-                                                fontSize: _screenUtils.setFontSize(15)
-                                              ),),
+                                              child: new Text(
+                                                "+ 加入",
+                                                style: new TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: _screenUtils
+                                                        .setFontSize(15)),
+                                              ),
                                             ),
                                           ),
                                         ))
@@ -211,11 +216,9 @@ class _TopicPostPageState extends State<TopicPostPage>
                                   borderRadius: BorderRadius.circular(
                                       _screenUtils.setWidgetHeight(55)),
                                   child: new Image.network(
-                                    "https://user-picture-store.oss-cn-hangzhou.aliyuncs.com/e45fb920-cea0-11e9-dc67-f1d1e9dcbdef.png",
-                                    width:
-                                    _screenUtils.setWidgetHeight(76),
-                                    height:
-                                    _screenUtils.setWidgetHeight(76),
+                                    widget.topicPicture,
+                                    width: _screenUtils.setWidgetHeight(76),
+                                    height: _screenUtils.setWidgetHeight(76),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -234,32 +237,26 @@ class _TopicPostPageState extends State<TopicPostPage>
                                 bottom: _screenUtils.setWidgetHeight(14),
                                 left: _screenUtils.setWidgetWidth(14)),
                             child: new Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 new Container(
                                   padding: EdgeInsets.only(
-                                      top: _screenUtils
-                                          .setWidgetHeight(12),
-                                      bottom: _screenUtils
-                                          .setWidgetHeight(9)),
+                                      top: _screenUtils.setWidgetHeight(12),
+                                      bottom: _screenUtils.setWidgetHeight(9)),
                                   child: new Text(
                                     "话题简介",
                                     style: new TextStyle(
                                         color: Colors.black,
-                                        fontSize:
-                                        _screenUtils.setFontSize(19),
+                                        fontSize: _screenUtils.setFontSize(19),
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 new Container(
                                   padding: EdgeInsets.only(
-                                      top:
-                                      _screenUtils.setWidgetHeight(4),
-                                      bottom: _screenUtils
-                                          .setWidgetHeight(5)),
+                                      top: _screenUtils.setWidgetHeight(4),
+                                      bottom: _screenUtils.setWidgetHeight(5)),
                                   child: new Text(
-                                   "",
+                                    "",
                                     style: new TextStyle(
                                         color: Colors.grey,
                                         fontWeight: FontWeight.bold),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/gson/home_user_topic_entity.dart';
+import 'package:sauce_app/home/post_topic_page.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 
@@ -115,49 +116,43 @@ class HomeTopicPage extends State<StatefulWidget> {
       ),
       itemCount: articles.length,
       itemBuilder: (BuildContext context, int index) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: FadeInImage.assetNetwork(
-                placeholder: "assert/imgs/loading.gif",
-                image: articles[index].topicPicUrl,
-                fit: BoxFit.cover,
-                width: 64,
-                height: 64,
+        return new GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            Navigator.push(context, new MaterialPageRoute(builder: (_) {
+              return new TopicPostPage(
+                topicId: articles[index].id.toString(),
+                topicName: articles[index].topicName,
+                topicPicture: articles[index].topicPicUrl.toString(),
+              );
+            }));
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: FadeInImage.assetNetwork(
+                  placeholder: "assert/imgs/loading.gif",
+                  image: articles[index].topicPicUrl,
+                  fit: BoxFit.cover,
+                  width: 64,
+                  height: 64,
+                ),
               ),
-            ),
 //            new Image.network(articles[index].topicPicUrl,width: 55,height: 55,),
-            new Text(
-              articles[index].topicName,
-              style: new TextStyle(color: Colors.black),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            )
-          ],
+              new Text(
+                articles[index].topicName,
+                style: new TextStyle(color: Colors.black),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
+            ],
+          ),
         );
       },
     );
-//    return Wrap(
-//      spacing: 10.0,
-//      direction: Axis.horizontal, //方向
-//      alignment: WrapAlignment.start, //内容排序方式
-//      children: List<Widget>.generate(
-//        articles.length,
-//        (int index) {
-//          return Column(
-//            children: <Widget>[
-//              new Image.network(articles[index].topicPicUrl),
-//              new Text(articles[index].topicName,style:new TextStyle(
-//                color:Colors.black
-//              ))
-//            ],
-//          );
-//        },
-//      ).toList(),
-//    );
   }
 
   ///

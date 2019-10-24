@@ -182,31 +182,31 @@ class ThirdSocialLoginState extends State<ThirdSocialLoginPage> {
               new Container(
                 child: new Expanded(
                     child: new GestureDetector(
-                  child: new Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new Text(
-                        "使用手机号码登录或注册",
-                        style: new TextStyle(
-                            fontSize: screenUtil.setFontSize(15),
-                            decoration: TextDecoration.none,
-                            color: Color(0xff576189),
-                            fontWeight: FontWeight.normal),
+                      child: new Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          new Text(
+                            "使用手机号码登录或注册",
+                            style: new TextStyle(
+                                fontSize: screenUtil.setFontSize(15),
+                                decoration: TextDecoration.none,
+                                color: Color(0xff576189),
+                                fontWeight: FontWeight.normal),
+                          ),
+                          new Image.asset(
+                            "assert/imgs/login_arrow_rightx.png",
+                            width: screenUtil.setWidgetWidth(17),
+                            height: screenUtil.setWidgetHeight(13),
+                          )
+                        ],
                       ),
-                      new Image.asset(
-                        "assert/imgs/login_arrow_rightx.png",
-                        width: screenUtil.setWidgetWidth(17),
-                        height: screenUtil.setWidgetHeight(13),
-                      )
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        new CustomRouteSlide(new LoginPage()),
-                        (route) => route == null);
-                  },
-                )),
+                      onTap: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            new CustomRouteSlide(new LoginPage()),
+                                (route) => route == null);
+                      },
+                    )),
               )
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +233,7 @@ class ThirdSocialLoginState extends State<ThirdSocialLoginPage> {
               Navigator.pushAndRemoveUntil(
                   context,
                   new CustomRouteSlide(new LoginPage()),
-                  (route) => route == null);
+                      (route) => route == null);
             },
           ),
         )

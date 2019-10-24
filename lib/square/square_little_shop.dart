@@ -26,8 +26,6 @@ import 'package:sauce_app/widget/loading_dialog.dart';
 import 'package:tobias/tobias.dart' as tobias;
 import 'package:flutter/material.dart';
 
-import 'user_shop_car_list_page.dart';
-
 class LittleShopPage extends StatefulWidget {
   @override
   _LittleShopPageState createState() => _LittleShopPageState();
@@ -41,7 +39,7 @@ class _LittleShopPageState extends State<LittleShopPage> {
   @override
   void initState() {
     super.initState();
-
+    getUserShopCar();
     getCommodityKindItem();
   }
 
@@ -54,11 +52,20 @@ class _LittleShopPageState extends State<LittleShopPage> {
   bool isRequestShopCar = true;
 
   @override
+  void deactivate() {
+    super.deactivate();
+    print("------------------------------------------");
+//    if (isSet) {
+    getUserShopCar();
+//    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     screenUtils.initUtil(context);
-    if (isSet) {
-      getUserShopCar();
-    }
+//    if (isSet) {
+//
+//    }
     EventBusUtil.getDefault().register((String i) {
       if (i == "add") {
         if (isRequestShopCar) {
@@ -67,6 +74,13 @@ class _LittleShopPageState extends State<LittleShopPage> {
         }
       }
     });
+
+    void NavigatorGetUserShopCarList() {
+      Navigator.push(context, new MaterialPageRoute(builder: (_) {
+        return new UserShopCarListPage();
+      }));
+    }
+
     return Scaffold(
         appBar: BackUtil.NavigationBack(context, "小卖部"),
         body: new Stack(
@@ -79,6 +93,7 @@ class _LittleShopPageState extends State<LittleShopPage> {
                     child: Container(
                       color: Colors.white,
                       child: new ListView.builder(
+                          physics: new BouncingScrollPhysics(),
                           itemCount: _commodity_kind.length,
                           itemBuilder: (BuildContext context, int position) {
                             return getCommodityKind(position);
@@ -151,7 +166,7 @@ class _LittleShopPageState extends State<LittleShopPage> {
                     decoration: BoxDecoration(
                         color: Color(0xff434343),
                         border:
-                        Border.all(color: Color(0xff434343), width: 1.0),
+                            Border.all(color: Color(0xff434343), width: 1.0),
                         borderRadius: BorderRadius.circular(60)),
                     width: MediaQuery.of(context).size.width -
                         screenUtils.setWidgetWidth(60),
@@ -176,10 +191,7 @@ class _LittleShopPageState extends State<LittleShopPage> {
                             left: screenUtils.setWidgetWidth(20)),
                         child: new GestureDetector(
                           onTap: () {
-                            Navigator.push(context,
-                                new MaterialPageRoute(builder: (_) {
-                                  return new UserShopCarListPage();
-                                }));
+                            NavigatorGetUserShopCarList();
                           },
                           child: new ClipRRect(
                             child: new Image.asset(
@@ -192,25 +204,30 @@ class _LittleShopPageState extends State<LittleShopPage> {
                           ),
                         ),
                       ),
-                     goodsCount==0?new Container():new Positioned(
-                       child: new ClipRRect(
-                         borderRadius: BorderRadius.all(Radius.circular(14)),
-                         child: new Container(
-                           alignment: Alignment.center,
-                           width: screenUtils.setWidgetWidth(20),
-                           height: screenUtils.setWidgetHeight(20),
-                           color: Colors.redAccent,
-                           child: new Text(
-                             goodsCount > 99 ? "99" : goodsCount.toString(),
-                             style: new TextStyle(
-                                 color: Colors.white,
-                                 fontSize: screenUtils.setFontSize(14)),
-                           ),
-                         ),
-                       ),
-                       right: screenUtils.setWidgetWidth(2),
-                       top: screenUtils.setWidgetHeight(2),
-                     ) ,
+                      goodsCount == 0
+                          ? new Container()
+                          : new Positioned(
+                              child: new ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(14)),
+                                child: new Container(
+                                  alignment: Alignment.center,
+                                  width: screenUtils.setWidgetWidth(20),
+                                  height: screenUtils.setWidgetHeight(20),
+                                  color: Colors.redAccent,
+                                  child: new Text(
+                                    goodsCount > 99
+                                        ? "99"
+                                        : goodsCount.toString(),
+                                    style: new TextStyle(
+                                        color: Colors.white,
+                                        fontSize: screenUtils.setFontSize(14)),
+                                  ),
+                                ),
+                              ),
+                              right: screenUtils.setWidgetWidth(2),
+                              top: screenUtils.setWidgetHeight(2),
+                            ),
                     ],
                   ),
                   new Positioned(
@@ -218,8 +235,8 @@ class _LittleShopPageState extends State<LittleShopPage> {
                       onTap: () {
                         Navigator.push(context,
                             new MaterialPageRoute(builder: (_) {
-                              return new SquareUserSnackOrderPage();
-                            }));
+                          return new SquareUserSnackOrderPage();
+                        }));
                       },
                       child: new Container(
                         height: screenUtils.setWidgetHeight(60),
@@ -476,11 +493,13 @@ class _LittleShopPageState extends State<LittleShopPage> {
       print("-----------------------");
       var decode = json.decode(response.toString());
       var userShopCarEntity = UserShopCarEntity.fromJson(decode);
-      if(userShopCarEntity.code==200){
+      if (userShopCarEntity.code == 200) {
         var price = userShopCarEntity.data.price;
         var count = userShopCarEntity.data.shopCarCount;
-        goodsPrice = price;
-        goodsCount = count;
+        setState(() {
+          goodsPrice = price;
+          goodsCount = count;
+        });
       }
     } else {
       getUserShopCar();
@@ -727,5 +746,255 @@ class BottomDialogState extends State<BottomDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+}
+
+class UserShopCarListPage extends StatefulWidget {
+  @override
+  UserShopCarListPageState createState() => new UserShopCarListPageState();
+}
+
+class UserShopCarListPageState extends State<UserShopCarListPage> {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: BackUtil.NavigationBack(context, "用户购物车"),
+      body: new ListView.builder(
+        physics: new BouncingScrollPhysics(),
+        itemBuilder: (BuildContext content, int postion) {
+          return userShopCarListItem(context, _user_shop_list[postion]);
+        },
+        itemCount: _user_shop_list.length,
+      ),
+    );
+  }
+
+  Widget userShopCarListItem(
+      BuildContext context, UserShopCarDataGood userShopCarDataGood) {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.all(screenUtils.setWidgetHeight(7)),
+      margin: EdgeInsets.only(bottom: screenUtils.setWidgetHeight(1)),
+      child: new Stack(
+        alignment: Alignment.bottomRight,
+        children: <Widget>[
+          new Row(
+            children: <Widget>[
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: FadeInImage.assetNetwork(
+                    placeholder: "assert/imgs/loading.gif",
+                    image: userShopCarDataGood.foodPicture,
+                    fit: BoxFit.cover,
+                    width: screenUtils.setWidgetWidth(74),
+                    height: screenUtils.setFontSize(74),
+                  )),
+              new Expanded(
+                  child: new Container(
+                padding: EdgeInsets.only(left: screenUtils.setWidgetHeight(6)),
+                alignment: Alignment.centerLeft,
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    new Container(
+                      padding: EdgeInsets.only(
+                          top: screenUtils.setWidgetHeight(6),
+                          bottom: screenUtils.setWidgetHeight(6),
+                          right: screenUtils.setWidgetHeight(6)),
+                      child: new Text(
+                        userShopCarDataGood.foodName,
+                        style: new TextStyle(
+                            fontSize: screenUtils.setFontSize(18),
+                            fontWeight: FontWeight.w400,
+                            decoration: TextDecoration.none,
+                            color: Colors.black),
+                      ),
+                    ),
+                    new Row(
+                      children: <Widget>[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(2),
+                          child: new Container(
+                            padding: EdgeInsets.all(1.5),
+                            color: Color(0xffffe300),
+                            child: new Text(userShopCarDataGood.foodsSize,
+                                style: new TextStyle(
+                                    fontSize: screenUtils.setFontSize(12),
+                                    decoration: TextDecoration.none,
+                                    color: Colors.white)),
+                          ),
+                        ),
+                        new Container(
+                          margin: EdgeInsets.only(
+                              left: screenUtils.setWidgetWidth(5)),
+                          child: new Text(
+                            "口味：${userShopCarDataGood.tasty.foodsTaste}",
+                            style: new TextStyle(color: Colors.grey),
+                          ),
+                        )
+                      ],
+                    ),
+                    new Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding:
+                          EdgeInsets.only(top: screenUtils.setWidgetHeight(6)),
+                      child: new Row(
+                        children: <Widget>[
+                          new RichText(
+                              text: new TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: '￥',
+                                style: TextStyle(
+                                    fontSize: screenUtils.setFontSize(13),
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w200)),
+                            TextSpan(
+                                text: userShopCarDataGood.foodsPrice.substring(
+                                    0,
+                                    userShopCarDataGood.foodsPrice
+                                        .indexOf(".")),
+                                style: TextStyle(
+                                    fontSize: screenUtils.setFontSize(20),
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500)),
+                            TextSpan(
+                                text: userShopCarDataGood.foodsPrice.substring(
+                                    userShopCarDataGood.foodsPrice
+                                        .indexOf(".")),
+                                style: TextStyle(
+                                    fontSize: screenUtils.setFontSize(17),
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600)),
+                          ])),
+                          new Expanded(
+                            child: new Container(
+                              alignment: Alignment.centerRight,
+                              child: new Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  new GestureDetector(
+                                    child: new Image.asset(
+                                      "assert/imgs/img_shop_car_reduce.png",
+                                      width: screenUtils.setWidgetWidth(22),
+                                      height: screenUtils.setWidgetHeight(22),
+                                    ),
+                                    onTap: () {
+                                      shopCarManagerByUserId(
+                                          0,
+                                          userShopCarDataGood.tasty.id
+                                              .toString());
+                                    },
+                                  ),
+                                  new Container(
+                                      alignment: Alignment.center,
+                                      width: screenUtils.setWidgetWidth(20),
+                                      height: screenUtils.setWidgetHeight(24),
+                                      child: new Text(
+                                        userShopCarDataGood.tasty.count
+                                            .toString(),
+                                        style: new TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize:
+                                                screenUtils.setFontSize(14)),
+                                      )),
+                                  new GestureDetector(
+                                    onTap: () {
+                                      shopCarManagerByUserId(
+                                          1,
+                                          userShopCarDataGood.tasty.id
+                                              .toString());
+                                    },
+                                    child: new Image.asset(
+                                      "assert/imgs/ic_shopcar.png",
+                                      width: screenUtils.setWidgetWidth(22),
+                                      height: screenUtils.setWidgetHeight(22),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ))
+            ],
+          ),
+          new Container(
+            margin: EdgeInsets.only(bottom: screenUtils.setWidgetHeight(2)),
+            child: new Container(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future shopCarManagerByUserId(int type, String snackId) async {
+    var instance = await SpUtil.getInstance();
+    var response = await HttpUtil.getInstance()
+        .post(Api.SHOP_CAR_MANAGER_BY_USERID, data: {
+      "snackId": snackId,
+      "type": type.toString(),
+      "userId": instance.getInt("id").toString()
+    });
+    print(response.toString());
+    var decode = json.decode(response.toString());
+    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
+    queryUserShopCarByUserId();
+  }
+
+  List<UserShopCarDataGood> _user_shop_list = new List();
+
+  Future queryUserShopCarByUserId() async {
+    var instance = await SpUtil.getInstance();
+    var response = await HttpUtil.getInstance().get(
+        Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
+        data: {"userId": instance.getInt("id").toString()});
+    if (response != null) {
+      var decode = json.decode(response.toString());
+      var userShopCarEntity = UserShopCarEntity.fromJson(decode);
+      var price = userShopCarEntity.data.price;
+      var count = userShopCarEntity.data.shopCarCount;
+      setState(() {
+        _user_shop_list = userShopCarEntity.data.goods;
+      });
+    } else {
+      queryUserShopCarByUserId();
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    queryUserShopCarByUserId();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+//  @override
+//  void deactivate(){
+//
+//  }
+
+  @override
+  void didUpdateWidget(UserShopCarListPage oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
   }
 }

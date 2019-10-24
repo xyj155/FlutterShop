@@ -49,13 +49,19 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
     return DefaultTabController(
       length: myTabs.length,
       child: Scaffold(
-        body: NestedScrollView(
+        body: _items==null?new Container(
+          child: new Center(
+            child: new CupertinoActivityIndicator(
+              radius: screenUtil.setWidgetHeight(10),
+            ),
+          ),
+        ):NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               _widget_menu_card(contexts),
               SliverOverlapAbsorber(
                 handle:
-                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 child: SliverAppBar(
                   elevation: 0,
                   backgroundColor: Colors.white,
@@ -110,10 +116,6 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
         appKey: "a96bfaaaaa323f4e0e137fb0",
         channel: "developer-default",
         debug: true);
-    print("------------------------------------------");
-    await _jPush.setAlias(spUtil.getString("username"));
-    await _jPush.setTags(spUtil.getString("username"));
-    print("------------------------------------------");
   }
 
   Widget home_top_menu(BuildContext context) {
@@ -173,7 +175,7 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
           ],
         ),
         onTap: () {
-          _onListItemTap(context, index);
+          _onListItemTap(context, index, model.id.toString());
         },
       ),
       margin: EdgeInsets.all(10),
@@ -188,9 +190,16 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
 void _onListItemTap(
   BuildContext context,
   int index,
+  String titleId,
 ) {
   if (index == 0) {
     Navigator.push(context, CustomRouteSlide(UserTopicPage()));
+  } else {
+    Navigator.push(
+        context,
+        CustomRouteSlide(new HomeTitlePage(
+          titleId: titleId,
+        )));
   }
 }
 
@@ -199,4 +208,31 @@ class HomeTabList {
   Widget goodList;
 
   HomeTabList(this.text, this.goodList);
+}
+
+class HomeTitlePage extends StatefulWidget {
+  HomeTitlePage({Key key, String titleId}) : super(key: key);
+
+  @override
+  _HomeTitlePageState createState() => _HomeTitlePageState();
+}
+
+class _HomeTitlePageState extends State<HomeTitlePage>
+    with SingleTickerProviderStateMixin {
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
 }

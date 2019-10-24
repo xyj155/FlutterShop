@@ -410,7 +410,7 @@ class _HomePostLocalState extends State<HomePostLocal> with AutomaticKeepAliveCl
         Navigator.push(
             context,
             CustomRouteSlide(
-                UserPostDetailItemPage(userId: "${index.id.toString()}")));
+                UserPostDetailItemPage(postId: "${index.id.toString()}")));
       },
     );
   }

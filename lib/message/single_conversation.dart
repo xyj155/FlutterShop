@@ -45,11 +45,12 @@ class _SingleConversationPageState extends State<SingleConversationPage>
   int from = 0; // 记录开始位置
   int limit = 20; //限制
   Future loadUserMsg() async {
+    print(widget.username);
     MethodChannel channel = MethodChannel('jmessage_flutter');
     jmessage = new JmessageFlutter.private(channel, LocalPlatform());
     if (jmessage != null) {
       kMockUser = JMSingle.fromJson({
-        'username': '17374131273',
+        'username': widget.userId,
       });
       List<dynamic> resultList = await jmessage.getHistoryMessages(
         type: kMockUser,
@@ -68,14 +69,10 @@ class _SingleConversationPageState extends State<SingleConversationPage>
   }
 
   void _messageListener(dynamic message) {
-    //为什做这个判断是因为极光有BUG 会连推送多条相同的消息
+
     print("------------------------------");
     print(message.from.username);
     print("------------------------------");
-//    if (isSameMessage(currentMessage: message, previousMessage: _msgList[0])) {
-//      return;
-//    }
-
     if (message is JMTextMessage) {
       JMTextMessage textMessage = message;
       if (textMessage.from.username == widget.userId) {

@@ -47,7 +47,6 @@ dependencies:
   fake_tencent:
     git:
       url: https://github.com/v7lin/fake_tencent.git
-  fluwx: ^1.0.4
   flutter_tags: ^0.4.3
   jmessage_flutter: ^0.2.0
   jpush_flutter:
@@ -71,7 +70,11 @@ dependencies:
   photo: ^0.4.3+1
   amap_location: 0.1.0
   crypto: ^2.1.3
+  flutter_getuuid:
+    git:
+      url: https://github.com/wozhizhizhi/flutter_getuuid.git
   simple_permissions:
+  fluwx: ^1.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -105,7 +108,6 @@ flutter:
     - assert/imgs/tabbar_project_normal.png
     - assert/imgs/manx.png
     - assert/imgs/ic_game_lol.png
-    - assert/imgs/near_a.png
     - assert/flare/Space.flr
     - assert/imgs/ic_empty_bg.png
     - assert/imgs/ic_shopcar.png

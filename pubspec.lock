@@ -262,6 +262,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.4"
+  flutter_getuuid:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "7452137c487cae958983c281fdb7e3e2210a9471"
+      url: "https://github.com/wozhizhizhi/flutter_getuuid.git"
+    source: git
+    version: "0.0.1"
   flutter_luban:
     dependency: "direct main"
     description:
@@ -337,10 +346,12 @@ packages:
   fluwx:
     dependency: "direct main"
     description:
-      name: fluwx
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.6"
+      path: "."
+      ref: HEAD
+      resolved-ref: bcb0f5f477d9190c3b53ad0a002d12d800bad2bf
+      url: "https://github.com/OpenFlutter/fluwx.git"
+    source: git
+    version: "1.1.2"
   front_end:
     dependency: transitive
     description:

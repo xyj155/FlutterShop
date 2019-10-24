@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 import 'package:sauce_app/util/CommonBack.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 
 class CommonWebViewPage extends StatefulWidget {
@@ -36,15 +37,14 @@ class _CommonWebViewPageState extends State<CommonWebViewPage>
         }
       }
     });
-
   }
+
   @override
   void dispose() {
     super.dispose();
     _onStateChanged.cancel();
     flutterWebviewPlugin.dispose();
   }
-
 
   StreamSubscription<WebViewStateChanged> _onStateChanged;
   FlutterWebviewPlugin flutterWebviewPlugin = FlutterWebviewPlugin();
@@ -63,13 +63,18 @@ class _CommonWebViewPageState extends State<CommonWebViewPage>
       withJavascript: true,
     );
   }
-String title="45454";
+
+  String title = "45454";
+
   void loadJS() async {
-    flutterWebviewPlugin.evalJavascript('ale()').then((result) {
-      print(result);
-
+    var spUtil = await SpUtil.getInstance();
+    var id = spUtil.getInt("id");
+    flutterWebviewPlugin.evalJavascript("getUserId($id)").then((result) {});
+    flutterWebviewPlugin.onUrlChanged.listen((url) {
+      if (url.contains("finish")) {
+        Navigator.pop(context);
+      }
     });
-
     flutterWebviewPlugin.evalJavascript("window.document.title").then((result) {
       print(result);
       setState(() {

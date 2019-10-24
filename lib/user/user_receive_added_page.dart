@@ -45,8 +45,8 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
     screenUtils.initUtil(context);
     local = emptyResult == null || emptyResult.areaName == null
         ? ''
-        : emptyResult.provinceName.toString() +
-            emptyResult.cityName.toString() +
+        : emptyResult.provinceName.toString() +"|"+
+            emptyResult.cityName.toString() +"|"+
             emptyResult.areaName.toString();
     return new Scaffold(
       backgroundColor: Colors.white,

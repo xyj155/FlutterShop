@@ -41,5 +41,18 @@
   static final String SUBMIT_USER_VIDEO_POST = "JustLikeThis/public/index.php/api/mobile/submituservideopostbyuserid";
   static final String QUERY_LOCATION_USER_POST = "JustLikeThis/public/index.php/api/mobile/querynearuserpostbyuserid";
   static final String SUBMIT_POST_COMMENT_BY_USER_ID = "JustLikeThis/public/index.php/api/mobile/submitpostcommentbyuserid";
+  static final String SHOP_CAR_MANAGER_BY_USERID = "JustLikeThis/public/index.php/api/mobile/shopsnackmanager";
+  static final String SUBMIT_USER_PART_JOB_APPLY = "JustLikeThis/public/index.php/api/mobile/sendpartjobemailbyuserid";
+  static final String QUERY_BUSINESS_BANNER = "JustLikeThis/public/index.php/api/mobile/querybusinessbanner";
+  static final String QUERY_SHOP_CLASSIFY_TAGS = "JustLikeThis/public/index.php/api/mobile/querybusinessclassifytag";
+  static final String QUERY_SHOP_LIST_BY_CLASSIFY = "JustLikeThis/public/index.php/api/mobile/querybusinessshopbyclassifytag";
+  static final String QUERY_USER_THUMB_AND_REPLAY_COUNT = "JustLikeThis/public/index.php/api/mobile/queryuserthumbandreplaybyuserid";
+  static final String QUERY_USER_THUMB = "JustLikeThis/public/index.php/api/mobile/queryuserthumbbyuserid";
+  static final String SUBMIT_USER_VIEW_HISTORY = "JustLikeThis/public/index.php/api/mobile/submituserviewhistory";
+  static final String QUERY_USER_POST_LIST_BY_USERID = "JustLikeThis/public/index.php/api/mobile/queryuserpostbyuserid";
+  static final String QUERY_USER_VIEW_HISTORY = "JustLikeThis/public/index.php/api/mobile/queryuserviewhistory";
+  static final String SUBMIT_USER_INVITE_CODE = "JustLikeThis/public/index.php/api/mobile/submituserinvitecode";
+  static final String QUERY_USER_BY_INVITE_CODE = "JustLikeThis/public/index.php/api/mobile/queryuserbyinvitecode";
+  static final String SUBMIT_USER_OBSERVE = "JustLikeThis/public/index.php/api/mobile/submituserobserve";
   static final String BASE_URL = "http://47.98.122.133/";
 }

@@ -1,16 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_getuuid/flutter_getuuid.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:sauce_app/MainPage.dart';
 import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/common/common_webview_page.dart';
 import 'package:sauce_app/gson/user_entity.dart';
+import 'package:sauce_app/login/invite_code_input_page.dart';
 import 'package:sauce_app/login/third_social_login.dart';
 import 'package:sauce_app/login/user_register_owner_information.dart';
 import 'package:sauce_app/util/AppEncryptionUtil.dart';
@@ -97,6 +101,36 @@ class LoginState extends State<LoginPage> {
   }
 
   String smsCode = "";
+  Future queryUserByCode() async {
+    var result = await showDialog(
+      context: context,
+      builder: (ctx) {
+        return Center(
+          child: new LoadingDialog(
+            text: "",
+          ),
+        );
+      },
+    );
+    var uuid = await FlutterGetuuid.platformUid;
+    var instance = await HttpUtil.getInstance()
+        .get(Api.QUERY_USER_BY_INVITE_CODE, data: {"ime": uuid});
+
+    print("=============================================");
+    print(instance);
+    print("=============================================");
+    var decode = json.decode(instance);
+    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
+    if (baseResponseEntity.code == 200) {
+
+      Navigator.push(context, new MaterialPageRoute(builder: (_) {
+        return new UserTelVerifyPage();
+      }));
+    }
+
+
+  }
+
 
   @override
   void initState() {
@@ -104,6 +138,7 @@ class LoginState extends State<LoginPage> {
     super.initState();
     _seconds = widget.countdown;
     loadJson();
+
     setState(() {
       smsCode = getRankCode();
     });
@@ -139,11 +174,16 @@ class LoginState extends State<LoginPage> {
       _startTimer();
       inkWellStyle = _unavailableStyle;
       _verifyStr = '已发送$_seconds' + 's';
-      setState(() {});
-    } else if (baseResponseEntity.code == 201) {
       setState(() {
-        notRegister = true;
+        ToastUtil.showCommonToast("验证码：" + smsCode);
       });
+    } else if (baseResponseEntity.code == 201) {
+      Navigator.push(context, new MaterialPageRoute(builder: (_) {
+        return new InviteCodeInputPage();
+      }));
+//      setState(() {
+//        notRegister = true;
+//      });
     } else if (baseResponseEntity.code == 301) {
       ToastUtil.showErrorToast("发送验证码失败：" + baseResponseEntity.msg);
     }
@@ -156,6 +196,7 @@ class LoginState extends State<LoginPage> {
     // TODO: implement build
 
     screenUtil.initUtil(context);
+    queryUserByCode();
     return new Stack(
       children: <Widget>[
         new Container(
@@ -265,7 +306,6 @@ class LoginState extends State<LoginPage> {
                           onChanged: (content) {
                             setState(() {
                               verifyCode = content;
-                              ToastUtil.showCommonToast("验证码："+verifyCode);
                             });
                           },
                           decoration: InputDecoration(
@@ -434,7 +474,6 @@ class LoginState extends State<LoginPage> {
                   },
                 )),
               ),
-
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
           ),
@@ -506,7 +545,6 @@ class LoginState extends State<LoginPage> {
       Navigator.pop(context);
       Navigator.pushAndRemoveUntil(context,
           new CustomRouteSlide(new MainPage()), (route) => route == null);
-
     } else {
       ToastUtil.showCommonToast("用户信息获取错误或用户不存在！");
       Navigator.pop(context);

@@ -79,7 +79,13 @@ class SquarePageState extends State<SquarePageIndex>
     screenUtils.initUtil(context);
     return new Container(
       color: Colors.white,
-      child: NestedScrollView(
+      child: _banner_list==null?new Container(
+        child: new Center(
+          child: new CupertinoActivityIndicator(
+            radius: screenUtils.setWidgetWidth(13),
+          ),
+        ),
+      ):NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverToBoxAdapter(

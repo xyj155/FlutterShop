@@ -27,6 +27,9 @@ class UserPostItemEntity {
 class UserPostItemData {
 	int visible;
 	String postContent;
+	String topicName;
+	String topicPicUrl;
+	int topicId;
 	int postType;
 	int like;
 	dynamic postTopic;
@@ -43,11 +46,14 @@ class UserPostItemData {
 	dynamic lantitude;
 	dynamic longitude;
 
-	UserPostItemData({this.visible, this.postContent, this.postType, this.like, this.postTopic, this.userId, this.pictures, this.commentCount, this.duration, this.shareCount, this.createTime, this.location, this.id, this.thumbCount, this.user, this.lantitude, this.longitude});
+	UserPostItemData({this.topicName, this.visible, this.topicPicUrl, this.topicId, this.postContent, this.postType, this.like, this.postTopic, this.userId, this.pictures, this.commentCount, this.duration, this.shareCount, this.createTime, this.location, this.id, this.thumbCount, this.user, this.lantitude, this.longitude});
 
 	UserPostItemData.fromJson(Map<String, dynamic> json) {
 		visible = json['visible'];
+		topicId = json['topicId'];
+		topicPicUrl = json['topicPicUrl'];
 		postContent = json['postContent'];
+		topicName = json['topicName'];
 		postType = json['postType'];
 		like = json['like'];
 		postTopic = json['postTopic'];
@@ -71,9 +77,12 @@ class UserPostItemData {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
 		data['visible'] = this.visible;
 		data['postContent'] = this.postContent;
+		data['topicPicUrl'] = this.topicPicUrl;
+		data['topicId'] = this.topicId;
 		data['postType'] = this.postType;
 		data['like'] = this.like;
 		data['postTopic'] = this.postTopic;
+		data['topicName'] = this.topicName;
 		data['userId'] = this.userId;
 		if (this.pictures != null) {
       data['pictures'] =  this.pictures.map((v) => v.toJson()).toList();

@@ -1,3 +1,5 @@
+import 'user_post_item_entity.dart';
+
 class UserPostItemDetailEntity {
 	String msg;
 	int code;
@@ -28,7 +30,7 @@ class UserPostItemDetailData {
 	int like;
 	dynamic postTopic;
 	int userId;
-	List<String> pictures;
+	List<UserPostItemDataPicture> pictures;
 	String timeDuration;
 	dynamic topicType;
 	String commentCount;
@@ -48,7 +50,9 @@ class UserPostItemDetailData {
 		like = json['like'];
 		postTopic = json['postTopic'];
 		userId = json['userId'];
-		pictures = json['pictures']?.cast<String>();
+		if (json['pictures'] != null) {
+			pictures = new List<UserPostItemDataPicture>();(json['pictures'] as List).forEach((v) { pictures.add(new UserPostItemDataPicture.fromJson(v)); });
+		}
 		timeDuration = json['timeDuration'];
 		topicType = json['topicType'];
 		commentCount = json['commentCount'];
@@ -68,7 +72,9 @@ class UserPostItemDetailData {
 		data['like'] = this.like;
 		data['postTopic'] = this.postTopic;
 		data['userId'] = this.userId;
-		data['pictures'] = this.pictures;
+		if (this.pictures != null) {
+			data['pictures'] =  this.pictures.map((v) => v.toJson()).toList();
+		}
 		data['timeDuration'] = this.timeDuration;
 		data['topicType'] = this.topicType;
 		data['commentCount'] = this.commentCount;

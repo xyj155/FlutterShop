@@ -5,8 +5,9 @@ class RightListRadioButton extends StatelessWidget {
   String title;
   String value;
   final ValueChanged<bool> onTap;
+  bool isSet;
 
-  RightListRadioButton({Key key, this.title, this.value, this.onTap})
+  RightListRadioButton({Key key, this.title, this.value, this.onTap,this.isSet})
       : super(key: key);
 
   @override
@@ -29,7 +30,7 @@ class RightListRadioButton extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: new Text(value),
           ),
-          trailing:new Switch(value: false, onChanged: onTap),
+          trailing:new Switch(value: isSet, onChanged: onTap),
         ),
       ),
     );

@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sauce_app/common/common_webview_page.dart';
 import 'package:sauce_app/config.dart';
+import 'package:sauce_app/login/login.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/widget/list_radiobutton_right.dart';
 import 'package:sauce_app/widget/list_title_right.dart';
 
@@ -98,6 +102,15 @@ class _UserSettingPageIndexState extends State<UserSettingPageIndex>
               color: Color(0xfffafafa),
             ),
             new ListTile(
+              onTap: () {
+                Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                  return new CommonWebViewPage(
+                    title: "用户注册协议",
+                    url:
+                    "https://sxystushop.xyz/JustLikeThis/public/app/user_privacy.html",
+                  );
+                }));
+              },
               title: new Text(
                 "用户隐私及协议说明",
                 style: TextStyle(
@@ -112,6 +125,14 @@ class _UserSettingPageIndexState extends State<UserSettingPageIndex>
               ),
             ),
             new ListTile(
+              onTap: () {
+                Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                  return new CommonWebViewPage(
+                      url:
+                      'http://sxystushop.xyz/JustLikeThis/public/app/app_recalback.html',
+                      title: "");
+                }));
+              },
               title: new Text(
                 "帮助和反馈",
                 style: TextStyle(
@@ -140,26 +161,83 @@ class _UserSettingPageIndexState extends State<UserSettingPageIndex>
               height: screenUtils.setWidgetHeight(10),
               color: Color(0xfffafafa),
             ),
-            new Container(
-              padding: EdgeInsets.all(screenUtils.setWidgetHeight(15)),
-              child: new Text(
-                "退出登录",
-                style: new TextStyle(
-                  color: Colors.red,
-                  decoration: TextDecoration.none,
-                  fontSize: screenUtils.setFontSize(16),
+            new GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                showCupertinoDialog<int>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return CupertinoAlertDialog(
+                        title: Text(
+                          "退出登录",
+                          style: new TextStyle(
+                              fontSize: screenUtils.setFontSize(18),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        content: new Container(
+                          padding:
+                          EdgeInsets.all(screenUtils.setWidgetWidth(10)),
+                          child: Text(
+                            '退出登录后将无法获取信息！',
+                            style: new TextStyle(
+                                color: Colors.grey,
+                                fontSize: screenUtils.setFontSize(15),
+                                fontWeight: FontWeight.normal),
+                          ),
+                        ),
+                        actions: <Widget>[
+                          CupertinoDialogAction(
+                            child: Text("确定"),
+                            onPressed: () {
+//                      Navigator.pop(cxt,1);
+                              loginOut();
+                            },
+                          ),
+                          CupertinoDialogAction(
+                            child: Text(
+                              "取消",
+                              style: new TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context, 2);
+                            },
+                          )
+                        ],
+                      );
+                    });
+              },
+              child: new Container(
+                padding: EdgeInsets.all(screenUtils.setWidgetHeight(15)),
+                child: new Text(
+                  "退出登录",
+                  style: new TextStyle(
+                    color: Colors.red,
+                    decoration: TextDecoration.none,
+                    fontSize: screenUtils.setFontSize(16),
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
             new Expanded(
                 child: new Container(
-              color: Color(0xfffafafa),
-            ))
+                  color: Color(0xfffafafa),
+                ))
           ],
         ),
       ),
     );
+  }
+
+  Future loginOut() async {
+    var instance = await SpUtil.getInstance();
+    instance.clear().then((_) {
+      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (_) {
+        return new LoginPage();
+      }), (route) => route == null);
+    });
   }
 
   String cacheSize = "0.00K";
@@ -208,7 +286,8 @@ class _UserSettingPageIndexState extends State<UserSettingPageIndex>
     if (null == value) {
       return 0;
     }
-    List<String> unitArr = List()..add('B')..add('K')..add('M')..add('G');
+    List<String> unitArr = List()
+      ..add('B')..add('K')..add('M')..add('G');
     int index = 0;
     while (value > 1024) {
       index++;
@@ -244,12 +323,32 @@ class _UserPrivacyPageState extends State<UserPrivacyPage>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
+    getUserPrivacyConfig();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  bool _is_search = true;
+  bool _is_chat = true;
+  bool _is_circle = true;
+  bool _is_near = true;
+
+  Future getUserPrivacyConfig() async {
+    var spUtil = await SpUtil.getInstance();
+    setState(() {
+      _is_search =
+      spUtil.getBool("canSearch") == null ? true : spUtil.getBool("canSearch");
+      _is_chat =
+      spUtil.getBool("canChat") == null ? true : spUtil.getBool("canChat");
+      _is_circle =
+      spUtil.getBool("canCircle") == null ? true : spUtil.getBool("canCircle");
+      _is_near =
+      spUtil.getBool("canNear") == null ? true : spUtil.getBool("canNear");
+    });
   }
 
   @override
@@ -264,26 +363,46 @@ class _UserPrivacyPageState extends State<UserPrivacyPage>
             title: "允许被搜索",
             onTap: (isCheck) {
               print(isCheck);
+              updateUserConfig("canSearch", isCheck);
             },
+            isSet: _is_search,
           ),
           RightListRadioButton(
             value: "",
-            title: "附近人可以私聊我",
+            title: "允许被查看动态",
             onTap: (isCheck) {
               print(isCheck);
+              updateUserConfig("canCircle", isCheck);
             },
+            isSet: _is_circle,
+          ),
+          RightListRadioButton(
+            value: "",
+            title: "附近人可以看到我",
+            onTap: (isCheck) {
+              print(isCheck);
+              updateUserConfig("canNear", isCheck);
+            },
+            isSet: _is_near,
           ),
           RightListRadioButton(
             value: "",
             title: "允许聊天",
             onTap: (isCheck) {
+              updateUserConfig("canChat", isCheck);
               print(isCheck);
             },
+            isSet: _is_chat,
           ),
         ],
       ),
     );
   }
+}
+
+Future updateUserConfig(String key, bool isSet) async {
+  var instance = await SpUtil.getInstance();
+  instance.putBool(key, isSet);
 }
 
 class AccountAndSecurityPage extends StatefulWidget {
@@ -293,6 +412,8 @@ class AccountAndSecurityPage extends StatefulWidget {
 }
 
 class AccountAndSecurityPageState extends State<AccountAndSecurityPage> {
+  String _username;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -302,12 +423,12 @@ class AccountAndSecurityPageState extends State<AccountAndSecurityPage> {
           children: <Widget>[
             RightListTitle(
               title: "电话号码",
-              value: "12141515515",
+              value:_username,
               onTap: () {},
             ),
             RightListTitle(
               title: "注销账号",
-              value: "",
+              value: "暂时无法使用",
               onTap: () {},
             ),
           ],
@@ -316,10 +437,18 @@ class AccountAndSecurityPageState extends State<AccountAndSecurityPage> {
     );
   }
 
+  Future getUserTel() async {
+    var spUtil = await SpUtil.getInstance();
+    setState(() {
+      _username = spUtil.getString("username");
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getUserTel();
   }
 
   @override
