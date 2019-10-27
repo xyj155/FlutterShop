@@ -13,6 +13,7 @@ import 'package:sauce_app/gson/user_entity.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 
 import 'package:sauce_app/util/ScreenUtils.dart';
+import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 
 import 'package:sauce_app/widget/login_social_button.dart';
@@ -165,9 +166,10 @@ class ThirdSocialLoginState extends State<ThirdSocialLoginPage> {
                   title: "QQ登录",
                   bgColor: Color(0xff2fc2ff),
                   onClickCallBack: () {
-                    _tencent.login(
-                      scope: [TencentScope.GET_SIMPLE_USERINFO],
-                    );
+                    ToastUtil.showCommonToast("内测期间不可进行第三方登陆");
+//                    _tencent.login(
+//                      scope: [TencentScope.GET_SIMPLE_USERINFO],
+//                    );
                   },
                 ),
               ),
@@ -176,7 +178,7 @@ class ThirdSocialLoginState extends State<ThirdSocialLoginPage> {
                 title: "微信登录",
                 bgColor: Color(0xff52bd33),
                 onClickCallBack: () {
-                  _loginWeChat();
+                  ToastUtil.showCommonToast("内测期间不可进行第三方登陆");
                 },
               ),
               new Container(

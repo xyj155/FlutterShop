@@ -129,7 +129,7 @@ class HttpUtil {
       ToastUtil.showCommonToast("响应超时");
     } else if (e.type == DioErrorType.RESPONSE) {
       // When the server response, but with a incorrect status, such as 404, 503...
-      ToastUtil.showCommonToast("出现异常");
+
     } else if (e.type == DioErrorType.CANCEL) {
       // When the request is cancelled, dio will throw a error with this type.
       print("请求取消");

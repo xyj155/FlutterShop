@@ -136,12 +136,9 @@ class MainPageState extends State<MainPageWidget> {
         //点击事件
         onTap: (index) {
           if (index == 2) {
-            // tab添加被点击
-
             return;
           } else {
             setState(() {
-//            print(index);
               _tabIndex = index;
             });
           }

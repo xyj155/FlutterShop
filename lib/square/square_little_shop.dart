@@ -488,19 +488,26 @@ class _LittleShopPageState extends State<LittleShopPage> {
         Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
         data: {"userId": instance.getInt("id").toString()});
     if (response != null) {
-      print("-----------------------");
-      print(response.toString());
-      print("-----------------------");
+
       var decode = json.decode(response.toString());
       var userShopCarEntity = UserShopCarEntity.fromJson(decode);
-      if (userShopCarEntity.code == 200) {
-        var price = userShopCarEntity.data.price;
-        var count = userShopCarEntity.data.shopCarCount;
-        setState(() {
-          goodsPrice = price;
-          goodsCount = count;
-        });
-      }
+      var price = userShopCarEntity.data.price;
+      var count = userShopCarEntity.data.shopCarCount;
+      print("-----------------------");
+      print(userShopCarEntity.data);
+      print("-----------------------");
+      setState(() {
+        goodsPrice = price;
+        goodsCount = count;
+      });
+//      if (userShopCarEntity.code == 200) {
+//        var price = userShopCarEntity.data.price;
+//        var count = userShopCarEntity.data.shopCarCount;
+//        setState(() {
+//          goodsPrice = price;
+//          goodsCount = count;
+//        });
+//      }
     } else {
       getUserShopCar();
     }
@@ -942,9 +949,11 @@ class UserShopCarListPageState extends State<UserShopCarListPage> {
       "type": type.toString(),
       "userId": instance.getInt("id").toString()
     });
+
+    print("ppppppppppppppppppppppppppppppppppppppppppp");
     print(response.toString());
+    print("ppppppppppppppppppppppppppppppppppppppppppp");
     var decode = json.decode(response.toString());
-    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
     queryUserShopCarByUserId();
   }
 

@@ -88,8 +88,10 @@ class _CellInputState extends State<CellInput> {
             height: 98,
             width: double.infinity,
             child: TextField(
+
               keyboardType: _keyboardType(),
-              inputFormatters: [LengthLimitingTextInputFormatter(_cellCount)],
+              inputFormatters: [LengthLimitingTextInputFormatter(_cellCount),
+            WhitelistingTextInputFormatter(RegExp("[A-Z0-9]"))],
               decoration:InputDecoration(
                 border: InputBorder.none,
               ),

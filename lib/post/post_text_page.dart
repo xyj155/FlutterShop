@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:amap_location/amap_location.dart';
+
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sauce_app/api/Api.dart';
@@ -31,19 +32,7 @@ class _TextPostPageState extends State<TextPostPage>
   @override
   void initState() {
     super.initState();
-    AmapUtil.startLocation((location) {
-      AMapLocation aMapLocation = location;
-      print("---------------------------------");
-      print(aMapLocation.street);
-      print(aMapLocation.longitude);
-      print(aMapLocation.latitude);
-      setState(() {
-        _location = aMapLocation.city + " · " + aMapLocation.street;
-        _latitude = aMapLocation.longitude.toString();
-        _longitude = aMapLocation.longitude.toString();
-      });
-      print("---------------------------------");
-    });
+//    AmapUtil.startLocation();
   }
 
   @override

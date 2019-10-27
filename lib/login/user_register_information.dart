@@ -69,7 +69,7 @@ class _UserAvatarRegisterPageState extends State<UserAvatarRegisterPage>
 
   List<PickerItem> list = new List();
   String startYear = "请选择你的性别";
-  var data = ['男', '女', '男女通吃', '未知'];
+  var data = ['男', '女'];
 
   void setUserSex() {
     for (int i = 0; i < data.length; i++) {

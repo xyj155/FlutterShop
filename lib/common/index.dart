@@ -28,7 +28,7 @@ class _IndexPageState extends State<IndexPage>
 
   void queryUserLoginState() async {
     SpUtil instance = await SpUtil.instance;
-    if (instance.getBool("login")!=null) {
+    if (instance.getString("login")!=null) {
       Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (_) {
         return new MainPage();
       }), (route) => route == null);

@@ -32,6 +32,7 @@ class LoginSocialState extends State<LoginSocialButton> {
     screenUtil.initUtil(context);
     // TODO: implement build
     return new GestureDetector(
+      behavior: HitTestBehavior.opaque,
       child: new Container(
         margin: EdgeInsets.only(top: screenUtil.setWidgetHeight(13)),
         child: new Row(

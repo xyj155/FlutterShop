@@ -19,6 +19,7 @@
   static final String QUERY_SHOP_BUSINESS_BY_TYPE = "JustLikeThis/public/index.php/api/mobile/queryshopbytypeanddistance";
   static final String QUERY_USER_OBSERVE_FANS_BY_USERID = "JustLikeThis/public/index.php/api/mobile/queryuserfansandobserve";
   static final String QUERY_USER_AND_CHECK_EXIST = "JustLikeThis/public/index.php/api/mobile/sendsmscode";
+  static final String SEND_SMS_CODE = "JustLikeThis/public/index.php/api/mobile/sendsmscoderegister";
   static final String USER_LOGIN_BY_USERNAME = "/JustLikeThis/public/index.php/api/mobile/userloginbyusername";
   static final String QUERY_USER_CONTACT_LIST = "/JustLikeThis/public/index.php/api/mobile/queryusercontactslist";
   static final String SUBMIT_USER_GAME_INVITE = "/JustLikeThis/public/index.php/api/mobile/submitgameinvitebyuser";
@@ -54,5 +55,10 @@
   static final String SUBMIT_USER_INVITE_CODE = "JustLikeThis/public/index.php/api/mobile/submituserinvitecode";
   static final String QUERY_USER_BY_INVITE_CODE = "JustLikeThis/public/index.php/api/mobile/queryuserbyinvitecode";
   static final String SUBMIT_USER_OBSERVE = "JustLikeThis/public/index.php/api/mobile/submituserobserve";
+  static final String UPDATE_USER_ADDRESS_BY_ID = "JustLikeThis/public/index.php/api/mobile/updateuserreceiveaddressbyid";
+  static final String QUERY_TOPIC_DETAIL = "JustLikeThis/public/index.php/api/mobile/queryusertopicdatabyid";
+  static final String QUERY_POST_BY_TOPIC_ID = "JustLikeThis/public/index.php/api/mobile/queryuserpostbytopicid";
+  static final String JOIN_TOPIC_BY_USER_ID = "JustLikeThis/public/index.php/api/mobile/jointopicbyuserid";
+  static final String USER_REGISTER_BY_USERNAME = "JustLikeThis/public/index.php/api/mobile/userregisterwithtel";
   static final String BASE_URL = "http://47.98.122.133/";
 }

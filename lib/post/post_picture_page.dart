@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:amap_location/amap_location.dart';
+//import 'package:amap_base_location/amap_base_location.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
@@ -40,19 +40,7 @@ class _PostPicturePageState extends State<PostPicturePage>
   @override
   void initState() {
     super.initState();
-    AmapUtil.startLocation((location) {
-      AMapLocation aMapLocation = location;
-      print("---------------------------------");
-      print(aMapLocation.street);
-      print(aMapLocation.longitude);
-      print(aMapLocation.latitude);
-      setState(() {
-        _location = aMapLocation.city + " · " + aMapLocation.street;
-        _latitude = aMapLocation.latitude.toString();
-        _longitude = aMapLocation.longitude.toString();
-      });
-      print("---------------------------------");
-    });
+//    AmapUtil.startLocation();
   }
 
   @override

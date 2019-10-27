@@ -21,6 +21,7 @@ import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 
 import 'package:sauce_app/util/relative_time_util.dart';
+import 'package:sauce_app/util/time_util.dart';
 import 'package:sauce_app/util/user_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
 import 'package:share/share.dart';
@@ -103,7 +104,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
     // TODO: implement initState
     super.initState();
     getPageData();
-    getPostCommentByPostId(page);
+    getPostCommentByPostId(1);
   }
 
   ScrollController _scrollController = new ScrollController();
@@ -202,8 +203,8 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                                               "assert/imgs/loading.gif",
                                           image: "${userPostItem.user.avatar}",
                                           fit: BoxFit.cover,
-                                          width: 44,
-                                          height: 44,
+                                          width: screenUtil.setWidgetWidth(38),
+                                          height: screenUtil.setWidgetHeight(38),
                                         ),
                                       ),
                                     ),
@@ -229,19 +230,23 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                                               MainAxisAlignment.center,
                                           children: <Widget>[
                                             new Text(
-                                              "${userPostItem.user.nickname}",
+                                              "${Base642Text.decodeBase64(userPostItem.user.nickname)}",
                                               style: new TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: screenUtil
                                                       .setFontSize(15)),
                                             ),
-                                            new Text(
-                                              "${RelativeDateFormat.format(userPostItem.createTime)}",
-                                              style: new TextStyle(
-                                                  fontSize: screenUtil
-                                                      .setFontSize(11),
-                                                  color: Color(0xff9B9B9B)),
-                                            ),
+                                           new Container(
+                                             margin: EdgeInsets.only(top: screenUtil.setWidgetHeight(6)),
+                                             child:  new Text(
+                                               "${RelativeDateFormat.format(userPostItem.createTime)}",
+                                               style: new TextStyle(
+                                                   fontSize: screenUtil
+                                                       .setFontSize(11),
+                                                   color: Color(0xff9B9B9B)),
+                                             ),
+
+                                           ),
                                           ],
                                         ),
                                       )
@@ -287,6 +292,9 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                                               userPostItem.pictures.length,
                                           itemBuilder: (BuildContext context,
                                               int indexs) {
+                                            print("=====================================================================");
+                                            print("${userPostItem.pictures[indexs].postPictureUrl}?x-oss-process=style/image_press");
+                                            print("=====================================================================");
                                             return new GestureDetector(
                                               onTap: () {
                                                 Navigator.push(
@@ -308,7 +316,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                                                   placeholder:
                                                       "assert/imgs/loading.gif",
                                                   image:
-                                                      "${userPostItem.pictures[indexs]}",
+                                                      "${userPostItem.pictures[indexs].postPictureUrl}?x-oss-process=style/image_press",
                                                   fit: BoxFit.cover,
                                                   width: 44,
                                                   height: 44,
@@ -470,8 +478,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                               if (content.isEmpty) {
                                 ToastUtil.showCommonToast("你还没有输入文字哦！");
                               } else {
-//                          sendMsg(content);
-                                submitUserPost();
+                                submitUserPostComment();
                               }
                             },
                             icon: Icon(
@@ -519,7 +526,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
                         bottom: screenUtil.setWidgetHeight(6),
                         top: screenUtil.setWidgetHeight(11)),
                     child: new Text(
-                      "${postCommentListData.user.nickname}",
+                      "${Base642Text.decodeBase64(postCommentListData.user.nickname)}",
                       style: new TextStyle(
                           color: Colors.black,
                           fontSize: screenUtil.setFontSize(14),
@@ -547,8 +554,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
           child: new Row(
             children: <Widget>[
               new Text(
-                (position + 1).toString() +
-                    "楼    ${RelativeDateFormat.format(postCommentListData.createTime)}",
+          "${RelativeDateFormat.format(postCommentListData.createTime)}",
                 style: new TextStyle(color: Colors.grey),
               )
             ],
@@ -562,7 +568,7 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
     );
   }
 
-  Future submitUserPost() async {
+  Future submitUserPostComment() async {
     var spUtil = await SpUtil.getInstance();
     var response = await HttpUtil.getInstance()
         .post(Api.SUBMIT_POST_COMMENT_BY_USER_ID, data: {
@@ -577,7 +583,21 @@ class _HomePostDetailItemState extends State<UserPostDetailItemPage> {
     var decode = json.decode(response);
     var baseResponseEntity = BaseResponseEntity.fromJson(decode);
     if (baseResponseEntity.code == 200) {
-      getPostCommentMoreByPostId(page);
+      DataUtils dataUtils= DataUtils.instance;
+      var today = DateTime.now();
+//      getPostCommentMoreByPostId(page);
+      _comment_list.add(new PostCommentListData(
+        createTime:dataUtils.getFormartData(timeSamp: today.millisecondsSinceEpoch,format: "yyyy-mm-dd hh:mm:ss") ,
+        comment: Base642Text.encodeBase64(content),
+        userId: spUtil.getInt("id"),
+        user: new PostCommentListDataUser(
+          sex: spUtil.getString("avatar"),
+          nickname: spUtil.getString("nickname"),
+          isOnline: spUtil.getString("sex"),
+          avatar: spUtil.getString("avatar"),
+          id: spUtil.getInt("id")
+        )
+      ));
       FocusScope.of(context).requestFocus(FocusNode());
       _editingController.text = "";
       ToastUtil.showCommonToast("评论成功");

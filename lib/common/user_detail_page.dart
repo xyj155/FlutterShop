@@ -191,8 +191,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                                                               .end,
                                                       children: <Widget>[
                                                         new Text(
-                                                          _userViewDetailData
-                                                              .nickname,
+                                                          Base642Text.decodeBase64( _userViewDetailData.nickname),
                                                           style: new TextStyle(
                                                               color: Colors
                                                                   .white,
@@ -629,7 +628,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                       Navigator.push(context,
                           new MaterialPageRoute(builder: (_) {
                         return SingleConversationPage(
-                          username: _userViewDetailData.nickname,
+                          username:Base642Text.decodeBase64( _userViewDetailData.nickname),
                           avatar: _userViewDetailData.avatar,
                           userId: _userViewDetailData.username,
                         );

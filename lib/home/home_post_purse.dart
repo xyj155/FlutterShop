@@ -28,8 +28,6 @@ import 'package:share/share.dart';
 import '../common/common_vide_player.dart';
 import 'post_topic_page.dart';
 
-
-
 class HomePostPurse extends StatefulWidget {
   @override
   _HomePostPurseState createState() => new _HomePostPurseState();
@@ -38,7 +36,6 @@ class HomePostPurse extends StatefulWidget {
 class _HomePostPurseState extends State<HomePostPurse>
     with AutomaticKeepAliveClientMixin {
   ScreenUtils screenUtil = new ScreenUtils();
-
 
   void getPage() async {
     SpUtil sp = await SpUtil.getInstance();
@@ -139,7 +136,6 @@ class _HomePostPurseState extends State<HomePostPurse>
             bgColor: Colors.white,
             infoColor: Colors.white),
         child: getBody(),
-
       ),
     );
   }
@@ -156,8 +152,10 @@ class _HomePostPurseState extends State<HomePostPurse>
           });
     } else {
       // 加载菊花
-      return new Center(
-        child: CupertinoActivityIndicator(),
+      return new Container(
+        child: new Center(
+          child: CupertinoActivityIndicator(),
+        ),
       );
     }
   }
@@ -180,7 +178,7 @@ class _HomePostPurseState extends State<HomePostPurse>
     super.dispose();
   }
 
-  setUserPostList(UserPostItemData index) {
+  Widget setUserPostList(UserPostItemData index) {
     print("--------------------------");
     print(index.like);
     print("--------------------------");
@@ -211,19 +209,56 @@ class _HomePostPurseState extends State<HomePostPurse>
                     }));
                   },
                   child: new Container(
-                    padding: EdgeInsets.only(
+                    width: screenUtil.setWidgetWidth(55),
+                    height: screenUtil.setWidgetHeight(55),
+                    margin: EdgeInsets.only(
                         top: screenUtil.setWidgetHeight(20),
                         left: screenUtil.setWidgetWidth(20),
                         right: screenUtil.setWidgetWidth(6)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
-                      child: FadeInImage.assetNetwork(
-                        placeholder: "assert/imgs/loading.gif",
-                        image: "${index.user.avatar}",
-                        fit: BoxFit.cover,
-                        width: 44,
-                        height: 44,
-                      ),
+                    child: new Stack(
+                      children: <Widget>[
+                        new Container(
+                          margin: EdgeInsets.only(
+                              top: screenUtil.setWidgetHeight(10)),
+                          child: new ClipRRect(
+                            borderRadius: BorderRadius.circular(40),
+                            child: FadeInImage.assetNetwork(
+                              placeholder: "assert/imgs/loading.gif",
+                              image: "${index.user.avatar}",
+                              fit: BoxFit.cover,
+                              width: screenUtil.setWidgetWidth(43),
+                              height: screenUtil.setWidgetWidth(43),
+                            ),
+                          ),
+                        ),
+                        index.user.isOnline == "1"
+                            ? new Positioned(
+                                child: new Container(
+                                  padding: EdgeInsets.only(
+                                      left: screenUtil.setWidgetWidth(4),
+                                      right: screenUtil.setWidgetWidth(4),
+                                      bottom: screenUtil.setWidgetHeight(2),
+                                      top: screenUtil.setWidgetHeight(2)),
+                                  decoration: BoxDecoration(
+                                      color: Color(0xff4ddfa9),
+                                      borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(6),
+                                        topLeft: Radius.circular(6),
+                                        bottomRight: Radius.circular(6),
+                                        bottomLeft: Radius.circular(0),
+                                      )),
+                                  child: new Text(
+                                    "在线",
+                                    style: new TextStyle(
+                                        color: Colors.white,
+                                        fontSize: screenUtil.setFontSize(10)),
+                                  ),
+                                ),
+                                right: 0,
+                                top: 0,
+                              )
+                            : new Container()
+                      ],
                     ),
                   ),
                 ),
@@ -238,16 +273,20 @@ class _HomePostPurseState extends State<HomePostPurse>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           new Text(
-                            "${index.user.nickname}",
+                            "${Base642Text.decodeBase64(index.user.nickname)}",
                             style: new TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: screenUtil.setFontSize(15)),
                           ),
-                          new Text(
-                            "${RelativeDateFormat.format(index.createTime)}",
-                            style: new TextStyle(
-                                fontSize: screenUtil.setFontSize(11),
-                                color: Color(0xff9B9B9B)),
+                          new Container(
+                            margin: EdgeInsets.only(
+                                top: screenUtil.setWidgetHeight(6)),
+                            child: new Text(
+                              "${RelativeDateFormat.format(index.createTime)}",
+                              style: new TextStyle(
+                                  fontSize: screenUtil.setFontSize(11),
+                                  color: Color(0xff9B9B9B)),
+                            ),
                           ),
                         ],
                       ),
@@ -262,7 +301,6 @@ class _HomePostPurseState extends State<HomePostPurse>
               padding: EdgeInsets.only(
                   left: screenUtil.setFontSize(20),
                   right: screenUtil.setFontSize(20),
-                  top: screenUtil.setFontSize(14),
                   bottom: screenUtil.setFontSize(10)),
               child: new Text(
                 Base642Text.decodeBase64("${index.postContent}"),
@@ -296,9 +334,8 @@ class _HomePostPurseState extends State<HomePostPurse>
                               borderRadius: BorderRadius.circular(8),
                               child: FadeInImage.assetNetwork(
                                 placeholder: "assert/imgs/loading.gif",
-                                image:
-                                    "${_picture_list[indexs]}" +
-                                        "?x-oss-process=style/image_press",
+                                image: "${_picture_list[indexs]}" +
+                                    "?x-oss-process=style/image_press",
                                 fit: BoxFit.cover,
                                 width: screenUtil.setWidgetWidth(54),
                                 height: screenUtil.setWidgetWidth(54),
@@ -317,71 +354,87 @@ class _HomePostPurseState extends State<HomePostPurse>
                           );
                         },
                       )
-                    : index.pictures.length==0?new Container():new GestureDetector(
-                        onTap: () {
-                          print("-------------------------------------------");
-                          print(index.pictures[0].height);
-                          print(index.pictures[0].weight);
-                          print("-------------------------------------------");
-                          Navigator.push(context,
-                              new MaterialPageRoute(builder: (_) {
-                            return new CommonVideoPlayer(
-                              videoUrl: index.pictures[0].postPictureUrl,
-                              height: index.pictures[0].height,
-                              width: index.pictures[0].weight,
-                            );
-                          }));
-                        },
-                        child: new Stack(
-                          children: <Widget>[
-                            new Container(
-                              padding: EdgeInsets.only(
-                                  left: screenUtil.setWidgetHeight(20)),
-                              alignment: Alignment.center,
-                              height: screenUtil.setWidgetHeight(200),
-                              child: FadeInImage.assetNetwork(
-                                placeholder: "assert/imgs/loading.gif",
-                                image: "${index.pictures[0].postPictureUrl}" +
-                                    "?x-oss-process=video/snapshot,t_5000,f_jpg",
-                                fit: BoxFit.cover,
-                              ),
+                    : index.pictures.length == 0
+                        ? new Container()
+                        : new GestureDetector(
+                            onTap: () {
+                              print(
+                                  "-------------------------------------------");
+                              print(index.pictures[0].height);
+                              print(index.pictures[0].weight);
+                              print(
+                                  "-------------------------------------------");
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return new CommonVideoPlayer(
+                                  videoUrl: index.pictures[0].postPictureUrl,
+                                  height: index.pictures[0].height,
+                                  width: index.pictures[0].weight,
+                                );
+                              }));
+                            },
+                            child: new Stack(
+                              children: <Widget>[
+                                new Container(
+                                  alignment: Alignment.center,
+                                  height: screenUtil.setWidgetHeight(200),
+                                  child: new ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    child: FadeInImage.assetNetwork(
+                                      placeholder: "assert/imgs/loading.gif",
+                                      image: "${index.pictures[0].postPictureUrl}" +
+                                          "?x-oss-process=video/snapshot,t_5000,f_jpg",
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                new Container(
+                                  padding: EdgeInsets.only(
+                                      left: screenUtil.setWidgetHeight(20)),
+                                  height: screenUtil.setWidgetHeight(200),
+                                  alignment: Alignment.center,
+                                  child: new Image.asset(
+                                    "assert/imgs/video_player.png",
+                                    width: screenUtil.setWidgetWidth(40),
+                                    height: screenUtil.setWidgetHeight(40),
+                                  ),
+                                ),
+                              ],
                             ),
-                            new Container(
-                              padding: EdgeInsets.only(
-                                  left: screenUtil.setWidgetHeight(20)),
-                              height: screenUtil.setWidgetHeight(200),
-                              alignment: Alignment.center,
-                              child: new Image.asset(
-                                "assert/imgs/video_player.png",
-                                width: screenUtil.setWidgetWidth(40),
-                                height: screenUtil.setWidgetHeight(40),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
+                          )),
             new GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: (){
-                Navigator.push(context, new MaterialPageRoute(builder: (_){
-                  return new TopicPostPage(topicPicture: index.topicPicUrl,
-                  topicId: index.topicId.toString(),topicName: index.topicName,);
+              onTap: () {
+                Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                  return new TopicPostPage(
+                    topicPicture: index.topicPicUrl,
+                    topicId: index.topicId.toString(),
+                    topicName: index.topicName,
+                  );
                 }));
               },
               child: new Container(
-                margin: EdgeInsets.only(left: screenUtil.setWidgetWidth(15),
-                  top: screenUtil.setWidgetHeight(6),),
+                margin: EdgeInsets.only(
+                  left: screenUtil.setWidgetWidth(15),
+                  top: screenUtil.setWidgetHeight(6),
+                ),
                 alignment: Alignment.centerLeft,
-                child:   new ClipRRect(
+                child: new ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(4)),
                   child: new Container(
-                    padding: EdgeInsets.only(left: screenUtil.setWidgetWidth(4),
-                        right:screenUtil.setWidgetWidth(4),top: screenUtil.setWidgetHeight(2), bottom: screenUtil.setWidgetHeight(2)),
+                    padding: EdgeInsets.only(
+                        left: screenUtil.setWidgetWidth(4),
+                        right: screenUtil.setWidgetWidth(4),
+                        top: screenUtil.setWidgetHeight(2),
+                        bottom: screenUtil.setWidgetHeight(2)),
                     color: Color(0xff4ddfa9),
-                    child: new Text("${index.topicName} | # ",style: new TextStyle(
-                      color: Colors.white,
-
-                    ),),
+                    child: new Text(
+                      "${index.topicName} | # ",
+                      style: new TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -450,15 +503,18 @@ class _HomePostPurseState extends State<HomePostPurse>
     var spUtil = await SpUtil.instance;
     var id = spUtil.getInt("id");
 
-    var reponse = await HttpUtil.getInstance().post(Api.USER_UPDATE_BY_POST_ID,
-        data: {"userId": id.toString(), "postId": postId.id.toString(),"postUserId":postId.user.id.toString()});
+    var reponse =
+        await HttpUtil.getInstance().post(Api.USER_UPDATE_BY_POST_ID, data: {
+      "userId": id.toString(),
+      "postId": postId.id.toString(),
+      "postUserId": postId.user.id.toString()
+    });
     var decode = json.decode(reponse);
     var baseResponseEntity = BaseResponseEntity.fromJson(decode);
     if (baseResponseEntity.code != 200) {
       ToastUtil.showCommonToast("点赞失败！");
       return false;
     } else {
-      ToastUtil.showErrorToast("点赞成功");
       return true;
     }
   }

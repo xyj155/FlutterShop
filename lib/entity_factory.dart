@@ -13,6 +13,7 @@ import 'package:sauce_app/gson/shop_kind_list_entity.dart';
 import 'package:sauce_app/gson/single_part_time_job_detail_entity.dart';
 import 'package:sauce_app/gson/square_banner_entity.dart';
 import 'package:sauce_app/gson/square_purse_title_entity.dart';
+import 'package:sauce_app/gson/topic_detail_entity.dart';
 import 'package:sauce_app/gson/university_entity.dart';
 import 'package:sauce_app/gson/user_comment_reply_entity.dart';
 import 'package:sauce_app/gson/user_contact_list_entity.dart';
@@ -60,6 +61,8 @@ class EntityFactory {
       return SquareBannerEntity.fromJson(json) as T;
     } else if (T.toString() == "SquarePurseTitleEntity") {
       return SquarePurseTitleEntity.fromJson(json) as T;
+    } else if (T.toString() == "TopicDetailEntity") {
+      return TopicDetailEntity.fromJson(json) as T;
     } else if (T.toString() == "UniversityEntity") {
       return UniversityEntity.fromJson(json) as T;
     } else if (T.toString() == "UserCommentReplyEntity") {

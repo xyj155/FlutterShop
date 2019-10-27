@@ -111,7 +111,6 @@ class HomePageIndex extends State<HomePage> with AutomaticKeepAliveClientMixin {
   }
 
   Future initJPushTag() async {
-    var spUtil = await SpUtil.getInstance();
     _jPush.setup(
         appKey: "a96bfaaaaa323f4e0e137fb0",
         channel: "developer-default",

@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:amap_location/amap_location.dart';
+
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -23,7 +24,6 @@ import 'package:sauce_app/util/ali_oss_upload_util.dart';
 import 'package:sauce_app/util/amap_location_util.dart';
 import 'package:sauce_app/widget/list_title_right.dart';
 import 'package:sauce_app/widget/loading_dialog.dart';
-import 'package:simple_permissions/simple_permissions.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
@@ -98,46 +98,12 @@ class _MyHomePageState extends State<PostVideoPage> with LoadingDelegate {
   @override
   void initState() {
     super.initState();
-    _checkPersmission();
-    AmapUtil.startLocation((location) {
-      AMapLocation aMapLocation = location;
-      print("---------------------------------");
-      print(aMapLocation.street);
-      print(aMapLocation.longitude);
-      print(aMapLocation.latitude);
-      setState(() {
-        _location = aMapLocation.city + " · " + aMapLocation.street;
-        _latitude = aMapLocation.latitude.toString();
-        _longitude = aMapLocation.longitude.toString();
-      });
-      print("---------------------------------");
-    });
+
+//    AmapUtil.startLocation();
   }
 
-  void _checkPersmission() async {
-    bool hasPermission =
-        await SimplePermissions.checkPermission(Permission.WhenInUseLocation);
-    if (!hasPermission) {
-      PermissionStatus requestPermissionResult =
-          await SimplePermissions.requestPermission(
-              Permission.WhenInUseLocation);
-      if (requestPermissionResult != PermissionStatus.authorized) {
-        ToastUtil.showCommonToast("申请定位权限失败");
-        return;
-      }
-    }
 
-    //    final options = LocationClientOptions(
-//      isOnceLocation: true,
-//      locatingWithReGeocode: true,
-//    );
-//    _amapLocation
-//        .getLocation(options)
-//        .then(_result.add)
-//        .then((_) => setState(() {
-//          print(_result[0].address);
-//    }));
-  }
+
 
   var _file_path = [];
 

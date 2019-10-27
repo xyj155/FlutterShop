@@ -2,9 +2,11 @@
 
 import 'dart:convert';
 
-import 'package:amap_location/amap_location.dart';
+//import 'package:amap_base_location/amap_base_location.dart';
+import 'package:amap_base_location/amap_base_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:flutter_getuuid/flutter_getuuid.dart';
 import 'package:sauce_app/api/Api.dart';
@@ -16,16 +18,22 @@ import 'package:sauce_app/square/square_user_snack_order.dart';
 import 'package:sauce_app/user/user_address_page.dart';
 import 'package:sauce_app/user/user_detail_center.dart';
 import 'package:sauce_app/user/user_index.dart';
+import 'package:sauce_app/user/user_information_edit.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/JMessageUtil.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
+import 'package:sauce_app/util/ToastUtil.dart';
+
 import 'MainPage.dart';
 import 'common/common_webview_page.dart';
 import 'common/index.dart';
 import 'common/user_detail_page.dart';
 import 'event_bus.dart';
 import 'home/home_post_item_detail.dart';
+import 'home/home_user_topic.dart';
 import 'home/post_topic_page.dart';
 import 'login/invite_code_input_page.dart';
+import 'login/is_submit_invite_code.dart';
 import 'login/login.dart';
 import 'package:platform/platform.dart';
 import 'package:jmessage_flutter/jmessage_flutter.dart';
@@ -45,6 +53,7 @@ import 'square/square_part_time_job.dart';
 import 'square/square_play_together.dart';
 import 'user/user_receive_added_page.dart';
 import 'user/user_setting.dart';
+import 'util/amap_location_util.dart';
 
 MethodChannel channel = MethodChannel('jmessage_flutter');
 JmessageFlutter jmessage =
@@ -67,12 +76,34 @@ void startupJpush() async {
     eventBus.fire(ReceiveMessage(message: 'new'));
   });
   _fireMessagaeEvent();
-  _initAmap();
 }
 
+List<Location> _result = [];
+var spInstance;
 Future _initAmap() async {
-//  AMap.init('30f75cebf01d9a3cfbf88670e2fc4344');
-  AMapLocationClient.setApiKey("30f75cebf01d9a3cfbf88670e2fc4344");
+
+   spInstance = await SpUtil.getInstance();
+
+
+   await AMap.init('30f75cebf01d9a3cfbf88670e2fc4344');
+  var string = spInstance.getString("avatar");
+  print("==========================================");
+  print(string);
+  print("==========================================");
+  final options = LocationClientOptions(
+    isOnceLocation: true,
+    locatingWithReGeocode: true,
+  );
+  final _amapLocation = AMapLocation();
+  if (await Permissions().requestPermission()) {
+    _amapLocation.getLocation(options).then(_result.add).then((_) {
+      print("==========================================");
+      print(_result[0].address);
+      print("==========================================");
+    });
+  } else {
+    ToastUtil.showCommonToast('权限不足');
+  }
 }
 
 _fireMessagaeEvent() async {
@@ -99,14 +130,13 @@ class MyApp extends StatelessWidget {
         new JMNotificationSettingsIOS(sound: true, alert: true, badge: true));
     startupJpush();
     initBugly();
+    _initAmap();
     return Material(
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: UserAddressPage(), //启动MainPage
+        home: MainPage(), //启动MainPage
       ),
     );
   }
-
-
 }

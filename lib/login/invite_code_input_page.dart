@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:amap_base_location/amap_base_location.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/gson/user_entity.dart';
 import 'package:sauce_app/login/third_social_login.dart';
 import 'package:sauce_app/util/AppEncryptionUtil.dart';
+import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
@@ -24,6 +26,7 @@ import 'package:sauce_app/widget/loading_dialog.dart';
 
 import '../MainPage.dart';
 import 'login.dart';
+import 'user_register_owner_information.dart';
 
 class InviteCodeInputPage extends StatefulWidget {
   @override
@@ -136,20 +139,29 @@ class InviteCodeInputPageState extends State<InviteCodeInputPage> {
 
   Future inputUserInviteCode(String code) async {
     var uuid = await FlutterGetuuid.platformUid;
-    var httpUtil = await HttpUtil.getInstance()
-        .post(Api.SUBMIT_USER_INVITE_CODE, data: {"ime": uuid, "code": code});
+    print("==============================================");
+    print(Base642Text.encodeBase64(code));
+    print(uuid);
+    print("==============================================");
+    var httpUtil = await HttpUtil.getInstance().post(
+        Api.SUBMIT_USER_INVITE_CODE,
+        data: {"ime": uuid, "code": Base642Text.encodeBase64(code)});
     var decode = json.decode(httpUtil);
+
     var baseResponseEntity = BaseResponseEntity.fromJson(decode);
     if (baseResponseEntity.code == 200) {
+      var spUtil = await SpUtil.getInstance();
+      spUtil.putString("invite", code);
 //      ToastUtil.showCommonToast("验证码填写正确");
       Navigator.push(context, new MaterialPageRoute(builder: (_) {
         return new UserTelVerifyPage();
       }));
     } else {
-      ToastUtil.showCommonToast("验证码填写错误！");
+      ToastUtil.showCommonToast(baseResponseEntity.msg);
     }
   }
 }
+
 final TextStyle _availableStyle = TextStyle(
     color: const Color(0xFF2da689),
     decoration: TextDecoration.none,
@@ -189,6 +201,13 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
   String countryCode = "+（86）中国大陆";
   String verifyCode = "";
 
+  @override
+  void dispose() {
+    _timer?.cancel(); //销毁计时器
+    _timer = null;
+    super.dispose();
+  }
+
   /// 当前倒计时的秒数。
   int _seconds;
 
@@ -203,13 +222,17 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_seconds == 0) {
         _cancelTimer();
-        _seconds = widget.countdown;
-        inkWellStyle = _availableStyle;
-        setState(() {});
+
+        setState(() {
+          _seconds = widget.countdown;
+          inkWellStyle = _availableStyle;
+        });
         return;
       }
-      _seconds--;
-      _verifyStr = '已发送$_seconds' + 's';
+      setState(() {
+        _seconds--;
+        _verifyStr = '已发送$_seconds' + 's';
+      });
       if (_seconds == 0) {
         _verifyStr = '重新发送';
       }
@@ -223,6 +246,32 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
   }
 
   String smsCode = "";
+  List<Location> _result = [];
+
+  Future initLocation() async {
+    final options = LocationClientOptions(
+      isOnceLocation: true,
+      locatingWithReGeocode: true,
+    );
+    final _amapLocation = AMapLocation();
+    if (await Permissions().requestPermission()) {
+      _amapLocation
+          .getLocation(options)
+          .then(_result.add)
+          .then((_) => setState(() {
+                setState(() {
+                  print("===============================");
+                  print(_result[0].latitude);
+                  print("===============================");
+//          latitude = _result[0].latitude;
+//          longitude = _result[0].longitude;
+//          cityName = _result[0].city;
+                });
+              }));
+    } else {
+      ToastUtil.showCommonToast('权限不足');
+    }
+  }
 
   @override
   void initState() {
@@ -230,10 +279,10 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
     super.initState();
     _seconds = widget.countdown;
     loadJson();
+    initLocation();
     setState(() {
       smsCode = getRankCode();
     });
-
   }
 
   List<PickerItem> list = new List();
@@ -253,9 +302,8 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
   }
 
   void sendSMS() async {
-    var response = await HttpUtil.getInstance().post(
-        Api.QUERY_USER_AND_CHECK_EXIST,
-        data: {"telphone": telPhone, "code": smsCode});
+    var response = await HttpUtil.getInstance()
+        .post(Api.SEND_SMS_CODE, data: {"telphone": telPhone, "code": smsCode});
     print("--------------------");
     print({"telphone": telPhone, "code": smsCode});
     print(response);
@@ -269,13 +317,6 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
       setState(() {
         ToastUtil.showCommonToast("验证码：" + smsCode);
       });
-    } else if (baseResponseEntity.code == 201) {
-      Navigator.push(context, new MaterialPageRoute(builder: (_){
-        return new InviteCodeInputPage();
-      }));
-//      setState(() {
-//        notRegister = true;
-//      });
     } else if (baseResponseEntity.code == 301) {
       ToastUtil.showErrorToast("发送验证码失败：" + baseResponseEntity.msg);
     }
@@ -410,37 +451,37 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
                       ),
                       new Expanded(
                           child: new Container(
-                            alignment: Alignment.centerRight,
-                            child: widget.available
-                                ? InkWell(
-                              child: Text(
-                                '  $_verifyStr  ',
-                                style: inkWellStyle,
-                              ),
-                              onTap: () {
-                                if (telPhone.isEmpty) {
-                                  ToastUtil.showCommonToast("电话号码不可为空哦！");
-                                } else {
-                                  bool isMobile = isChinaPhoneLegal(telPhone);
-                                  if (isMobile) {
-                                    if (_seconds == widget.countdown) {
-                                      sendSMS();
-                                    } else {
-                                      return;
-                                    }
+                        alignment: Alignment.centerRight,
+                        child: widget.available
+                            ? InkWell(
+                                child: Text(
+                                  '  $_verifyStr  ',
+                                  style: inkWellStyle,
+                                ),
+                                onTap: () {
+                                  if (telPhone.isEmpty) {
+                                    ToastUtil.showCommonToast("电话号码不可为空哦！");
                                   } else {
-                                    ToastUtil.showCommonToast("你的电话号码不对哦！");
+                                    bool isMobile = isChinaPhoneLegal(telPhone);
+                                    if (isMobile) {
+                                      if (_seconds == widget.countdown) {
+                                        sendSMS();
+                                      } else {
+                                        return;
+                                      }
+                                    } else {
+                                      ToastUtil.showCommonToast("你的电话号码不对哦！");
+                                    }
                                   }
-                                }
-                              },
-                            )
-                                : InkWell(
-                              child: Text(
-                                '  获取验证码  ',
-                                style: _unavailableStyle,
+                                },
+                              )
+                            : InkWell(
+                                child: Text(
+                                  '  获取验证码  ',
+                                  style: _unavailableStyle,
+                                ),
                               ),
-                            ),
-                          ))
+                      ))
                     ],
                   )),
               new Container(
@@ -477,17 +518,6 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
                       Navigator.pop(context);
                       return;
                     }
-//                    if(notRegister){
-//                      ToastUtil.showCommonToast("你还没有注册哦！");
-//                      Navigator.push(context, new MaterialPageRoute(builder: (_) {
-//                        return new UserRegisterInformationPageWithoutAvatar();
-//                      }));
-//                    }else{
-//                      Navigator.pushAndRemoveUntil(
-//                          context,
-//                          new CustomRouteSlide(new UserRegisterInformationPage()),
-//                              (route) => route == null);
-//                    }
                   },
                 ),
               ),
@@ -506,12 +536,12 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
                             ..onTap = () async {
                               Navigator.push(context,
                                   new MaterialPageRoute(builder: (_) {
-                                    return new CommonWebViewPage(
-                                      title: "用户注册协议",
-                                      url:
+                                return new CommonWebViewPage(
+                                  title: "用户注册协议",
+                                  url:
                                       "https://sxystushop.xyz/JustLikeThis/public/app/user_register.html",
-                                    );
-                                  }));
+                                );
+                              }));
                             }),
                       TextSpan(
                         text: '和 ',
@@ -525,12 +555,12 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
                             ..onTap = () async {
                               Navigator.push(context,
                                   new MaterialPageRoute(builder: (_) {
-                                    return new CommonWebViewPage(
-                                      title: "隐私权政策",
-                                      url:
+                                return new CommonWebViewPage(
+                                  title: "隐私权政策",
+                                  url:
                                       "https://sxystushop.xyz/JustLikeThis/public/app/user_privacy.html",
-                                    );
-                                  }));
+                                );
+                              }));
                             })
                     ],
                   ),
@@ -561,7 +591,7 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
     instance.putString("signature", userData.signature);
     instance.putString("fans", userData.fans);
     instance.putString("score", userData.score);
-    instance.putBool("login", true);
+    instance.putString("login", "1");
     instance.putString("school", userData.school);
     instance.putString("nickname", userData.nickname);
     instance.putString("major", userData.major);
@@ -571,25 +601,31 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
 
   bool isChinaPhoneLegal(String str) {
     return new RegExp(
-        '^((13[0-9])|(15[^4])|(166)|(17[0-8])|(18[0-9])|(19[8-9])|(147,145))\\d{8}\$')
+            '^((13[0-9])|(15[^4])|(166)|(17[0-8])|(18[0-9])|(19[8-9])|(147,145))\\d{8}\$')
         .hasMatch(str);
   }
 
   void userLoginByUserName() async {
-    var post = await HttpUtil.getInstance().post(Api.USER_LOGIN_BY_USERNAME,
-        data: {"username": AppEncryptionUtil.verifyTokenEncode(telPhone)});
-    print(post.toString());
-    var decode = json.decode(post.toString());
-    var userEntity = UserEntity.fromJson(decode);
-    if (userEntity.code == 200) {
-      saveUserData(userEntity.data[0]);
-      Navigator.pop(context);
-      Navigator.pushAndRemoveUntil(context,
-          new CustomRouteSlide(new MainPage()), (route) => route == null);
-    } else {
-      ToastUtil.showCommonToast("用户信息获取错误或用户不存在！");
-      Navigator.pop(context);
-    }
+    var spUtil = await SpUtil.getInstance();
+    spUtil.putString("username", telPhone);
+    Navigator.pushAndRemoveUntil(
+        context,
+        new CustomRouteSlide(new UserRegisterInformationPage()),
+        (route) => route == null);
+//    var post = await HttpUtil.getInstance().post(Api.USER_LOGIN_BY_USERNAME,
+//        data: {"username": AppEncryptionUtil.verifyTokenEncode(telPhone)});
+//    print(post.toString());
+//    var decode = json.decode(post.toString());
+//    var userEntity = UserEntity.fromJson(decode);
+//    if (userEntity.code == 200) {
+//      saveUserData(userEntity.data[0]);
+//      Navigator.pop(context);
+//      Navigator.pushAndRemoveUntil(context,
+//          new CustomRouteSlide(new MainPage()), (route) => route == null);
+//    } else {
+//      ToastUtil.showCommonToast("用户信息获取错误或用户不存在！");
+//      Navigator.pop(context);
+//    }
   }
 
   String getRankCode() {
@@ -605,5 +641,4 @@ class _UserTelVerifyPageState extends State<UserTelVerifyPage>
       return code.toString();
     }
   }
-
 }

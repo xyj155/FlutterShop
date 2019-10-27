@@ -490,8 +490,9 @@ class _UserReceiveEditPageState extends State<UserReceiveEditPage>
   void submitUserAddress() async {
     var instance = await SpUtil.getInstance();
     var response =
-    await HttpUtil.getInstance().post(Api.SUBMIT_USER_ADDRESS, data: {
+    await HttpUtil.getInstance().post(Api.UPDATE_USER_ADDRESS_BY_ID, data: {
       "userId": instance.getInt("id").toString(),
+      "id": widget.id.toString(),
       "username": username.toString(),
       "userTel": userTel.toString(),
       "localCity": local,
@@ -500,6 +501,9 @@ class _UserReceiveEditPageState extends State<UserReceiveEditPage>
       "currentCity": emptyResult.cityName,
       "user_receive_address": addressNum,
     });
+    print("======================================");
+    print(response);
+    print("======================================");
     var decode = json.decode(response.toString());
     var baseResponseEntity = BaseResponseEntity.fromJson(decode);
     if (baseResponseEntity.code == 200) {

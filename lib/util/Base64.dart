@@ -3,7 +3,6 @@ import 'dart:convert' as convert;
 class Base642Text{
   static String encodeBase64(String data){
     var content = utf8.encode(data);
-    print(content);
     var digest = base64Encode(content);
     return digest;
   }

@@ -23,14 +23,16 @@ import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
-import 'package:sauce_app/util/SharePreferenceUtil.dart';
+//import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/user/user_observe_fans.dart';
+import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/TransationUtil.dart';
 import 'package:sauce_app/util/relative_time_util.dart';
 import 'package:sauce_app/widget/Post_detail.dart';
 import 'package:share/share.dart';
 
+import '../main.dart';
 import 'user_game_list.dart';
 import 'user_receive_added_page.dart';
 
@@ -44,15 +46,26 @@ class UserPageIndex extends StatefulWidget {
 class _UserPageIndexState extends State<UserPageIndex> {
   @override
   void initState() {
-    loadUserData();
+
     print("///////////////////////////");
     super.initState();
+//    loadUserData();
   }
-
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print("deactivate------------------------------");
+    print("deactivate");
+    loadUserData();
+    print("///////////////////////////");
+    print("deactivate");
+  }
   @override
   void dispose() {
     super.dispose();
   }
+
 
   String instance = "";
   String nickname = "";
@@ -62,19 +75,19 @@ class _UserPageIndexState extends State<UserPageIndex> {
   String fans = "";
   String score = "";
 
-  void loadUserData() async {
-    var instance = await SpUtil.getInstance();
-    setState(() {
-      nickname = instance.getString("nickname");
-      avatar = instance.getString("avatar");
-      print("══════════════****══════════════════════");
-      print(avatar);
-      print("══════════════****══════════════════════");
-      signature = instance.getString("signature");
-      observe = instance.getString("observe");
-      fans = instance.getString("fans");
-      score = instance.getString("score");
-    });
+  Future loadUserData() async {
+return await  SpUtil.getInstance();
+//    setState(()  {
+//      nickname = spUtil.getString("nickname");
+//      avatar = spUtil.getString("avatar");
+//      print("══════════════****══════════════════════");
+//      print(spUtil.getString("avatar"));
+//      print("══════════════****══════════════════════");
+//      signature = spUtil.getString("signature");
+//      observe = spUtil.getString("observe");
+//      fans = spUtil.getString("fans");
+//      score = spUtil.getString("score");
+//    });
   }
 
   String _avatar_path = "";
@@ -99,7 +112,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
   }
 
   Future uploadAvatar() async {
-    var spUtil = await SpUtil.getInstance();
+   var  spUtil = await SpUtil.getInstance();
     var string = spUtil.getInt("id").toString();
     FormData formData = new FormData.from({
       "userId": string,
@@ -133,6 +146,11 @@ class _UserPageIndexState extends State<UserPageIndex> {
     screenUtil.initUtil(context);
     String _default_thumb = _user_thumb[0];
     int thumb_count = 3;
+
+    return new FutureBuilder(
+        future:loadUserData(),
+        builder: (BuildContext context,AsyncSnapshot snapshot){
+         var spUtil=snapshot.data;
     return new CustomScrollView(
       physics: ScrollPhysics(),
       slivers: <Widget>[
@@ -170,7 +188,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
                         new GestureDetector(
                           child: new ClipRRect(
                             child: Image.network(
-                              avatar,
+                              spUtil.getString("avatar"),
                               fit: BoxFit.cover,
                               height: screenUtil.setWidgetHeight(74),
                               width: screenUtil.setWidgetWidth(72),
@@ -185,27 +203,27 @@ class _UserPageIndexState extends State<UserPageIndex> {
                         ),
                         new Expanded(
                             child: new Container(
-                          padding: EdgeInsets.only(left: 20),
-                          child: new Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                new Text(
-                                  nickname,
-                                  style: new TextStyle(
-                                      fontSize: 27,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                new Divider(
-                                  color: Colors.transparent,
-                                  height: 10,
-                                ),
-                                new Text(
-                                  signature,
-                                  style: new TextStyle(
-                                      fontSize: 14, color: Color(0xff8a8a8a)),
-                                ),
-                              ]),
-                        )),
+                              padding: EdgeInsets.only(left: 20),
+                              child: new Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    new Text(
+                                      spUtil.getString("nickname"),
+                                      style: new TextStyle(
+                                          fontSize: 27,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    new Divider(
+                                      color: Colors.transparent,
+                                      height: 10,
+                                    ),
+                                    new Text(
+                                      spUtil.getString("signature"),
+                                      style: new TextStyle(
+                                          fontSize: 14, color: Color(0xff8a8a8a)),
+                                    ),
+                                  ]),
+                            )),
                         new Image.asset(
                           "assert/imgs/person_arrow_right_grayx.png",
                           width: 15,
@@ -225,7 +243,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
                         child: new Column(
                           children: <Widget>[
                             new Text(
-                              fans,
+                              spUtil.getString("fans"),
                               style: new TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
@@ -242,10 +260,10 @@ class _UserPageIndexState extends State<UserPageIndex> {
                         onTap: () {
                           Navigator.push(context,
                               new MaterialPageRoute(builder: (_) {
-                            return new UserObserveFansPage(
-                              type: "0",
-                            );
-                          }));
+                                return new UserObserveFansPage(
+                                  type: "0",
+                                );
+                              }));
                         },
                       ),
                     ),
@@ -255,7 +273,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
                         child: new Column(
                           children: <Widget>[
                             new Text(
-                              observe,
+                              spUtil.getString("observe"),
                               style: new TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
@@ -272,34 +290,34 @@ class _UserPageIndexState extends State<UserPageIndex> {
                         onTap: () {
                           Navigator.push(context,
                               new MaterialPageRoute(builder: (_) {
-                            return new UserObserveFansPage(
-                              type: "1",
-                            );
-                          }));
+                                return new UserObserveFansPage(
+                                  type: "1",
+                                );
+                              }));
                         },
                       ),
                     ),
                     new Expanded(
                         child: new GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      child: new Column(
-                        children: <Widget>[
-                          new Text(
-                            score,
-                            style: new TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff000000)),
+                          behavior: HitTestBehavior.opaque,
+                          child: new Column(
+                            children: <Widget>[
+                              new Text(
+                                spUtil.getString("score"),
+                                style: new TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff000000)),
+                              ),
+                              new Text(
+                                "积分",
+                                style: new TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
                           ),
-                          new Text(
-                            "积分",
-                            style: new TextStyle(
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
+                        )),
                   ],
                 ),
                 new Container(
@@ -411,7 +429,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
                       return new CommonWebViewPage(
                           title: "抽奖",
                           url:
-                              "http://sxystushop.xyz/JustLikeThis/public/luckdraw/default.html");
+                          "http://sxystushop.xyz/JustLikeThis/public/luckdraw/default.html");
                     }));
                   },
                   title: new Text(
@@ -461,7 +479,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
                     Navigator.push(context, new MaterialPageRoute(builder: (_) {
                       return new CommonWebViewPage(
                           url:
-                              'http://47.98.122.133/Admini/app/inviteFriend.html',
+                          'http://47.98.122.133/Admini/app/inviteFriend.html',
                           title: "邀请好友");
                     }));
                   },
@@ -515,6 +533,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
         ),
       ],
     );
+    });
   }
 }
 
@@ -902,7 +921,7 @@ class UserViewHistoryPage extends StatefulWidget {
   _UserViewHistoryPageState createState() => _UserViewHistoryPageState();
 }
 
-class _UserViewHistoryPageState extends State<UserViewHistoryPage> with SingleTickerProviderStateMixin {
+class _UserViewHistoryPageState extends State<UserViewHistoryPage>  {
 
 
   @override
@@ -1042,7 +1061,7 @@ ScreenUtils _screenUtils=new ScreenUtils();
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           new Text(
-                            "${index.user.nickname}",
+                            "${Base642Text.decodeBase64(index.user.nickname)}",
                             style: new TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: screenUtil.setFontSize(15)),

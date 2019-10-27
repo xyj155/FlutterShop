@@ -69,7 +69,6 @@ class _SingleConversationPageState extends State<SingleConversationPage>
   }
 
   void _messageListener(dynamic message) {
-
     print("------------------------------");
     print(message.from.username);
     print("------------------------------");
@@ -293,14 +292,18 @@ class _SingleConversationPageState extends State<SingleConversationPage>
         title: Row(
           children: <Widget>[
             Container(
-              width: 40,
-              height: 40,
+              width: screenUtils.setWidgetWidth(40),
+              height: screenUtils.setWidgetHeight(40),
               margin: EdgeInsets.fromLTRB(0, 5, 10, 0),
-              child: CircleAvatar(
-                backgroundImage: FileImage(new File(widget.avatar)),
-                backgroundColor: Colors.grey[200],
-                minRadius: 30,
+              child: new ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+                child: new Image.network(widget.avatar),
               ),
+//              child: CircleAvatar(
+//                backgroundImage: ,
+//                backgroundColor: Colors.grey[200],
+//                minRadius: 30,
+//              ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -446,9 +449,9 @@ class _SingleConversationPageState extends State<SingleConversationPage>
 
   Future _getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if(image!=null){
+    if (image != null) {
       var sendImageMessage =
-      await jmessage.sendImageMessage(type: kMockUser, path: image.path);
+          await jmessage.sendImageMessage(type: kMockUser, path: image.path);
       var isSend = sendImageMessage.isSend;
       if (isSend) {
         setState(() {
@@ -463,7 +466,7 @@ class _SingleConversationPageState extends State<SingleConversationPage>
         Navigator.pop(context);
         ToastUtil.showCommonToast("图片发送失败");
       }
-    }else{
+    } else {
       Navigator.pop(context);
     }
   }

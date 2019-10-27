@@ -12,6 +12,8 @@ import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/widget/input_text_fied.dart';
 import 'package:sauce_app/widget/list_title_right.dart';
 
+import 'user_information_edit.dart';
+
 class UserDetailCenterPage extends StatefulWidget {
   @override
   _UserDetailCenterPageState createState() => _UserDetailCenterPageState();
@@ -24,7 +26,12 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
     loadUserData();
     super.initState();
   }
-
+@override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    loadUserData();
+}
   @override
   void dispose() {
     super.dispose();
@@ -106,38 +113,37 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
                                 left: _screenUtils.setWidgetWidth(15))),
                         new Expanded(
                             child: new Container(
-                              alignment: Alignment.centerRight,
-                              child: new Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  new Container(
-                                    alignment: Alignment.centerRight,
-                                    child: new ClipRRect(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(
-                                              _screenUtils.setWidgetWidth(35))),
-                                      child: new Image.network(
-                                        avatar,
-                                        width: _screenUtils.setWidgetWidth(55),
-                                        height: _screenUtils.setWidgetHeight(
-                                            57),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                          alignment: Alignment.centerRight,
+                          child: new Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              new Container(
+                                alignment: Alignment.centerRight,
+                                child: new ClipRRect(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                          _screenUtils.setWidgetWidth(35))),
+                                  child: new Image.network(
+                                    avatar,
+                                    width: _screenUtils.setWidgetWidth(55),
+                                    height: _screenUtils.setWidgetHeight(57),
+                                    fit: BoxFit.cover,
                                   ),
-                                  new Container(
-                                    margin: EdgeInsets.all(
-                                        _screenUtils.setWidgetWidth(15)),
-                                    child: new Image.asset(
-                                      "assert/imgs/person_arrow_right_grayx.png",
-                                      height: 15,
-                                      width: 15,
-                                    ),
-                                  )
-                                ],
+                                ),
                               ),
-                            ))
+                              new Container(
+                                margin: EdgeInsets.all(
+                                    _screenUtils.setWidgetWidth(15)),
+                                child: new Image.asset(
+                                  "assert/imgs/person_arrow_right_grayx.png",
+                                  height: 15,
+                                  width: 15,
+                                ),
+                              )
+                            ],
+                          ),
+                        ))
                       ],
                     ),
                   ),
@@ -146,7 +152,9 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
                   title: "用户名",
                   value: nickname,
                   onTap: () {
-                    updateUserByInput("nickname", "用户名", "请输入用户名", nickname);
+                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                      return new UserNameEditPage();
+                    }));
                   },
                 ),
                 new RightListTitle(
@@ -154,12 +162,18 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
                   value: signature.length > 8
                       ? signature.substring(0, 8) + "...."
                       : signature,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                      return new UserSignatureEditPage();
+                    }));
+                  },
                 ),
                 new RightListTitle(
                   title: "性别",
                   value: sex == "1" ? "男" : "女",
-                  onTap: () {},
+                  onTap: () {
+                    ToastUtil.showCommonToast("注册后无法修改");
+                  },
                 ),
                 new Container(
                   height: _screenUtils.setWidgetHeight(10),
@@ -179,22 +193,30 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
                 new RightListTitle(
                   title: "学校",
                   value: school,
-                  onTap: () {},
+                  onTap: () {
+                    ToastUtil.showCommonToast("注册后无法修改");
+                  },
                 ),
                 new RightListTitle(
                   title: "专业",
                   value: major,
-                  onTap: () {},
+                  onTap: () {
+                    ToastUtil.showCommonToast("注册后无法修改");
+                  },
                 ),
                 new RightListTitle(
                   title: "年级",
                   value: "用户名",
-                  onTap: () {},
+                  onTap: () {
+                    ToastUtil.showCommonToast("注册后无法修改");
+                  },
                 ),
                 new RightListTitle(
                   title: "入学时间",
                   value: "用户名",
-                  onTap: () {},
+                  onTap: () {
+                    ToastUtil.showCommonToast("注册后无法修改");
+                  },
                 ),
               ],
             ),
@@ -204,17 +226,16 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
     );
   }
 
-
   String inputName = "";
-  void updateUserByInput(String filed, String title, String placeHolder,
-      String updateData) {
 
+  void updateUserByInput(
+      String filed, String title, String placeHolder, String updateData) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
             title: Text(
-              "修改"+title,
+              "修改" + title,
               style: new TextStyle(
                   fontStyle: FontStyle.normal, fontWeight: FontWeight.normal),
             ),
@@ -244,7 +265,7 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
               CupertinoDialogAction(
                 child: Text('确认'),
                 onPressed: () {
-                  updateUserData(filed, inputName, updateData);
+//                  updateUserData(filed, inputName, updateData);
                 },
               ),
               CupertinoDialogAction(
@@ -257,26 +278,5 @@ class _UserDetailCenterPageState extends State<UserDetailCenterPage>
             ],
           );
         });
-  }
-
-  void updateUserData(String field, String data, String updateData) async {
-    print(data);
-    var instances = await SpUtil.getInstance();
-    var id = instances.getInt("id").toString();
-    var response = await HttpUtil.getInstance().post(Api.UPDATE_USER_FILED,
-        data: {"userId": id, "filed": field, "inputData": data});
-    print(response.toString());
-    var decode = json.decode(response);
-    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
-    if (baseResponseEntity.code == 200) {
-      setState(() {
-        nickname = data;
-      });
-      Navigator.of(context).pop();
-      ToastUtil.showCommonToast("修改成功！");
-    } else {
-      Navigator.of(context).pop();
-      ToastUtil.showCommonToast("修改失败！");
-    }
   }
 }

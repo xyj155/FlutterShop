@@ -18,6 +18,7 @@ import 'package:sauce_app/login/invite_code_input_page.dart';
 import 'package:sauce_app/login/third_social_login.dart';
 import 'package:sauce_app/login/user_register_owner_information.dart';
 import 'package:sauce_app/util/AppEncryptionUtil.dart';
+import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 
 import 'package:sauce_app/util/ScreenUtils.dart';
@@ -81,13 +82,16 @@ class LoginState extends State<LoginPage> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_seconds == 0) {
         _cancelTimer();
-        _seconds = widget.countdown;
-        inkWellStyle = _availableStyle;
-        setState(() {});
+        setState(() {
+          _seconds = widget.countdown;
+          inkWellStyle = _availableStyle;
+        });
         return;
       }
-      _seconds--;
-      _verifyStr = '已发送$_seconds' + 's';
+      setState(() {
+        _seconds--;
+        _verifyStr = '已发送$_seconds' + 's';
+      });
       if (_seconds == 0) {
         _verifyStr = '重新发送';
       }
@@ -101,36 +105,6 @@ class LoginState extends State<LoginPage> {
   }
 
   String smsCode = "";
-  Future queryUserByCode() async {
-    var result = await showDialog(
-      context: context,
-      builder: (ctx) {
-        return Center(
-          child: new LoadingDialog(
-            text: "",
-          ),
-        );
-      },
-    );
-    var uuid = await FlutterGetuuid.platformUid;
-    var instance = await HttpUtil.getInstance()
-        .get(Api.QUERY_USER_BY_INVITE_CODE, data: {"ime": uuid});
-
-    print("=============================================");
-    print(instance);
-    print("=============================================");
-    var decode = json.decode(instance);
-    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
-    if (baseResponseEntity.code == 200) {
-
-      Navigator.push(context, new MaterialPageRoute(builder: (_) {
-        return new UserTelVerifyPage();
-      }));
-    }
-
-
-  }
-
 
   @override
   void initState() {
@@ -191,12 +165,21 @@ class LoginState extends State<LoginPage> {
 
   bool notRegister = false;
 
+  Future refresh() async {}
+
+  Future queryUserByCode() async {
+    var uuid = await FlutterGetuuid.platformUid;
+    var instance = await HttpUtil.getInstance()
+        .get(Api.QUERY_USER_BY_INVITE_CODE, data: {"ime": uuid});
+    return instance;
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
     screenUtil.initUtil(context);
-    queryUserByCode();
+
     return new Stack(
       children: <Widget>[
         new Container(
@@ -388,17 +371,6 @@ class LoginState extends State<LoginPage> {
                       Navigator.pop(context);
                       return;
                     }
-//                    if(notRegister){
-//                      ToastUtil.showCommonToast("你还没有注册哦！");
-//                      Navigator.push(context, new MaterialPageRoute(builder: (_) {
-//                        return new UserRegisterInformationPageWithoutAvatar();
-//                      }));
-//                    }else{
-//                      Navigator.pushAndRemoveUntil(
-//                          context,
-//                          new CustomRouteSlide(new UserRegisterInformationPage()),
-//                              (route) => route == null);
-//                    }
                   },
                 ),
               ),
@@ -508,6 +480,9 @@ class LoginState extends State<LoginPage> {
   }
 
   void saveUserData(UserData userData) async {
+    print("=============================================================");
+    print(userData.nickname);
+    print("=============================================================");
     var instance = await SpUtil.getInstance();
     instance.putString("username", userData.username);
     instance.putString("avatar", userData.avatar);
@@ -520,7 +495,7 @@ class LoginState extends State<LoginPage> {
     instance.putString("signature", userData.signature);
     instance.putString("fans", userData.fans);
     instance.putString("score", userData.score);
-    instance.putBool("login", true);
+    instance.putString("login", "1");
     instance.putString("school", userData.school);
     instance.putString("nickname", userData.nickname);
     instance.putString("major", userData.major);
@@ -533,11 +508,17 @@ class LoginState extends State<LoginPage> {
             '^((13[0-9])|(15[^4])|(166)|(17[0-8])|(18[0-9])|(19[8-9])|(147,145))\\d{8}\$')
         .hasMatch(str);
   }
+  @override
+  void dispose() {
+    _timer?.cancel();      //销毁计时器
+    _timer=null;
+    super.dispose();
+  }
 
   void userLoginByUserName() async {
     var post = await HttpUtil.getInstance().post(Api.USER_LOGIN_BY_USERNAME,
         data: {"username": AppEncryptionUtil.verifyTokenEncode(telPhone)});
-    print(post.toString());
+
     var decode = json.decode(post.toString());
     var userEntity = UserEntity.fromJson(decode);
     if (userEntity.code == 200) {
