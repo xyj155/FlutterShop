@@ -61,5 +61,6 @@
   static final String JOIN_TOPIC_BY_USER_ID = "JustLikeThis/public/index.php/api/mobile/jointopicbyuserid";
   static final String USER_REGISTER_BY_USERNAME = "JustLikeThis/public/index.php/api/mobile/userregisterwithtel";
   static final String QUERY_USER_ORDER_SUBMIT_STATUS = "JustLikeThis/public/index.php/api/mobile/queryuserorderbyuserid";
+  static final String AROUND_USER_LIST = "JustLikeThis/public/index.php/api/mobile/queryarounduserbycity";
   static final String BASE_URL = "http://47.98.122.133/";
 }

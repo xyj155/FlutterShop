@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart' as prefix1;
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 
@@ -11,6 +12,7 @@ import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/common/picture_preview_dialog.dart';
 import 'package:sauce_app/common/user_detail_page.dart';
 import 'package:sauce_app/gson/base_response_entity.dart';
+import 'package:sauce_app/gson/around_user_entity.dart';
 import 'package:sauce_app/home/home_post_item_detail.dart';
 import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
@@ -27,15 +29,14 @@ import 'package:share/share.dart';
 
 import '../common/common_vide_player.dart';
 
-
 class HomePostLocal extends StatefulWidget {
   @override
   _HomePostLocalState createState() => new _HomePostLocalState();
 }
 
-class _HomePostLocalState extends State<HomePostLocal> with AutomaticKeepAliveClientMixin {
+class _HomePostLocalState extends State<HomePostLocal>
+    with AutomaticKeepAliveClientMixin {
   ScreenUtils screenUtil = new ScreenUtils();
-
 
   void getPage() async {
     SpUtil sp = await SpUtil.getInstance();
@@ -76,14 +77,20 @@ class _HomePostLocalState extends State<HomePostLocal> with AutomaticKeepAliveCl
   int _page;
 
   Future getPrePageData() async {
-    SpUtil sp = await SpUtil.getInstance();
-    int value = sp.getInt("local_page");
+    SpUtil spUtil = await SpUtil.getInstance();
+    int value = spUtil.getInt("local_page");
     _page = value == null ? 1 : value;
-    var userId = sp.getInt("id");
-    var response = await HttpUtil.getInstance().get(Api.QUERY_LOCATION_USER_POST,
-        data: {"page": _page.toString(), "userId": userId.toString()});
+    var userId = spUtil.getInt("id");
+    var response =
+    await HttpUtil.getInstance().get(Api.AROUND_USER_LIST, data: {
+      "page": _page.toString(),
+      "userId": spUtil.getInt("id").toString(),
+      "latitude": spUtil.getString("latitude"),
+      "longitude": spUtil.getString("longitude"),
+      "city": spUtil.getString("city")
+    });
     var decode = json.decode(response.toString());
-    var userPostItemEntity = UserPostItemEntity.fromJson(decode);
+    var userPostItemEntity = AroundUserEntity.fromJson(decode);
 
     setState(() {
       userPostItem.addAll(userPostItemEntity.data);
@@ -140,7 +147,7 @@ class _HomePostLocalState extends State<HomePostLocal> with AutomaticKeepAliveCl
   }
 
   int count = 1;
-  List<UserPostItemData> userPostItem = List();
+  List<AroundUserData> userPostItem = List();
 
   getBody() {
     if (userPostItem.length != 0) {
@@ -159,12 +166,18 @@ class _HomePostLocalState extends State<HomePostLocal> with AutomaticKeepAliveCl
 
   void getPurseDataList(int page) async {
     var spUtil = await SpUtil.getInstance();
-    var response = await HttpUtil.getInstance().get(Api.QUERY_POST_LIST,
-        data: {"page": page, "userId": spUtil.getInt("id").toString()});
+    var response =
+        await HttpUtil.getInstance().get(Api.AROUND_USER_LIST, data: {
+      "page": "1",
+      "userId": spUtil.getInt("id").toString(),
+      "latitude": spUtil.getString("latitude"),
+      "longitude": spUtil.getString("longitude"),
+      "city": spUtil.getString("city")
+    });
     print("-------------------postType-------------------");
     var decode = json.decode(response.toString());
     print("-------------------postType-------------------");
-    var userPostItemEntity = UserPostItemEntity.fromJson(decode);
+    var userPostItemEntity = AroundUserEntity.fromJson(decode);
     setState(() {
       userPostItem = userPostItemEntity.data;
     });
@@ -175,233 +188,105 @@ class _HomePostLocalState extends State<HomePostLocal> with AutomaticKeepAliveCl
     super.dispose();
   }
 
-  setUserPostList(UserPostItemData index) {
-    print("--------------------------");
-    print(index.like);
-    print("--------------------------");
-    var like_bumlb = index.like == 1
-        ? "assert/imgs/detail_like_selectedx.png"
-        : "assert/imgs/person_likex.png";
-    int thumb_count = int.parse(index.thumbCount);
-    var _picture_list = [];
-    var pictures = index.pictures;
-    for (var o in pictures) {
-      _picture_list.add(o.postPictureUrl);
-    }
+  setUserPostList(AroundUserData index) {
     return new GestureDetector(
       child: new Container(
+        padding: EdgeInsets.only(
+            left: screenUtil.setWidgetWidth(4),
+            top: screenUtil.setWidgetHeight(8),
+            bottom: screenUtil.setWidgetHeight(8),
+            right: screenUtil.setWidgetWidth(4)),
         color: Colors.white,
         child: Column(
           children: <Widget>[
-            new Row(
-              children: <Widget>[
-                new GestureDetector(
-                  onTap: () {
-                    print("--------------------------------------");
-                    print(index.user.toJson());
-                    print("--------------------------------------");
-                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                      return new UserDetailPage(
-                          userId: index.user.id.toString());
-                    }));
-                  },
-                  child: new Container(
-                    padding: EdgeInsets.only(
-                        top: screenUtil.setWidgetHeight(20),
-                        left: screenUtil.setWidgetWidth(20),
-                        right: screenUtil.setWidgetWidth(6)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
-                      child: FadeInImage.assetNetwork(
-                        placeholder: "assert/imgs/loading.gif",
-                        image: "${index.user.avatar}",
-                        fit: BoxFit.cover,
-                        width: 44,
-                        height: 44,
-                      ),
-                    ),
-                  ),
-                ),
-                new Column(
-                  children: <Widget>[
-                    new Container(
-                      padding: EdgeInsets.only(
-                          top: screenUtil.setWidgetHeight(20),
-                          right: screenUtil.setWidgetWidth(6)),
-                      child: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Text(
-                            "${index.user.nickname}",
-                            style: new TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: screenUtil.setFontSize(15)),
-                          ),
-                          new Text(
-                            "${RelativeDateFormat.format(index.createTime)}",
-                            style: new TextStyle(
-                                fontSize: screenUtil.setFontSize(11),
-                                color: Color(0xff9B9B9B)),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-            new Container(
-              color: Colors.white,
-              alignment: Alignment.centerLeft,
-              padding: EdgeInsets.only(
-                  left: screenUtil.setFontSize(20),
-                  right: screenUtil.setFontSize(20),
-                  top: screenUtil.setFontSize(14),
-                  bottom: screenUtil.setFontSize(10)),
-              child: new Text(
-                Base642Text.decodeBase64("${index.postContent}"),
-                style: new TextStyle(
-                  fontSize: screenUtil.setFontSize(17),
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 3,
-                textAlign: TextAlign.left,
-              ),
-            ),
-            new Container(
-                child: index.postType == 1
-                    ? new GridView.builder(
-                  padding: EdgeInsets.only(
-                      left: screenUtil.setWidgetWidth(20),
-                      right: screenUtil.setWidgetWidth(20),
-                      top: screenUtil.setWidgetHeight(8),
-                      bottom: screenUtil.setWidgetHeight(8)),
-                  physics: new NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 6.0,
-                    crossAxisSpacing: 6.0,
-                  ),
-                  itemCount: _picture_list.length,
-                  itemBuilder: (BuildContext context, int indexs) {
-                    return new GestureDetector(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: "assert/imgs/loading.gif",
-                          image:
-                          "${_picture_list[indexs]}" +
-                              "?x-oss-process=style/image_press",
-                          fit: BoxFit.cover,
-                          width: screenUtil.setWidgetWidth(54),
-                          height: screenUtil.setWidgetWidth(54),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PhotoGalleryPage(
-                                index: indexs,
-                                photoList: _picture_list,
-                              )),
-                        );
-                      },
-                    );
-                  },
-                )
-                    : new GestureDetector(
-                  onTap: () {
-                    print("-------------------------------------------");
-                    print(index.pictures[0].height);
-                    print(index.pictures[0].weight);
-                    print("-------------------------------------------");
-                    Navigator.push(context,
-                        new MaterialPageRoute(builder: (_) {
-                          return new CommonVideoPlayer(
-                            videoUrl: index.pictures[0].postPictureUrl,
-                            height: index.pictures[0].height,
-                            width: index.pictures[0].weight,
-                          );
-                        }));
-                  },
-                  child: new Stack(
+            new Stack(
+              children: <Widget>[new Row(
+                children: <Widget>[
+                  new Stack(
                     children: <Widget>[
-                      new Container(
-                        padding: EdgeInsets.only(
-                            left: screenUtil.setWidgetHeight(20)),
-                        alignment: Alignment.center,
-                        height: screenUtil.setWidgetHeight(200),
-                        child: FadeInImage.assetNetwork(
+                      new ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        child: new FadeInImage.assetNetwork(
                           placeholder: "assert/imgs/loading.gif",
-                          image: "${index.pictures[0].postPictureUrl}" +
-                              "?x-oss-process=video/snapshot,t_5000,f_jpg",
+                          image: "${index.avatar}",
                           fit: BoxFit.cover,
+                          width: screenUtil.setWidgetHeight(64),
+                          height: screenUtil.setWidgetHeight(65),
                         ),
                       ),
                       new Container(
-                        padding: EdgeInsets.only(
-                            left: screenUtil.setWidgetHeight(20)),
-                        height: screenUtil.setWidgetHeight(200),
-                        alignment: Alignment.center,
-                        child: new Image.asset(
-                          "assert/imgs/video_player.png",
-                          width: screenUtil.setWidgetWidth(40),
-                          height: screenUtil.setWidgetHeight(40),
+                        decoration: new BoxDecoration(
+                          color: Colors.white,
+                          border: new Border.all(
+                            width: 1,
+                            color: Colors.white,
+                          ),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(screenUtil.setWidgetHeight(16))),
                         ),
-                      ),
+                        child: new Image.asset(
+                          "assert/imgs/around_user_online.png",
+                          width: screenUtil.setWidgetWidth(13),
+                          height: screenUtil.setWidgetHeight(13),
+                        ),
+                      )
                     ],
                   ),
-                )),
-            new Row(
-              children: <Widget>[
-                new UserPostDetailList(
-                  title: "分享",
-                  imagePath: "assert/imgs/person_share.png",
-                  onTap: () {
-                    Share.share(
-                        '【玩安卓Flutter版】\n https://github.com/yechaoa/wanandroid_flutter');
-                  },
-                ),
-                new UserPostDetailList(
-                  title: "评论" + index.commentCount.toString(),
-                  imagePath: "assert/imgs/person_commentx.png",
-                ),
-                new UserPostDetailList(
-                  onTap: () {
-                    if (index.like == 1) {
-                      return;
-                    }
-                    userThumb(index).then((isSuccess) {
-                      print(isSuccess);
-                      if (isSuccess) {
-                        setState(() {
-                          like_bumlb = 'assert/imgs/detail_like_selectedx.png';
-                          index.like = 1;
-                          index.thumbCount =
-                              (int.parse(index.thumbCount) + 1).toString();
-                        });
-                      }
-                    });
-                  },
-                  title: "点赞 " + thumb_count.toString(),
-                  imagePath: like_bumlb,
-                ),
-                new Expanded(
-                    child: new Container(
-                        child: new Image.asset(
-                          "assert/imgs/post_more.png",
-                          width: screenUtil.setWidgetWidth(24),
-                          height: screenUtil.setWidgetHeight(21),
+                  new Expanded(child: new Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Container(
+                        padding: EdgeInsets.only(left: screenUtil.setWidgetWidth(5)),
+                        child:    new Text(Base642Text.decodeBase64(index.nickname),style: new TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenUtil.setFontSize(16)
+                        ),),
+                      ),
+                      new Container(
+                        margin: EdgeInsets.only(top: 6,left: screenUtil.setWidgetWidth(5)),
+                        width: screenUtil.setWidgetWidth(34),
+                        child: new ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          child:new Container(
+                            padding: EdgeInsets.only(right:3,left: 3,top: 1,bottom: 1),
+                            color:index.sex=="1"? Color(0xff49d4ea): Color(0xfffe78b7),
+                            child:  new Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                new Image.asset(index.sex=="1"?"assert/imgs/ic_small_boy.png":"assert/imgs/ic_small_girll.png",
+                                  width: screenUtil.setWidgetWidth(10),
+                                  height: screenUtil.setWidgetHeight(10),),
+                                new Text(" "+index.age.toString(),style: new TextStyle(
+                                  color: Colors.white,
+                                  fontSize: screenUtil.setFontSize(10),
+                                ),)
+                              ],
+                            ),
+                          ),
                         ),
-                        alignment: Alignment.centerRight))
-              ],
+                      ),
+                      new Container(
+                        padding: EdgeInsets.only(left: screenUtil.setWidgetWidth(5),
+                            top: screenUtil.setWidgetWidth(3)),
+                        child: new Text(index.signature,maxLines: 1,overflow: TextOverflow.ellipsis,
+                          style: new TextStyle(color: Colors.grey,fontSize: screenUtil.setFontSize(12)),),
+                      )
+                    ],
+                  ))
+                ],
+              ),
+             new Positioned(child:  new Text(index.distance,style: new TextStyle(
+                 color: Colors.grey,
+                 fontSize: 14
+             ),),right: 9,)],
             ),
             new Container(
-              height: screenUtil.setWidgetHeight(8),
+              margin: EdgeInsets.only(top: 7),
               color: Color(0xfffafafa),
+              height: 2,
             )
           ],
         ),
@@ -413,23 +298,6 @@ class _HomePostLocalState extends State<HomePostLocal> with AutomaticKeepAliveCl
                 UserPostDetailItemPage(postId: "${index.id.toString()}")));
       },
     );
-  }
-
-  Future<bool> userThumb(UserPostItemData postId) async {
-    var spUtil = await SpUtil.instance;
-    var id = spUtil.getInt("id");
-
-    var reponse = await HttpUtil.getInstance().post(Api.USER_UPDATE_BY_POST_ID,
-        data: {"userId": id.toString(), "postId": postId.id.toString()});
-    var decode = json.decode(reponse);
-    var baseResponseEntity = BaseResponseEntity.fromJson(decode);
-    if (baseResponseEntity.code != 200) {
-      ToastUtil.showCommonToast("点赞失败！");
-      return false;
-    } else {
-      ToastUtil.showErrorToast("点赞成功");
-      return true;
-    }
   }
 
   @override

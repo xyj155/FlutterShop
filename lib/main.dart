@@ -19,10 +19,12 @@ import 'package:sauce_app/user/user_address_page.dart';
 import 'package:sauce_app/user/user_detail_center.dart';
 import 'package:sauce_app/user/user_index.dart';
 import 'package:sauce_app/user/user_information_edit.dart';
+import 'package:sauce_app/user/user_order_center.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/JMessageUtil.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'MainPage.dart';
 import 'common/common_webview_page.dart';
@@ -79,14 +81,14 @@ void startupJpush() async {
 }
 
 List<Location> _result = [];
-var spInstance;
+
 Future _initAmap() async {
 
-   spInstance = await SpUtil.getInstance();
 
+  var spUtil= await SharedPreferences.getInstance();
 
    await AMap.init('30f75cebf01d9a3cfbf88670e2fc4344');
-  var string = spInstance.getString("avatar");
+  var string = spUtil.getString("avatar");
   print("==========================================");
   print(string);
   print("==========================================");
@@ -99,6 +101,9 @@ Future _initAmap() async {
     _amapLocation.getLocation(options).then(_result.add).then((_) {
       print("==========================================");
       print(_result[0].address);
+      spUtil.setString("city", _result[0].city);
+      spUtil.setString("longitude", _result[0].longitude.toString());
+      spUtil.setString("latitude", _result[0].latitude.toString());
       print("==========================================");
     });
   } else {

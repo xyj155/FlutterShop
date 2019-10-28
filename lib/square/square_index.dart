@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:qrcode_reader/qrcode_reader.dart';
+
 import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/common/common_webview_page.dart';
 import 'package:sauce_app/common/user_detail_page.dart';
@@ -57,19 +57,19 @@ class SquarePageState extends State<SquarePageIndex>
   Future<String> futureString;
 
   Future scan() async {
-    futureString = new QRCodeReader()
-        .setForceAutoFocus(true) // default false
-        .setHandlePermissions(true) // default true
-        .setExecuteAfterPermissionGranted(true) // default truefault false
-        .scan();
-    var spUtil = await SpUtil.getInstance();
-    futureString.then((result) {
-      Navigator.push(context, new MaterialPageRoute(builder: (_) {
-        return new CommonWebViewPage(
-            url: result + "&inviteId=" + spUtil.getInt("id").toString(),
-            title: "邀请好友");
-      }));
-    });
+//    futureString = new QRCodeReader()
+//        .setForceAutoFocus(true) // default false
+//        .setHandlePermissions(true) // default true
+//        .setExecuteAfterPermissionGranted(true) // default truefault false
+//        .scan();
+//    var spUtil = await SpUtil.getInstance();
+//    futureString.then((result) {
+//      Navigator.push(context, new MaterialPageRoute(builder: (_) {
+//        return new CommonWebViewPage(
+//            url: result + "&inviteId=" + spUtil.getInt("id").toString(),
+//            title: "邀请好友");
+//      }));
+//    });
   }
 
   TabController _tab_controller;

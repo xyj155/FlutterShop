@@ -1,3 +1,4 @@
+import 'package:sauce_app/gson/around_user_entity.dart';
 import 'package:sauce_app/gson/business_banner_entity.dart';
 import 'package:sauce_app/gson/business_class_tags_entity.dart';
 import 'package:sauce_app/gson/business_shop_list_entity.dart';
@@ -31,6 +32,8 @@ class EntityFactory {
   static T generateOBJ<T>(json) {
     if (1 == 0) {
       return null;
+    } else if (T.toString() == "AroundUserEntity") {
+      return AroundUserEntity.fromJson(json) as T;
     } else if (T.toString() == "BusinessBannerEntity") {
       return BusinessBannerEntity.fromJson(json) as T;
     } else if (T.toString() == "BusinessClassTagsEntity") {
