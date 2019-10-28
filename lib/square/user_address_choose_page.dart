@@ -63,7 +63,6 @@ return new GestureDetector(
               new Divider()
             ],
           ),
-          new Positioned(right:0,bottom: screenUtils.setWidgetHeight(30),child: new Image.asset("assert/imgs/user_address_editor.png",width: screenUtils.setWidgetWidth(17),height: screenUtils.setWidgetHeight(17),))
         ],
       ),
     ),

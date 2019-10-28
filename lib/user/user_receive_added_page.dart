@@ -15,7 +15,9 @@ import 'package:sauce_app/widget/loading_dialog.dart';
 
 class UserReceiveAddedPage extends StatefulWidget {
   int i;
+
   UserReceiveAddedPage({Key key, this.i}) : super(key: key);
+
   @override
   _UserReceiveAddedPageState createState() => _UserReceiveAddedPageState();
 }
@@ -45,9 +47,9 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
     screenUtils.initUtil(context);
     local = emptyResult == null || emptyResult.areaName == null
         ? ''
-        : emptyResult.provinceName.toString() +"|"+
-            emptyResult.cityName.toString() +"|"+
-            emptyResult.areaName.toString();
+        : emptyResult.provinceName.toString() + "|" +
+        emptyResult.cityName.toString() + "|" +
+        emptyResult.areaName.toString();
     return new Scaffold(
       backgroundColor: Colors.white,
       appBar: BackUtil.NavigationBack(context, "收货地址"),
@@ -65,38 +67,38 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
                     setState(() {
                       emptyResult = result;
                       local =
-                          emptyResult == null || emptyResult.areaName == null
-                              ? ''
-                              : emptyResult.provinceName.toString() +
-                                  emptyResult.cityName.toString() +
-                                  emptyResult.areaName.toString();
+                      emptyResult == null || emptyResult.areaName == null
+                          ? ''
+                          : emptyResult.provinceName.toString() +
+                          emptyResult.cityName.toString() +
+                          emptyResult.areaName.toString();
                     });
                   },
                   child: new Container(
                     padding:
-                        EdgeInsets.only(left: screenUtils.setWidgetWidth(18)),
+                    EdgeInsets.only(left: screenUtils.setWidgetWidth(18)),
                     alignment: Alignment.centerLeft,
                     height: screenUtils.setWidgetHeight(60),
                     child: new RichText(
                         text: TextSpan(
                             text: "地址",
                             style:
-                                TextStyle(color: Colors.black, fontSize: 18.0),
+                            TextStyle(color: Colors.black, fontSize: 18.0),
                             children: <TextSpan>[
-                          new TextSpan(
-                            text: emptyResult == null ||
+                              new TextSpan(
+                                text: emptyResult == null ||
                                     emptyResult.areaName == null
-                                ? '     请选择地址'
-                                : '     ' +
+                                    ? '     请选择地址'
+                                    : '     ' +
                                     emptyResult.provinceName.toString() +
                                     emptyResult.cityName.toString() +
                                     emptyResult.areaName.toString(),
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          )
-                        ])),
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              )
+                            ])),
                   ),
                 ),
                 new Divider(
@@ -115,7 +117,7 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
                         top: screenUtils.setWidgetHeight(17)),
                     icon: new Container(
                       margin:
-                          EdgeInsets.only(left: screenUtils.setWidgetWidth(16)),
+                      EdgeInsets.only(left: screenUtils.setWidgetWidth(16)),
                       child: new Text(
                         "门牌号",
                         style: new TextStyle(
@@ -148,7 +150,7 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
                         top: screenUtils.setWidgetHeight(17)),
                     icon: new Container(
                       margin:
-                          EdgeInsets.only(left: screenUtils.setWidgetWidth(16)),
+                      EdgeInsets.only(left: screenUtils.setWidgetWidth(16)),
                       child: new Text(
                         "联系人",
                         style: new TextStyle(
@@ -165,7 +167,7 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
                 ),
                 new Container(
                   margin:
-                      EdgeInsets.only(left: screenUtils.setWidgetHeight(40)),
+                  EdgeInsets.only(left: screenUtils.setWidgetHeight(40)),
                   child: new Row(
                     children: <Widget>[
                       new Text(
@@ -216,7 +218,7 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
                         top: screenUtils.setWidgetHeight(17)),
                     icon: new Container(
                       margin:
-                          EdgeInsets.only(left: screenUtils.setWidgetWidth(16)),
+                      EdgeInsets.only(left: screenUtils.setWidgetWidth(16)),
                       child: new Text(
                         "手机号码",
                         style: new TextStyle(
@@ -232,7 +234,10 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
                   endIndent: screenUtils.setWidgetWidth(15),
                 ),
                 new Container(
-                  width: MediaQuery.of(context).size.width - 28,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width - 28,
                   height: screenUtils.setWidgetHeight(50),
                   margin: EdgeInsets.only(top: screenUtils.setWidgetHeight(27)),
                   child: new MaterialButton(
@@ -274,12 +279,16 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
     );
   }
 
+
+
+
   String groupValue = "男";
 
   void submitUserAddress() async {
     var instance = await SpUtil.getInstance();
-    var response = await HttpUtil.getInstance().post(Api.SUBMIT_USER_ADDRESS, data:
-        {
+    var response = await HttpUtil.getInstance().post(
+        Api.SUBMIT_USER_ADDRESS, data:
+    {
       "userId": instance.getInt("id").toString(),
       "username": username.toString(),
       "userTel": userTel.toString(),
@@ -291,14 +300,13 @@ class _UserReceiveAddedPageState extends State<UserReceiveAddedPage>
     });
     var decode = json.decode(response.toString());
     var baseResponseEntity = BaseResponseEntity.fromJson(decode);
-    if(baseResponseEntity.code==200){
+    if (baseResponseEntity.code == 200) {
       Navigator.pop(context);
-      Navigator.pop(context,1);
+      Navigator.pop(context, 1);
       print(response.toString());
-    }else{
+    } else {
       Navigator.pop(context);
     }
-
   }
 
   void updateGroupValue(String v) {

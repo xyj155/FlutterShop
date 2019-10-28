@@ -497,7 +497,7 @@ class LoginState extends State<LoginPage> {
     instance.putString("score", userData.score);
     instance.putString("login", "1");
     instance.putString("school", userData.school);
-    instance.putString("nickname", userData.nickname);
+    instance.putString("nickname", Base642Text.decodeBase64(userData.nickname));
     instance.putString("major", userData.major);
     instance.putString("observe", userData.observe);
     instance.putInt("id", userData.id);

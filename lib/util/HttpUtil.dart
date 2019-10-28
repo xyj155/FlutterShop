@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sauce_app/api/Api.dart';
+import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/util/ToastUtil.dart';
 
 import 'AppEncryptionUtil.dart';
@@ -72,7 +73,13 @@ class HttpUtil {
       print('get error---------$e');
       formatError(e);
     }
-    return response.toString();
+    var baseResponseEntity = BaseResponseEntity.fromJson(json.decode(response.toString()));
+    if(baseResponseEntity.code==1003){
+      ToastUtil.showCommonToast("令牌已过期，请重新打开APP！");
+    }else{
+      return response.toString();
+    }
+
   }
 
 
@@ -90,7 +97,12 @@ class HttpUtil {
       print('post error---------$e');
       formatError(e);
     }
-    return response.toString();
+    var baseResponseEntity = BaseResponseEntity.fromJson(json.decode(response.toString()));
+    if(baseResponseEntity.code==1003){
+      ToastUtil.showCommonToast("令牌已过期，请重新打开APP！");
+    }else{
+      return response.toString();
+    }
   }
 
   /*

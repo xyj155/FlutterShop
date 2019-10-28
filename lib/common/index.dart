@@ -27,7 +27,10 @@ class _IndexPageState extends State<IndexPage>
   }
 
   void queryUserLoginState() async {
-    SpUtil instance = await SpUtil.instance;
+    var instance =  await SharedPreferences.getInstance();
+    print("======================================");
+    print(instance.getString("avatar"));
+    print("======================================");
     if (instance.getString("login")!=null) {
       Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (_) {
         return new MainPage();

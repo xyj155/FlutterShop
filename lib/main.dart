@@ -135,7 +135,7 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
       child: new MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: MainPage(), //启动MainPage
+        home: IndexPage(), //启动MainPage
       ),
     );
   }

@@ -34,6 +34,7 @@ import 'package:share/share.dart';
 
 import '../main.dart';
 import 'user_game_list.dart';
+import 'user_order_center.dart';
 import 'user_receive_added_page.dart';
 
 ScreenUtils screenUtil = new ScreenUtils();
@@ -152,7 +153,7 @@ return await  SpUtil.getInstance();
         builder: (BuildContext context,AsyncSnapshot snapshot){
          var spUtil=snapshot.data;
     return new CustomScrollView(
-      physics: ScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       slivers: <Widget>[
         new SliverToBoxAdapter(
           child: new Container(
@@ -396,6 +397,30 @@ return await  SpUtil.getInstance();
                 new Container(
                     height: screenUtil.setWidgetHeight(10),
                     color: Color(0xfffafafa)),
+                new ListTile(
+                  onTap: () {
+                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+                      return UserOrderCenterPage();
+                    }));
+                  },
+                  title: new Text(
+                    "我的订单",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                  trailing: new Image.asset(
+                    "assert/imgs/person_arrow_right_grayx.png",
+                    height: 15,
+                    width: 15,
+                  ),
+                  leading: new Image.asset(
+                    "assert/imgs/user_order_center.png",
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
                 new ListTile(
                   onTap: () {
                     Navigator.push(context, new MaterialPageRoute(builder: (_) {

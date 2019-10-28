@@ -21,6 +21,7 @@ import 'package:sauce_app/util/ToastUtil.dart';
 import 'package:sauce_app/util/event_bus.dart';
 
 import 'package:sauce_app/widget/loading_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //import 'package:sauce_app/widget/common_dialog.dart';
 import 'package:tobias/tobias.dart' as tobias;
@@ -39,8 +40,7 @@ class _LittleShopPageState extends State<LittleShopPage> {
   @override
   void initState() {
     super.initState();
-    getUserShopCar();
-    getCommodityKindItem();
+    queryUserGoods();
   }
 
   @override
@@ -55,32 +55,20 @@ class _LittleShopPageState extends State<LittleShopPage> {
   void deactivate() {
     super.deactivate();
     print("------------------------------------------");
-//    if (isSet) {
-    getUserShopCar();
-//    }
+    updateUserShopCar();
   }
 
   @override
   Widget build(BuildContext context) {
     screenUtils.initUtil(context);
-//    if (isSet) {
-//
-//    }
     EventBusUtil.getDefault().register((String i) {
       if (i == "add") {
         if (isRequestShopCar) {
-          getUpdateShopCat();
+          updateUserShopCar();
           debugPrint("enent bus ${isRequestShopCar}"); //接受消息打印
         }
       }
     });
-
-    void NavigatorGetUserShopCarList() {
-      Navigator.push(context, new MaterialPageRoute(builder: (_) {
-        return new UserShopCarListPage();
-      }));
-    }
-
     return Scaffold(
         appBar: BackUtil.NavigationBack(context, "小卖部"),
         body: new Stack(
@@ -191,7 +179,10 @@ class _LittleShopPageState extends State<LittleShopPage> {
                             left: screenUtils.setWidgetWidth(20)),
                         child: new GestureDetector(
                           onTap: () {
-                            NavigatorGetUserShopCarList();
+                            Navigator.push(context,
+                                new MaterialPageRoute(builder: (_) {
+                              return new UserShopCarListPage();
+                            }));
                           },
                           child: new ClipRRect(
                             child: new Image.asset(
@@ -233,10 +224,15 @@ class _LittleShopPageState extends State<LittleShopPage> {
                   new Positioned(
                     child: new GestureDetector(
                       onTap: () {
-                        Navigator.push(context,
-                            new MaterialPageRoute(builder: (_) {
-                          return new SquareUserSnackOrderPage();
-                        }));
+                        if (goodsCount > 0) {
+                          Navigator.push(context,
+                              new MaterialPageRoute(builder: (_) {
+                            return new SquareUserSnackOrderPage();
+                          }));
+                        } else {
+                          ToastUtil.showCommonToast("你还没有选择商品哦！");
+                          return;
+                        }
                       },
                       child: new Container(
                         height: screenUtils.setWidgetHeight(60),
@@ -247,7 +243,9 @@ class _LittleShopPageState extends State<LittleShopPage> {
                             right: screenUtils.setWidgetWidth(30)),
                         alignment: Alignment.center,
                         decoration: new BoxDecoration(
-                            color: Color(0xffffd300),
+                            color: goodsCount > 0
+                                ? Color(0xffffd300)
+                                : Colors.grey,
                             borderRadius: BorderRadius.only(
                                 topRight: Radius.circular(
                                     screenUtils.setWidgetHeight(60)),
@@ -278,18 +276,94 @@ class _LittleShopPageState extends State<LittleShopPage> {
 
   void showUserOrderBottomSheetDialog(BuildContext context) {}
 
-  getCommodityKindItem() async {
-    var response = await HttpUtil.getInstance().get(Api.COMMODITY_KIND_ITEM);
-    var decode = json.decode(response);
-    var shopKindListEntity = ShopKindListEntity.fromJson(decode);
-    if (shopKindListEntity.code == 200) {
-      setState(() {
-        _commodity_kind = shopKindListEntity.data;
-        index = 0;
-        shopId = shopKindListEntity.data[0].id;
-        getCommodityById(shopId);
-      });
+  void queryUserGoods() {
+    Future.wait([getCommodityKindItem(), getUserShopCar()]).then((data) {
+      var response1 = data[0];
+      var decode1 = json.decode(response1.toString());
+      var shopKindListEntity = ShopKindListEntity.fromJson(decode1);
+      if (shopKindListEntity.code == 200) {
+        setState(() {
+          _commodity_kind = shopKindListEntity.data;
+          index = 0;
+          shopId = shopKindListEntity.data[0].id;
+          getCommodityById(shopId);
+        });
+      }
+      var response2 = data[1];
+      print("==============================================");
+      print(response2);
+      print("==============================================");
+      if (response2 != null) {
+        var decode = json.decode(response2.toString());
+        var userShopCarEntity = UserShopCarEntity.fromJson(decode);
+        if (userShopCarEntity.code == 200) {
+          setState(() {
+            isSet = false;
+            goodsPrice = userShopCarEntity.data.price;
+            goodsCount = userShopCarEntity.data.shopCarCount;
+          });
+        } else if (userShopCarEntity.code == 203) {
+          updateUserShopCar();
+        }
+      } else {
+        updateUserShopCar();
+      }
+    });
+  }
+
+  Future getUserShopCar() async {
+    var instance = await SharedPreferences.getInstance();
+    print({"userId": instance.getInt("id").toString()});
+    return HttpUtil.getInstance().getDio().post(
+        Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
+        queryParameters: {"userId": instance.getInt("id").toString()});
+  }
+
+  Future updateUserShopCar() async {
+    var instance = await SpUtil.getInstance();
+    var response = await HttpUtil.getInstance().post(
+        Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
+        data: {"userId": instance.getInt("id").toString()});
+    print("==============================================");
+    print(response);
+    print({"userId": instance.getInt("id").toString()});
+    print("==============================================");
+    if (response != null) {
+      var decode = json.decode(response.toString());
+      var userShopCarEntity = UserShopCarEntity.fromJson(decode);
+      if (userShopCarEntity.code == 200) {
+        setState(() {
+          isSet = false;
+          goodsPrice = userShopCarEntity.data.price;
+          goodsCount = userShopCarEntity.data.shopCarCount;
+        });
+      } else if (userShopCarEntity.code == 203) {
+        updateUserShopCar();
+      }else if(userShopCarEntity.code == 201){
+        setState(() {
+          isSet = false;
+          goodsPrice = "0.00";
+          goodsCount = 0;
+        });
+      }
+    } else {
+      updateUserShopCar();
     }
+  }
+
+  Future getCommodityKindItem() async {
+    return HttpUtil.getInstance().getDio().get(Api.COMMODITY_KIND_ITEM);
+//    var response = await HttpUtil.getInstance().get(Api.COMMODITY_KIND_ITEM);
+//    var decode = json.decode(response);
+//    var shopKindListEntity = ShopKindListEntity.fromJson(decode);
+//    if (shopKindListEntity.code == 200) {
+//      setState(() {
+//        _commodity_kind = shopKindListEntity.data;
+//        index = 0;
+//        shopId = shopKindListEntity.data[0].id;
+//        getCommodityById(shopId);
+//      });
+//    }
   }
 
   Widget getCommodityKind(int i) {
@@ -321,7 +395,7 @@ class _LittleShopPageState extends State<LittleShopPage> {
 
   List<CommodityListItemData> _commodity_list = new List();
 
-  getCommodityById(int commodity) async {
+  void getCommodityById(int commodity) async {
     var response = await HttpUtil.getInstance()
         .get(Api.COMMODITY_ALL_BY_ID, data: {"shopId": commodity});
     var decode = json.decode(response);
@@ -429,9 +503,6 @@ class _LittleShopPageState extends State<LittleShopPage> {
                 height: screenUtils.setWidgetHeight(22),
               ),
               onTap: () {
-                print("==========isRequestShopCar=================");
-                print(isRequestShopCar);
-                print("============isRequestShopCar===============");
                 showDialog<Null>(
                     context: context, //BuildContext对象
                     barrierDismissible: false,
@@ -475,61 +546,11 @@ class _LittleShopPageState extends State<LittleShopPage> {
       });
     } else {
       Navigator.pop(context);
-      ToastUtil.showErrorToast("获取商品信息错误");
     }
   }
 
   int goodsCount = 0;
   String goodsPrice = "0.00";
-
-  Future getUserShopCar() async {
-    var instance = await SpUtil.getInstance();
-    var response = await HttpUtil.getInstance().get(
-        Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
-        data: {"userId": instance.getInt("id").toString()});
-    if (response != null) {
-
-      var decode = json.decode(response.toString());
-      var userShopCarEntity = UserShopCarEntity.fromJson(decode);
-      var price = userShopCarEntity.data.price;
-      var count = userShopCarEntity.data.shopCarCount;
-      print("-----------------------");
-      print(userShopCarEntity.data);
-      print("-----------------------");
-      setState(() {
-        goodsPrice = price;
-        goodsCount = count;
-      });
-//      if (userShopCarEntity.code == 200) {
-//        var price = userShopCarEntity.data.price;
-//        var count = userShopCarEntity.data.shopCarCount;
-//        setState(() {
-//          goodsPrice = price;
-//          goodsCount = count;
-//        });
-//      }
-    } else {
-      getUserShopCar();
-    }
-  }
-
-  void getUpdateShopCat() async {
-    var instance = await SpUtil.getInstance();
-    var response = await HttpUtil.getInstance().get(
-        Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
-        data: {"userId": instance.getInt("id").toString()});
-    if (response != null) {
-      var decode = json.decode(response.toString());
-      var userShopCarEntity = UserShopCarEntity.fromJson(decode);
-      if (userShopCarEntity.code == 200) {
-        setState(() {
-          isSet = false;
-          goodsPrice = userShopCarEntity.data.price;
-          goodsCount = userShopCarEntity.data.shopCarCount;
-        });
-      }
-    }
-  }
 }
 
 class BottomDialog extends StatefulWidget {
@@ -961,7 +982,7 @@ class UserShopCarListPageState extends State<UserShopCarListPage> {
 
   Future queryUserShopCarByUserId() async {
     var instance = await SpUtil.getInstance();
-    var response = await HttpUtil.getInstance().get(
+    var response = await HttpUtil.getInstance().post(
         Api.QUERY_SHOP_CAR_COUNT_AND_PRICE,
         data: {"userId": instance.getInt("id").toString()});
     if (response != null) {
