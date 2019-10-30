@@ -295,7 +295,7 @@ class _HomePostLocalState extends State<HomePostLocal>
         Navigator.push(
             context,
             CustomRouteSlide(
-                UserPostDetailItemPage(postId: "${index.id.toString()}")));
+                UserDetailPage(userId: "${index.id.toString()}")));
       },
     );
   }

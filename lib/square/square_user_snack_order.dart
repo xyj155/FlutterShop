@@ -7,6 +7,7 @@ import 'package:sauce_app/api/Api.dart';
 import 'package:sauce_app/gson/base_response_entity.dart';
 import 'package:sauce_app/gson/base_string_response_entity.dart';
 import 'package:sauce_app/gson/user_receive_address_entity.dart';
+import 'package:sauce_app/user/user_order_center.dart';
 import 'package:sauce_app/util/AppEncryptionUtil.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
@@ -73,20 +74,25 @@ class _SquareUserSnackOrderPageState extends State<SquareUserSnackOrderPage>
       var userShopCarEntity = UserShopCarEntity.fromJson(decode);
       var price = userShopCarEntity.data.price;
       var count = userShopCarEntity.data.shopCarCount;
-      Map<String, String> _goods = new Map();
+
       for (int i = 0; i < userShopCarEntity.data.goods.length; i++) {
-        userShopCarEntity.data.goods[i].tasty.foodsTaste;
-        String goods_item_tastyId =
-            userShopCarEntity.data.goods[i].tasty.foodsId.toString();
-        String goods_item_price =
-            userShopCarEntity.data.goods[i].tasty.tastePrice.toString();
-        String goods_item_count = userShopCarEntity.data.goods[i].tasty.count;
+        Map<String, dynamic> _goods = new Map();
+        var goods_item_tastyId = userShopCarEntity.data.goods[i].tasty.id;
+        var goods_item_price = userShopCarEntity.data.goods[i].tasty.tastePrice;
+        var goods_item_count = userShopCarEntity.data.goods[i].tasty.count;
+        print("=================================================");
+        print(goods_item_tastyId);
+        print(goods_item_price);
+        print(goods_item_count);
+        print("=================================================");
         _goods.putIfAbsent("t", () => goods_item_tastyId);
         _goods.putIfAbsent("p", () => goods_item_price);
         _goods.putIfAbsent("c", () => goods_item_count);
         _goods_list.add(_goods);
       }
-
+      print("=================================================");
+      print(json.encode(_goods_list));
+      print("=================================================");
       setState(() {
         countAll = count;
         priceAll = price;
@@ -214,7 +220,7 @@ class _SquareUserSnackOrderPageState extends State<SquareUserSnackOrderPage>
             ],
           ),
           new Container(
-            margin: EdgeInsets.only(bottom: screenUtils.setWidgetHeight(2)),
+            margin: EdgeInsets.only(bottom: screenUtils.setWidgetHeight(7)),
             child: new Container(),
           ),
         ],
@@ -597,12 +603,12 @@ class _SquareUserSnackOrderPageState extends State<SquareUserSnackOrderPage>
     if (baseResponseEntity.code == 200) {
       ToastUtil.showCommonToast("提交订单成功，货物将在一天之内送达！");
       Navigator.pop(context);
+      Navigator.push(context, new MaterialPageRoute(builder: (_) {
+        return new UserOrderCenterPage();
+      }));
       countdownTimer?.cancel();
       countdownTimer = null;
     } else {
-////      ToastUtil.showCommonToast("支付失败");
-//      countdownTimer?.cancel();
-//      countdownTimer = null;
     }
   }
 }

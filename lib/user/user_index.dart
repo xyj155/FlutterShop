@@ -23,6 +23,7 @@ import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/CommonBack.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/util/ScreenUtils.dart';
+
 //import 'package:sauce_app/util/SharePreferenceUtil.dart';
 import 'package:sauce_app/user/user_observe_fans.dart';
 import 'package:sauce_app/util/SharePreferenceUtil.dart';
@@ -47,11 +48,11 @@ class UserPageIndex extends StatefulWidget {
 class _UserPageIndexState extends State<UserPageIndex> {
   @override
   void initState() {
-
     print("///////////////////////////");
     super.initState();
 //    loadUserData();
   }
+
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -62,11 +63,11 @@ class _UserPageIndexState extends State<UserPageIndex> {
     print("///////////////////////////");
     print("deactivate");
   }
+
   @override
   void dispose() {
     super.dispose();
   }
-
 
   String instance = "";
   String nickname = "";
@@ -77,7 +78,7 @@ class _UserPageIndexState extends State<UserPageIndex> {
   String score = "";
 
   Future loadUserData() async {
-return await  SpUtil.getInstance();
+    return await SpUtil.getInstance();
 //    setState(()  {
 //      nickname = spUtil.getString("nickname");
 //      avatar = spUtil.getString("avatar");
@@ -113,7 +114,7 @@ return await  SpUtil.getInstance();
   }
 
   Future uploadAvatar() async {
-   var  spUtil = await SpUtil.getInstance();
+    var spUtil = await SpUtil.getInstance();
     var string = spUtil.getInt("id").toString();
     FormData formData = new FormData.from({
       "userId": string,
@@ -149,416 +150,450 @@ return await  SpUtil.getInstance();
     int thumb_count = 3;
 
     return new FutureBuilder(
-        future:loadUserData(),
-        builder: (BuildContext context,AsyncSnapshot snapshot){
-         var spUtil=snapshot.data;
-    return new CustomScrollView(
-      physics: BouncingScrollPhysics(),
-      slivers: <Widget>[
-        new SliverToBoxAdapter(
-          child: new Container(
-            color: Colors.white,
-            child: new Column(
-              children: <Widget>[
-                new Container(
-                  padding: new EdgeInsets.only(
-                      top: screenUtil.setWidgetHeight(15),
-                      left: screenUtil.setWidgetWidth(20),
-                      bottom: screenUtil.setWidgetHeight(15)),
-                  child: new Text("我的",
-                      style: TextStyle(
-                          fontSize: 33,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black)),
-                  alignment: Alignment.topLeft,
-                ),
-                new GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                      return new UserDetailCenterPage();
-                    }));
-                  },
-                  child: new Container(
-                    padding: new EdgeInsets.only(
-                        left: screenUtil.setWidgetWidth(20),
-                        bottom: screenUtil.setWidgetHeight(5),
-                        right: screenUtil.setWidgetWidth(20)),
-                    child: new Row(
-                      children: <Widget>[
-                        new GestureDetector(
-                          child: new ClipRRect(
-                            child: Image.network(
-                              spUtil.getString("avatar"),
-                              fit: BoxFit.cover,
-                              height: screenUtil.setWidgetHeight(74),
-                              width: screenUtil.setWidgetWidth(72),
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(screenUtil.setWidgetHeight(74)),
+        future: loadUserData(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          var spUtil = snapshot.data;
+          return new CustomScrollView(
+            physics: BouncingScrollPhysics(),
+            slivers: <Widget>[
+              new SliverToBoxAdapter(
+                child: new Container(
+                  color: Colors.white,
+                  child: new Stack(
+                    children: <Widget>[
+                      new Positioned(child: new Container(
+                        child: new ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          child: new Container(
+                            padding: EdgeInsets.only(left: screenUtil.setWidgetWidth(15),
+                                right:screenUtil.setWidgetWidth(15),
+                                top: screenUtil.setWidgetHeight(5),
+                                bottom: screenUtil.setWidgetHeight(5)),
+                            color: Color(0xff4ddfa9),
+                            child: new Text(
+                              "签到",
+                              style: new TextStyle(color: Colors.white),
                             ),
                           ),
-                          onTap: () {
-                            getImage();
-                          },
                         ),
-                        new Expanded(
-                            child: new Container(
-                              padding: EdgeInsets.only(left: 20),
-                              child: new Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    new Text(
-                                      spUtil.getString("nickname"),
-                                      style: new TextStyle(
-                                          fontSize: 27,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    new Divider(
-                                      color: Colors.transparent,
-                                      height: 10,
-                                    ),
-                                    new Text(
-                                      spUtil.getString("signature"),
-                                      style: new TextStyle(
-                                          fontSize: 14, color: Color(0xff8a8a8a)),
-                                    ),
-                                  ]),
-                            )),
-                        new Image.asset(
-                          "assert/imgs/person_arrow_right_grayx.png",
-                          width: 15,
-                          height: 15,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                new Divider(
-                    indent: 20, height: 16.0, color: Colors.transparent),
-                new Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: new GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: new Column(
-                          children: <Widget>[
-                            new Text(
-                              spUtil.getString("fans"),
-                              style: new TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff000000)),
-                            ),
-                            new Text(
-                              "粉丝",
-                              style: new TextStyle(
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(context,
-                              new MaterialPageRoute(builder: (_) {
-                                return new UserObserveFansPage(
-                                  type: "0",
-                                );
-                              }));
-                        },
-                      ),
-                    ),
-                    new Expanded(
-                      child: new GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: new Column(
-                          children: <Widget>[
-                            new Text(
-                              spUtil.getString("observe"),
-                              style: new TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff000000)),
-                            ),
-                            new Text(
-                              "关注",
-                              style: new TextStyle(
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(context,
-                              new MaterialPageRoute(builder: (_) {
-                                return new UserObserveFansPage(
-                                  type: "1",
-                                );
-                              }));
-                        },
-                      ),
-                    ),
-                    new Expanded(
-                        child: new GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          child: new Column(
-                            children: <Widget>[
-                              new Text(
-                                spUtil.getString("score"),
-                                style: new TextStyle(
-                                    fontSize: 25,
+                      ),right: 15,top: 18,),
+                      new Column(
+                        children: <Widget>[
+                          new Container(
+                            padding: new EdgeInsets.only(
+                                top: screenUtil.setWidgetHeight(15),
+                                left: screenUtil.setWidgetWidth(20),
+                                bottom: screenUtil.setWidgetHeight(15)),
+                            child: new Text("我的",
+                                style: TextStyle(
+                                    fontSize: 33,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xff000000)),
+                                    color: Colors.black)),
+                            alignment: Alignment.topLeft,
+                          ),
+                          new GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return new UserDetailCenterPage();
+                              }));
+                            },
+                            child: new Container(
+                              padding: new EdgeInsets.only(
+                                  left: screenUtil.setWidgetWidth(20),
+                                  bottom: screenUtil.setWidgetHeight(5),
+                                  right: screenUtil.setWidgetWidth(20)),
+                              child: new Row(
+                                children: <Widget>[
+                                  new GestureDetector(
+                                    child: new ClipRRect(
+                                      child: Image.network(
+                                        spUtil.getString("avatar"),
+                                        fit: BoxFit.cover,
+                                        height: screenUtil.setWidgetHeight(74),
+                                        width: screenUtil.setWidgetWidth(72),
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            screenUtil.setWidgetHeight(74)),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      getImage();
+                                    },
+                                  ),
+                                  new Expanded(
+                                      child: new Container(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: new Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          new Text(
+                                            spUtil.getString("nickname"),
+                                            style: new TextStyle(
+                                                fontSize: 27,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          new Divider(
+                                            color: Colors.transparent,
+                                            height: 10,
+                                          ),
+                                          new Text(
+                                            spUtil.getString("signature"),
+                                            style: new TextStyle(
+                                                fontSize: 14,
+                                                color: Color(0xff8a8a8a)),
+                                          ),
+                                        ]),
+                                  )),
+                                  new Image.asset(
+                                    "assert/imgs/person_arrow_right_grayx.png",
+                                    width: 15,
+                                    height: 15,
+                                  ),
+                                ],
                               ),
-                              new Text(
-                                "积分",
-                                style: new TextStyle(
-                                  fontSize: 15,
+                            ),
+                          ),
+                          new Divider(
+                              indent: 20,
+                              height: 16.0,
+                              color: Colors.transparent),
+                          new Row(
+                            children: <Widget>[
+                              new Expanded(
+                                child: new GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  child: new Column(
+                                    children: <Widget>[
+                                      new Text(
+                                        spUtil.getString("fans"),
+                                        style: new TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xff000000)),
+                                      ),
+                                      new Text(
+                                        "粉丝",
+                                        style: new TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        new MaterialPageRoute(builder: (_) {
+                                      return new UserObserveFansPage(
+                                        type: "0",
+                                      );
+                                    }));
+                                  },
                                 ),
                               ),
+                              new Expanded(
+                                child: new GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  child: new Column(
+                                    children: <Widget>[
+                                      new Text(
+                                        spUtil.getString("observe"),
+                                        style: new TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xff000000)),
+                                      ),
+                                      new Text(
+                                        "关注",
+                                        style: new TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        new MaterialPageRoute(builder: (_) {
+                                      return new UserObserveFansPage(
+                                        type: "1",
+                                      );
+                                    }));
+                                  },
+                                ),
+                              ),
+                              new Expanded(
+                                  child: new GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                child: new Column(
+                                  children: <Widget>[
+                                    new Text(
+                                      spUtil.getString("score"),
+                                      style: new TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xff000000)),
+                                    ),
+                                    new Text(
+                                      "积分",
+                                      style: new TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
                             ],
                           ),
-                        )),
-                  ],
+                          new Container(
+                            height: 5.0,
+                            color: Color(0xfffafafa),
+                            margin: EdgeInsets.only(top: 16),
+                          ),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return UserPostListPage();
+                              }));
+                            },
+                            title: new Text(
+                              "我的发帖",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_post_collection.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new ListTile(
+                            title: new Text(
+                              "我的收藏",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_collection.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return UserViewHistoryPage();
+                              }));
+                            },
+                            title: new Text(
+                              "浏览历史",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_view_history.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new Container(
+                              height: screenUtil.setWidgetHeight(10),
+                              color: Color(0xfffafafa)),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return UserOrderCenterPage();
+                              }));
+                            },
+                            title: new Text(
+                              "我的订单",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/user_order_center.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return UserAddressPage();
+                              }));
+                            },
+                            title: new Text(
+                              "收货地址",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_location.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new Container(
+                              height: screenUtil.setWidgetHeight(10),
+                              color: Color(0xfffafafa)),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return new CommonWebViewPage(
+                                    title: "抽奖",
+                                    url:
+                                        "http://sxystushop.xyz/JustLikeThis/public/luckdraw/default.html");
+                              }));
+                            },
+                            title: new Text(
+                              "抽奖",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_prize.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return new UserGameListPage();
+                              }));
+                            },
+                            title: new Text(
+                              "玩游戏 送礼品",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_game.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return new CommonWebViewPage(
+                                    url:
+                                        'http://47.98.122.133/Admini/app/inviteFriend.html',
+                                    title: "邀请好友");
+                              }));
+                            },
+                            title: new Text(
+                              "邀请",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_invite.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          new Container(
+                              height: screenUtil.setWidgetHeight(10),
+                              color: Color(0xfffafafa)),
+                          new ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  new CustomRouteSlide(
+                                      new UserSettingPageIndex()));
+                            },
+                            title: new Text(
+                              "设置",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            trailing: new Image.asset(
+                              "assert/imgs/person_arrow_right_grayx.png",
+                              height: 15,
+                              width: 15,
+                            ),
+                            leading: new Image.asset(
+                              "assert/imgs/ic_user_setting.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-                new Container(
-                  height: 5.0,
-                  color: Color(0xfffafafa),
-                  margin: EdgeInsets.only(top: 16),
-                ),
-                new ListTile(
-                  onTap: (){
-
-                    Navigator.push(context, new MaterialPageRoute(builder: (_){
-                      return UserPostListPage();
-                    }));
-                  },
-                  title: new Text(
-                    "我的发帖",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_post_collection.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new ListTile(
-                  title: new Text(
-                    "我的收藏",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_collection.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new ListTile(
-                  onTap: (){
-                    Navigator.push(context, new MaterialPageRoute(builder: (_){
-                      return UserViewHistoryPage();
-                    }));
-                  },
-                  title: new Text(
-                    "浏览历史",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_view_history.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new Container(
-                    height: screenUtil.setWidgetHeight(10),
-                    color: Color(0xfffafafa)),
-                new ListTile(
-                  onTap: () {
-                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                      return UserOrderCenterPage();
-                    }));
-                  },
-                  title: new Text(
-                    "我的订单",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/user_order_center.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new ListTile(
-                  onTap: () {
-                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                      return UserAddressPage();
-                    }));
-                  },
-                  title: new Text(
-                    "收货地址",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_location.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new Container(
-                    height: screenUtil.setWidgetHeight(10),
-                    color: Color(0xfffafafa)),
-                new ListTile(
-                  onTap: () {
-                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                      return new CommonWebViewPage(
-                          title: "抽奖",
-                          url:
-                          "http://sxystushop.xyz/JustLikeThis/public/luckdraw/default.html");
-                    }));
-                  },
-                  title: new Text(
-                    "抽奖",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_prize.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new ListTile(
-                  onTap: () {
-                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                      return new UserGameListPage();
-                    }));
-                  },
-                  title: new Text(
-                    "玩游戏 送礼品",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_game.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new ListTile(
-                  onTap: () {
-                    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                      return new CommonWebViewPage(
-                          url:
-                          'http://47.98.122.133/Admini/app/inviteFriend.html',
-                          title: "邀请好友");
-                    }));
-                  },
-                  title: new Text(
-                    "邀请",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_invite.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                new Container(
-                    height: screenUtil.setWidgetHeight(10),
-                    color: Color(0xfffafafa)),
-                new ListTile(
-                  onTap: () {
-                    Navigator.push(context,
-                        new CustomRouteSlide(new UserSettingPageIndex()));
-                  },
-                  title: new Text(
-                    "设置",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  trailing: new Image.asset(
-                    "assert/imgs/person_arrow_right_grayx.png",
-                    height: 15,
-                    width: 15,
-                  ),
-                  leading: new Image.asset(
-                    "assert/imgs/ic_user_setting.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-    });
+              ),
+            ],
+          );
+        });
   }
 }
 
@@ -569,8 +604,6 @@ class UserPostListPage extends StatefulWidget {
 
 class _UserPostListPageState extends State<UserPostListPage>
     with SingleTickerProviderStateMixin {
-
-
   @override
   void initState() {
     getUserPostByUserId();
@@ -579,10 +612,11 @@ class _UserPostListPageState extends State<UserPostListPage>
 
   @override
   void dispose() {
-
     super.dispose();
   }
-ScreenUtils _screenUtils=new ScreenUtils();
+
+  ScreenUtils _screenUtils = new ScreenUtils();
+
   @override
   Widget build(BuildContext context) {
     _screenUtils.initUtil(context);
@@ -774,91 +808,92 @@ ScreenUtils _screenUtils=new ScreenUtils();
             new Container(
                 child: index.postType == 1
                     ? new GridView.builder(
-                  padding: EdgeInsets.only(
-                      left: screenUtil.setWidgetWidth(20),
-                      right: screenUtil.setWidgetWidth(20),
-                      top: screenUtil.setWidgetHeight(8),
-                      bottom: screenUtil.setWidgetHeight(8)),
-                  physics: new NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 6.0,
-                    crossAxisSpacing: 6.0,
-                  ),
-                  itemCount: _picture_list.length,
-                  itemBuilder: (BuildContext context, int indexs) {
-                    return new GestureDetector(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: "assert/imgs/loading.gif",
-                          image: "${_picture_list[indexs]}" +
-                              "?x-oss-process=style/image_press",
-                          fit: BoxFit.cover,
-                          width: screenUtil.setWidgetWidth(54),
-                          height: screenUtil.setWidgetWidth(54),
+                        padding: EdgeInsets.only(
+                            left: screenUtil.setWidgetWidth(20),
+                            right: screenUtil.setWidgetWidth(20),
+                            top: screenUtil.setWidgetHeight(8),
+                            bottom: screenUtil.setWidgetHeight(8)),
+                        physics: new NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 6.0,
+                          crossAxisSpacing: 6.0,
                         ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PhotoGalleryPage(
-                                    index: indexs,
-                                    photoList: _picture_list,
-                                  )),
-                        );
-                      },
-                    );
-                  },
-                )
-                    : index.pictures.length==0
-                    ? new Container()
-                    : new GestureDetector(
-                  onTap: () {
-                    print("-------------------------------------------");
-                    print(index.pictures[0].height);
-                    print(index.pictures[0].weight);
-                    print("-------------------------------------------");
-                    Navigator.push(context,
-                        new MaterialPageRoute(builder: (_) {
-                          return new CommonVideoPlayer(
-                            videoUrl: index.pictures[0].postPictureUrl,
-                            height: index.pictures[0].height,
-                            width: index.pictures[0].weight,
+                        itemCount: _picture_list.length,
+                        itemBuilder: (BuildContext context, int indexs) {
+                          return new GestureDetector(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: FadeInImage.assetNetwork(
+                                placeholder: "assert/imgs/loading.gif",
+                                image: "${_picture_list[indexs]}" +
+                                    "?x-oss-process=style/image_press",
+                                fit: BoxFit.cover,
+                                width: screenUtil.setWidgetWidth(54),
+                                height: screenUtil.setWidgetWidth(54),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PhotoGalleryPage(
+                                          index: indexs,
+                                          photoList: _picture_list,
+                                        )),
+                              );
+                            },
                           );
-                        }));
-                  },
-                  child: new Stack(
-                    children: <Widget>[
-                      new Container(
-                        padding: EdgeInsets.only(
-                            left: screenUtil.setWidgetHeight(20)),
-                        alignment: Alignment.center,
-                        height: screenUtil.setWidgetHeight(200),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: "assert/imgs/loading.gif",
-                          image: "${index.pictures[0].postPictureUrl}" +
-                              "?x-oss-process=video/snapshot,t_5000,f_jpg",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      new Container(
-                        padding: EdgeInsets.only(
-                            left: screenUtil.setWidgetHeight(20)),
-                        height: screenUtil.setWidgetHeight(200),
-                        alignment: Alignment.center,
-                        child: new Image.asset(
-                          "assert/imgs/video_player.png",
-                          width: screenUtil.setWidgetWidth(40),
-                          height: screenUtil.setWidgetHeight(40),
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
+                        },
+                      )
+                    : index.pictures.length == 0
+                        ? new Container()
+                        : new GestureDetector(
+                            onTap: () {
+                              print(
+                                  "-------------------------------------------");
+                              print(index.pictures[0].height);
+                              print(index.pictures[0].weight);
+                              print(
+                                  "-------------------------------------------");
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return new CommonVideoPlayer(
+                                  videoUrl: index.pictures[0].postPictureUrl,
+                                  height: index.pictures[0].height,
+                                  width: index.pictures[0].weight,
+                                );
+                              }));
+                            },
+                            child: new Stack(
+                              children: <Widget>[
+                                new Container(
+                                  padding: EdgeInsets.only(
+                                      left: screenUtil.setWidgetHeight(20)),
+                                  alignment: Alignment.center,
+                                  height: screenUtil.setWidgetHeight(200),
+                                  child: FadeInImage.assetNetwork(
+                                    placeholder: "assert/imgs/loading.gif",
+                                    image: "${index.pictures[0].postPictureUrl}" +
+                                        "?x-oss-process=video/snapshot,t_5000,f_jpg",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                new Container(
+                                  padding: EdgeInsets.only(
+                                      left: screenUtil.setWidgetHeight(20)),
+                                  height: screenUtil.setWidgetHeight(200),
+                                  alignment: Alignment.center,
+                                  child: new Image.asset(
+                                    "assert/imgs/video_player.png",
+                                    width: screenUtil.setWidgetWidth(40),
+                                    height: screenUtil.setWidgetHeight(40),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
             new Row(
               children: <Widget>[
                 new UserPostDetailList(
@@ -946,9 +981,7 @@ class UserViewHistoryPage extends StatefulWidget {
   _UserViewHistoryPageState createState() => _UserViewHistoryPageState();
 }
 
-class _UserViewHistoryPageState extends State<UserViewHistoryPage>  {
-
-
+class _UserViewHistoryPageState extends State<UserViewHistoryPage> {
   @override
   void initState() {
     getUserPostByUserId();
@@ -957,12 +990,13 @@ class _UserViewHistoryPageState extends State<UserViewHistoryPage>  {
 
   @override
   void dispose() {
-
     super.dispose();
   }
-ScreenUtils _screenUtils=new ScreenUtils();
+
+  ScreenUtils _screenUtils = new ScreenUtils();
   List<UserPostItemData> _user_post_list = new List();
   int page = 1;
+
   @override
   Widget build(BuildContext context) {
     _screenUtils.initUtil(context);
@@ -1013,6 +1047,7 @@ ScreenUtils _screenUtils=new ScreenUtils();
       ),
     );
   }
+
   getBody() {
     if (_user_post_list.length != 0) {
       return ListView.builder(
@@ -1027,6 +1062,7 @@ ScreenUtils _screenUtils=new ScreenUtils();
       );
     }
   }
+
   setUserPostList(UserPostItemData index) {
     print("-------------------------------------------");
     print(index.pictures.length);
@@ -1125,91 +1161,92 @@ ScreenUtils _screenUtils=new ScreenUtils();
             new Container(
                 child: index.postType == 1
                     ? new GridView.builder(
-                  padding: EdgeInsets.only(
-                      left: screenUtil.setWidgetWidth(20),
-                      right: screenUtil.setWidgetWidth(20),
-                      top: screenUtil.setWidgetHeight(8),
-                      bottom: screenUtil.setWidgetHeight(8)),
-                  physics: new NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 6.0,
-                    crossAxisSpacing: 6.0,
-                  ),
-                  itemCount: _picture_list.length,
-                  itemBuilder: (BuildContext context, int indexs) {
-                    return new GestureDetector(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: "assert/imgs/loading.gif",
-                          image: "${_picture_list[indexs]}" +
-                              "?x-oss-process=style/image_press",
-                          fit: BoxFit.cover,
-                          width: screenUtil.setWidgetWidth(54),
-                          height: screenUtil.setWidgetWidth(54),
+                        padding: EdgeInsets.only(
+                            left: screenUtil.setWidgetWidth(20),
+                            right: screenUtil.setWidgetWidth(20),
+                            top: screenUtil.setWidgetHeight(8),
+                            bottom: screenUtil.setWidgetHeight(8)),
+                        physics: new NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 6.0,
+                          crossAxisSpacing: 6.0,
                         ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PhotoGalleryPage(
-                                    index: indexs,
-                                    photoList: _picture_list,
-                                  )),
-                        );
-                      },
-                    );
-                  },
-                )
-                    : index.pictures.length==0
-                    ? new Container()
-                    : new GestureDetector(
-                  onTap: () {
-                    print("-------------------------------------------");
-                    print(index.pictures[0].height);
-                    print(index.pictures[0].weight);
-                    print("-------------------------------------------");
-                    Navigator.push(context,
-                        new MaterialPageRoute(builder: (_) {
-                          return new CommonVideoPlayer(
-                            videoUrl: index.pictures[0].postPictureUrl,
-                            height: index.pictures[0].height,
-                            width: index.pictures[0].weight,
+                        itemCount: _picture_list.length,
+                        itemBuilder: (BuildContext context, int indexs) {
+                          return new GestureDetector(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: FadeInImage.assetNetwork(
+                                placeholder: "assert/imgs/loading.gif",
+                                image: "${_picture_list[indexs]}" +
+                                    "?x-oss-process=style/image_press",
+                                fit: BoxFit.cover,
+                                width: screenUtil.setWidgetWidth(54),
+                                height: screenUtil.setWidgetWidth(54),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PhotoGalleryPage(
+                                          index: indexs,
+                                          photoList: _picture_list,
+                                        )),
+                              );
+                            },
                           );
-                        }));
-                  },
-                  child: new Stack(
-                    children: <Widget>[
-                      new Container(
-                        padding: EdgeInsets.only(
-                            left: screenUtil.setWidgetHeight(20)),
-                        alignment: Alignment.center,
-                        height: screenUtil.setWidgetHeight(200),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: "assert/imgs/loading.gif",
-                          image: "${index.pictures[0].postPictureUrl}" +
-                              "?x-oss-process=video/snapshot,t_5000,f_jpg",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      new Container(
-                        padding: EdgeInsets.only(
-                            left: screenUtil.setWidgetHeight(20)),
-                        height: screenUtil.setWidgetHeight(200),
-                        alignment: Alignment.center,
-                        child: new Image.asset(
-                          "assert/imgs/video_player.png",
-                          width: screenUtil.setWidgetWidth(40),
-                          height: screenUtil.setWidgetHeight(40),
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
+                        },
+                      )
+                    : index.pictures.length == 0
+                        ? new Container()
+                        : new GestureDetector(
+                            onTap: () {
+                              print(
+                                  "-------------------------------------------");
+                              print(index.pictures[0].height);
+                              print(index.pictures[0].weight);
+                              print(
+                                  "-------------------------------------------");
+                              Navigator.push(context,
+                                  new MaterialPageRoute(builder: (_) {
+                                return new CommonVideoPlayer(
+                                  videoUrl: index.pictures[0].postPictureUrl,
+                                  height: index.pictures[0].height,
+                                  width: index.pictures[0].weight,
+                                );
+                              }));
+                            },
+                            child: new Stack(
+                              children: <Widget>[
+                                new Container(
+                                  padding: EdgeInsets.only(
+                                      left: screenUtil.setWidgetHeight(20)),
+                                  alignment: Alignment.center,
+                                  height: screenUtil.setWidgetHeight(200),
+                                  child: FadeInImage.assetNetwork(
+                                    placeholder: "assert/imgs/loading.gif",
+                                    image: "${index.pictures[0].postPictureUrl}" +
+                                        "?x-oss-process=video/snapshot,t_5000,f_jpg",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                new Container(
+                                  padding: EdgeInsets.only(
+                                      left: screenUtil.setWidgetHeight(20)),
+                                  height: screenUtil.setWidgetHeight(200),
+                                  alignment: Alignment.center,
+                                  child: new Image.asset(
+                                    "assert/imgs/video_player.png",
+                                    width: screenUtil.setWidgetWidth(40),
+                                    height: screenUtil.setWidgetHeight(40),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
             new Row(
               children: <Widget>[
                 new UserPostDetailList(
@@ -1269,11 +1306,11 @@ ScreenUtils _screenUtils=new ScreenUtils();
       },
     );
   }
+
   Future getUserPostByUserId() async {
     var instance = await SpUtil.getInstance();
 
-    var response = await HttpUtil.getInstance().get(
-        Api.QUERY_USER_VIEW_HISTORY,
+    var response = await HttpUtil.getInstance().get(Api.QUERY_USER_VIEW_HISTORY,
         data: {"userId": instance.getInt("id").toString(), "page": 1});
     print("------------------------------------------");
     print(response);
@@ -1287,8 +1324,7 @@ ScreenUtils _screenUtils=new ScreenUtils();
 
   Future getUserPostByUserIdNextPage(int pages) async {
     var instance = await SpUtil.getInstance();
-    var response = await HttpUtil.getInstance().get(
-        Api.QUERY_USER_VIEW_HISTORY,
+    var response = await HttpUtil.getInstance().get(Api.QUERY_USER_VIEW_HISTORY,
         data: {"userId": instance.getInt("id").toString(), "page": pages});
     var decode = json.decode(response);
     var userPostItemEntity = UserPostItemEntity.fromJson(decode);
@@ -1302,7 +1338,7 @@ ScreenUtils _screenUtils=new ScreenUtils();
     var id = spUtil.getInt("id");
 
     var reponse =
-    await HttpUtil.getInstance().post(Api.USER_UPDATE_BY_POST_ID, data: {
+        await HttpUtil.getInstance().post(Api.USER_UPDATE_BY_POST_ID, data: {
       "userId": id.toString(),
       "postId": postId.id.toString(),
       "postUserId": postId.user.id.toString()

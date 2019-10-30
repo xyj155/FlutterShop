@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'dart:async';
@@ -18,6 +19,7 @@ import 'package:sauce_app/square/food_kind/square_shop_foods_purse.dart';
 
 import 'package:sauce_app/square/food_kind/square_shop_wear_purse.dart';
 import 'package:sauce_app/square/food_kind/square_shop_live_purse.dart';
+import 'package:sauce_app/util/Base64.dart';
 import 'package:sauce_app/util/HttpUtil.dart';
 import 'package:sauce_app/gson/user_item_entity.dart';
 import 'package:sauce_app/gson/square_purse_title_entity.dart';
@@ -57,6 +59,7 @@ class SquarePageState extends State<SquarePageIndex>
   Future<String> futureString;
 
   Future scan() async {
+
 //    futureString = new QRCodeReader()
 //        .setForceAutoFocus(true) // default false
 //        .setHandlePermissions(true) // default true
@@ -494,85 +497,92 @@ class SquarePageState extends State<SquarePageIndex>
 
 //设置周边店铺item
   Widget _set_widget_location_shop(BuildContext context, int position) {
-    return new Container(
-        margin: EdgeInsets.all(screenUtils.setWidgetWidth(2)),
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            new Stack(
-              children: <Widget>[
-                new ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(screenUtils.setWidgetWidth(3)),
-                  child: FadeInImage.assetNetwork(
-                    placeholder: "assert/imgs/loading.gif",
-                    image: "${_shop_list[position].businessPicture}",
-                    fit: BoxFit.cover,
-                    width: screenUtils.setWidgetWidth(110),
-                    height: screenUtils.setWidgetHeight(86),
-                  ),
-                ),
-                new Positioned(
-                  bottom: screenUtils.setWidgetHeight(3),
-                  left: screenUtils.setWidgetWidth(3),
-                  child: ClipRRect(
+    return new GestureDetector(
+      onTap: (){
+        Navigator.push(context, new MaterialPageRoute(builder: (_){
+          return new CommonWebViewPage(url: "http://47.98.122.133/Admini/business_detail/businessDetail.html?shopId=${_shop_list[position].shopId}", title: "");
+        }));
+      },
+      child: new Container(
+          margin: EdgeInsets.all(screenUtils.setWidgetWidth(2)),
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              new Stack(
+                children: <Widget>[
+                  new ClipRRect(
                     borderRadius:
-                        BorderRadius.circular(screenUtils.setWidgetWidth(10)),
-                    child: new Container(
-                      alignment: Alignment.bottomLeft,
-                      padding: EdgeInsets.only(
-                          left: screenUtils.setWidgetWidth(4),
-                          right: screenUtils.setWidgetWidth(4),
-                          top: screenUtils.setWidgetHeight(2),
-                          bottom: screenUtils.setWidgetHeight(2)),
-                      decoration: new BoxDecoration(
-                        gradient: const LinearGradient(colors: [
-                          Color(0xfffe7e23),
-                          Color(0xfffe6519),
-                          Color(0xfffe4e12)
-                        ]),
-                      ),
-                      child: new Text(
-                        _shop_list[position].purseTag,
-                        style: new TextStyle(
-                          color: Colors.white,
-                          fontSize: screenUtils.setFontSize(11),
+                    BorderRadius.circular(screenUtils.setWidgetWidth(3)),
+                    child: FadeInImage.assetNetwork(
+                      placeholder: "assert/imgs/loading.gif",
+                      image: "${_shop_list[position].businessPicture}",
+                      fit: BoxFit.cover,
+                      width: screenUtils.setWidgetWidth(110),
+                      height: screenUtils.setWidgetHeight(86),
+                    ),
+                  ),
+                  new Positioned(
+                    bottom: screenUtils.setWidgetHeight(3),
+                    left: screenUtils.setWidgetWidth(3),
+                    child: ClipRRect(
+                      borderRadius:
+                      BorderRadius.circular(screenUtils.setWidgetWidth(10)),
+                      child: new Container(
+                        alignment: Alignment.bottomLeft,
+                        padding: EdgeInsets.only(
+                            left: screenUtils.setWidgetWidth(4),
+                            right: screenUtils.setWidgetWidth(4),
+                            top: screenUtils.setWidgetHeight(2),
+                            bottom: screenUtils.setWidgetHeight(2)),
+                        decoration: new BoxDecoration(
+                          gradient: const LinearGradient(colors: [
+                            Color(0xfffe7e23),
+                            Color(0xfffe6519),
+                            Color(0xfffe4e12)
+                          ]),
+                        ),
+                        child: new Text(
+                          _shop_list[position].purseTag,
+                          style: new TextStyle(
+                            color: Colors.white,
+                            fontSize: screenUtils.setFontSize(11),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              ],
-            ),
-            new Container(
-              width: screenUtils.setWidgetWidth(90),
-              margin: EdgeInsets.only(
-                  top: screenUtils.setWidgetHeight(6),
-                  bottom: screenUtils.setWidgetHeight(2)),
-              child: new Text(
-                _shop_list[position].businessName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: new TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal,
-                    fontSize: screenUtils.setFontSize(15)),
+                  )
+                ],
               ),
-            ),
-            new Container(
-              width: screenUtils.setWidgetWidth(90),
-              child: new Text(
-                _shop_list[position].businessDesc,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: new TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.normal,
-                    fontSize: screenUtils.setFontSize(13)),
+              new Container(
+                width: screenUtils.setWidgetWidth(90),
+                margin: EdgeInsets.only(
+                    top: screenUtils.setWidgetHeight(6),
+                    bottom: screenUtils.setWidgetHeight(2)),
+                child: new Text(
+                  _shop_list[position].businessName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: new TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                      fontSize: screenUtils.setFontSize(15)),
+                ),
               ),
-            )
-          ],
-        ));
+              new Container(
+                width: screenUtils.setWidgetWidth(90),
+                child: new Text(
+                  _shop_list[position].businessDesc,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: new TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.normal,
+                      fontSize: screenUtils.setFontSize(13)),
+                ),
+              )
+            ],
+          )),
+    );
   }
 
   int index = 0;
@@ -728,7 +738,7 @@ class SquarePageState extends State<SquarePageIndex>
               width: screenUtils.setWidgetWidth(48),
               alignment: Alignment.center,
               child: new Text(
-                "${model.nickname}",
+                "${Base642Text.decodeBase64(model.nickname)}",
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: new TextStyle(color: Color(0xff000000)),

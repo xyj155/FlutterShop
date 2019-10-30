@@ -285,6 +285,7 @@ class _ConversationListPageState extends State<ConversationListPage>
               new CustomRouteSlide(SingleConversationPage(
                   userId: target.username,
                   username: target.nickname,
+                  type: 0,
                   avatar: target.avatarThumbPath)));
         },
       ),

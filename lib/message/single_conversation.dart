@@ -20,10 +20,12 @@ class SingleConversationPage extends StatefulWidget {
   final String userId;
   final String username;
   final String avatar;
+  final int type;
 
   SingleConversationPage(
       {Key key,
       @required this.avatar,
+      this.type=1,
       @required this.userId,
       @required this.username})
       : super(key: key);
@@ -297,13 +299,9 @@ class _SingleConversationPageState extends State<SingleConversationPage>
               margin: EdgeInsets.fromLTRB(0, 5, 10, 0),
               child: new ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
-                child: new Image.network(widget.avatar),
+                child: widget.type==0?
+                new Image.file(new File(widget.avatar)):new Image.network(widget.avatar),
               ),
-//              child: CircleAvatar(
-//                backgroundImage: ,
-//                backgroundColor: Colors.grey[200],
-//                minRadius: 30,
-//              ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
